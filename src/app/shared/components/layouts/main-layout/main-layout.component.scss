@@ -252,14 +252,12 @@
   display: grid;
   grid-template-rows: 1fr auto;
   min-height: 100dvh;
-  background: var(--color-bg-main);
 }
 
 .main-content {
   padding: 2rem;
   min-height: calc(100vh - 60px); // Subtract footer height
   overflow-x: hidden;
-  background: var(--color-bg-main);
 
   @media (max-width: 1024px) {
     padding: 1.5rem;
