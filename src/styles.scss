@@ -66,11 +66,9 @@ body {
   font-size: 16px;
   line-height: 1.5;
   color: var(--color-text-primary);
-  background-color: var(--color-bg-main);
+  background-color: var(--color-primary-dark);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
 }
 
 // Scrollbar Styling
