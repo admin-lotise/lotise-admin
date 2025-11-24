@@ -23,18 +23,24 @@ export class MainLayoutComponent {
       if (isPlatformBrowser(this.platformId)) {
         const themeColor = this.document.querySelector('meta[name="theme-color"]');
         const body = this.document.body;
+        const rootStyles = getComputedStyle(this.document.documentElement);
+        
+        // Get colors from CSS variables
+        const bgMain = rootStyles.getPropertyValue('--color-bg-main').trim();
+        const bgSidebar = rootStyles.getPropertyValue('--color-bg-sidebar').trim();
+        const bgFooter = rootStyles.getPropertyValue('--color-bg-footer').trim();
         
         if (this.isMobileMenuOpen()) {
           // Sidebar open - use sidebar color for header, footer color for bottom
-          if (themeColor) themeColor.setAttribute('content', '#1e3a5f');
+          if (themeColor) themeColor.setAttribute('content', bgSidebar);
           if (body) {
-            body.style.background = 'linear-gradient(to bottom, #1e3a5f 0%, #1e3a5f calc(100% - 80px), #152942 calc(100% - 80px), #152942 100%)';
+            body.style.background = `linear-gradient(to bottom, ${bgSidebar} 0%, ${bgSidebar} calc(100% - 80px), ${bgFooter} calc(100% - 80px), ${bgFooter} 100%)`;
           }
         } else {
           // Sidebar closed - use main content color for top, footer color for bottom
-          if (themeColor) themeColor.setAttribute('content', '#f8fafc');
+          if (themeColor) themeColor.setAttribute('content', bgMain);
           if (body) {
-            body.style.background = 'linear-gradient(to bottom, #f8fafc 0%, #f8fafc calc(100% - 80px), #152942 calc(100% - 80px), #152942 100%)';
+            body.style.background = `linear-gradient(to bottom, ${bgMain} 0%, ${bgMain} calc(100% - 80px), ${bgFooter} calc(100% - 80px), ${bgFooter} 100%)`;
           }
         }
       }
