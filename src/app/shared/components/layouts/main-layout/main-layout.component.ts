@@ -25,13 +25,17 @@ export class MainLayoutComponent {
         const body = this.document.body;
         
         if (this.isMobileMenuOpen()) {
-          // Sidebar open - use sidebar color
+          // Sidebar open - use sidebar color for header, footer color for bottom
           if (themeColor) themeColor.setAttribute('content', '#1e3a5f');
-          if (body) body.style.backgroundColor = '#1e3a5f';
+          if (body) {
+            body.style.background = 'linear-gradient(to bottom, #1e3a5f 0%, #1e3a5f calc(100% - 80px), #152942 calc(100% - 80px), #152942 100%)';
+          }
         } else {
-          // Sidebar closed - use main content color
+          // Sidebar closed - use main content color for top, footer color for bottom
           if (themeColor) themeColor.setAttribute('content', '#f8fafc');
-          if (body) body.style.backgroundColor = '#f8fafc';
+          if (body) {
+            body.style.background = 'linear-gradient(to bottom, #f8fafc 0%, #f8fafc calc(100% - 80px), #152942 calc(100% - 80px), #152942 100%)';
+          }
         }
       }
     });
