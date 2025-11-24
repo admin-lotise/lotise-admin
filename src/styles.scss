@@ -75,11 +75,7 @@ body {
 
 body {
   min-height: 100dvh;
-  background: linear-gradient(to bottom, 
-    var(--color-bg-main) 0%, 
-    var(--color-bg-main) calc(100% - 80px), 
-    var(--color-bg-footer) calc(100% - 80px), 
-    var(--color-bg-footer) 100%);
+  background-color: var(--color-bg-footer);
 }
 
 // Scrollbar Styling
