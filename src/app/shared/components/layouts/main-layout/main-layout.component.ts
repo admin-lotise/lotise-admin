@@ -26,13 +26,13 @@ export class MainLayoutComponent {
         const rootStyles = getComputedStyle(this.document.documentElement);
         
         // Get colors from CSS variables
-        const bgSidebar = rootStyles.getPropertyValue('--color-bg-sidebar').trim();
+        const bgMain = rootStyles.getPropertyValue('--color-bg-main').trim();
         const bgFooter = rootStyles.getPropertyValue('--color-bg-footer').trim();
         
         if (this.isMobileMenuOpen()) {
-          // Sidebar open - use sidebar color
-          if (themeColor) themeColor.setAttribute('content', bgSidebar);
-          if (body) body.style.backgroundColor = bgSidebar;
+          // Sidebar open - use bg-main for header, same footer color
+          if (themeColor) themeColor.setAttribute('content', bgMain);
+          if (body) body.style.backgroundColor = bgFooter;
         } else {
           // Sidebar closed - use footer color
           if (themeColor) themeColor.setAttribute('content', bgFooter);
