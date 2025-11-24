@@ -18,16 +18,20 @@ export class MainLayoutComponent {
   currentYear = new Date().getFullYear();
 
   constructor() {
-    // Update theme-color when mobile menu opens/closes
+    // Update theme-color and body background when mobile menu opens/closes
     effect(() => {
       if (isPlatformBrowser(this.platformId)) {
         const themeColor = this.document.querySelector('meta[name="theme-color"]');
-        if (themeColor) {
-          if (this.isMobileMenuOpen()) {
-            themeColor.setAttribute('content', '#1e3a5f');
-          } else {
-            themeColor.setAttribute('content', '#f8fafc');
-          }
+        const body = this.document.body;
+        
+        if (this.isMobileMenuOpen()) {
+          // Sidebar open - use sidebar color
+          if (themeColor) themeColor.setAttribute('content', '#1e3a5f');
+          if (body) body.style.backgroundColor = '#1e3a5f';
+        } else {
+          // Sidebar closed - use main content color
+          if (themeColor) themeColor.setAttribute('content', '#f8fafc');
+          if (body) body.style.backgroundColor = '#f8fafc';
         }
       }
     });
