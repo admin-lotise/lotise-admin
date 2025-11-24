@@ -55,6 +55,7 @@
     width: var(--sidebar-width-expanded);
     max-width: 280px;
     z-index: 1000;
+    padding-bottom: env(safe-area-inset-bottom, 20px);
 
     &.mobile-open {
       transform: translateX(0);
