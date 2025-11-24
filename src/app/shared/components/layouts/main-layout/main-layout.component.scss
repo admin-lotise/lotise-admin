@@ -1,7 +1,7 @@
 .main-layout {
   display: grid;
   grid-template-columns: var(--sidebar-width-expanded) 1fr;
-  min-height: 100vh;
+  min-height: 100dvh;
   transition: grid-template-columns var(--transition-normal);
   position: relative;
 
@@ -251,8 +251,8 @@
 .content-wrapper {
   display: grid;
   grid-template-rows: 1fr auto;
-  min-height: 100vh;
-  background: linear-gradient(to bottom, var(--color-bg-main) 0%, var(--color-bg-main) calc(100% - 56px), var(--color-bg-footer) calc(100% - 56px), var(--color-bg-footer) 100%);
+  min-height: 100dvh;
+  background: var(--color-bg-main);
 }
 
 .main-content {
