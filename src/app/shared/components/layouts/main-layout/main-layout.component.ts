@@ -30,9 +30,6 @@ export class MainLayoutComponent {
         const bgFooter = rootStyles.getPropertyValue('--color-bg-footer').trim();
         
         if (this.isMobileMenuOpen()) {
-          // Sidebar open - use bg-main for both header and body
-          if (themeColor) themeColor.setAttribute('content', bgMain);
-          if (body) body.style.backgroundColor = bgMain;
         } else {
           // Sidebar closed - use footer color for both
           if (themeColor) themeColor.setAttribute('content', bgFooter);
