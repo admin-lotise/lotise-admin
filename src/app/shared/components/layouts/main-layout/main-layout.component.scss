@@ -259,6 +259,7 @@
   padding: 2rem;
   min-height: calc(100vh - 60px); // Subtract footer height
   overflow-x: hidden;
+  background: var(--color-bg-main);
 
   @media (max-width: 1024px) {
     padding: 1.5rem;
@@ -266,12 +267,12 @@
 
   @media (max-width: 768px) {
     padding: 1rem;
-    padding-top: 4.5rem; // Espacio para el botón hamburguesa
+    padding-top: calc(env(safe-area-inset-top, 0) + 4.5rem); // Espacio para el botón hamburguesa
   }
 
   @media (max-width: 480px) {
     padding: 1rem 0.75rem;
-    padding-top: 4.5rem;
+    padding-top: calc(env(safe-area-inset-top, 0) + 4.5rem);
   }
 }
 
