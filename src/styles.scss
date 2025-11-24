@@ -1,1 +1,86 @@
 /* You can add global styles to this file, and also import other style files */
+
+// Color Scheme - Professional Dark Blue-Gray
+:root {
+  // Primary Colors - Dark Blue-Gray Palette
+  --color-primary: #1e3a5f; // Deep blue-gray
+  --color-primary-dark: #152942; // Darker blue-gray
+  --color-primary-light: #2c4f7c; // Lighter blue-gray
+  
+  // Accent Colors
+  --color-accent: #3b82f6; // Bright blue for highlights
+  --color-accent-hover: #2563eb;
+  
+  // Neutral Colors
+  --color-bg-main: #f8fafc; // Very light gray-blue (main content)
+  --color-bg-white: #ffffff; // Pure white
+  --color-bg-sidebar: #1e3a5f; // Dark blue-gray (sidebar)
+  --color-bg-footer: #152942; // Darker blue-gray (footer)
+  
+  // Text Colors
+  --color-text-primary: #1e293b; // Dark text for light backgrounds
+  --color-text-secondary: #64748b; // Gray text
+  --color-text-light: #f1f5f9; // Light text for dark backgrounds
+  --color-text-white: #ffffff; // White text
+  
+  // Border & Divider
+  --color-border: #e2e8f0;
+  --color-border-light: #f1f5f9;
+  
+  // Shadows
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  
+  // Transitions
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 300ms ease-in-out;
+  
+  // Spacing
+  --sidebar-width-expanded: 260px;
+  --sidebar-width-collapsed: 70px;
+}
+
+// Reset & Base Styles
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Scrollbar Styling
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-primary-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+// Firefox scrollbar
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) var(--color-primary-dark);
+}
