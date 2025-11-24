@@ -1,7 +1,18 @@
 /* You can add global styles to this file, and also import other style files */
 
-// Color Scheme - Professional Dark Blue-Gray
+/* Importar fuentes recomendadas (global) */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700;800&family=Bebas+Neue&display=swap');
+
+/* Importar Roboto desde Google Fonts (Roboto Sans) */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
+
+// Color Scheme - Professional Dark Blue-Gray Palette
 :root {
+  // Typography
+  --font-sans: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-condensed: var(--font-sans);
+  --base-font-size: 16px;
+
   // Primary Colors - Dark Blue-Gray Palette
   --color-primary: #1e3a5f; // Deep blue-gray
   --color-primary-dark: #152942; // Darker blue-gray
@@ -51,7 +62,7 @@
 html,
 body {
   height: 100%;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.5;
   color: var(--color-text-primary);
