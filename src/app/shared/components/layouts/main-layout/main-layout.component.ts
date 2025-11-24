@@ -29,6 +29,15 @@ export class MainLayoutComponent {
         const bgMain = rootStyles.getPropertyValue('--color-bg-main').trim();
         const bgFooter = rootStyles.getPropertyValue('--color-bg-footer').trim();
         
+        if (this.isMobileMenuOpen()) {
+          // Sidebar open - use bg-main for header/top, footer color for bottom
+          if (themeColor) themeColor.setAttribute('content', bgMain);
+          if (body) body.style.backgroundColor = bgFooter;
+        } else {
+          // Sidebar closed - use footer color
+          if (themeColor) themeColor.setAttribute('content', bgFooter);
+          if (body) body.style.backgroundColor = bgFooter;
+        }
       }
     });
   }
