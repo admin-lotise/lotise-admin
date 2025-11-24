@@ -1,5 +1,5 @@
-import { Component, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, signal, Renderer2, inject, PLATFORM_ID, effect } from '@angular/core';
+import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
@@ -10,9 +10,28 @@ import { RouterOutlet } from '@angular/router';
   styleUrls: ['./main-layout.component.scss']
 })
 export class MainLayoutComponent {
+  private document = inject(DOCUMENT);
+  private platformId = inject(PLATFORM_ID);
+  
   isSidebarExpanded = signal(true);
   isMobileMenuOpen = signal(false);
   currentYear = new Date().getFullYear();
+
+  constructor() {
+    // Update theme-color when mobile menu opens/closes
+    effect(() => {
+      if (isPlatformBrowser(this.platformId)) {
+        const themeColor = this.document.querySelector('meta[name="theme-color"]');
+        if (themeColor) {
+          if (this.isMobileMenuOpen()) {
+            themeColor.setAttribute('content', '#1e3a5f');
+          } else {
+            themeColor.setAttribute('content', '#f8fafc');
+          }
+        }
+      }
+    });
+  }
 
   toggleSidebar(): void {
     this.isSidebarExpanded.update(value => !value);
