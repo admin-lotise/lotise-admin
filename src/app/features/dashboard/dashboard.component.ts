@@ -36,11 +36,24 @@ import { CommonModule } from '@angular/common';
         font-size: 2rem;
         color: var(--color-text-primary);
         margin-bottom: 0.5rem;
+
+        @media (max-width: 768px) {
+          font-size: 1.75rem;
+        }
+
+        @media (max-width: 480px) {
+          font-size: 1.5rem;
+        }
       }
 
       p {
         color: var(--color-text-secondary);
         margin-bottom: 2rem;
+
+        @media (max-width: 768px) {
+          margin-bottom: 1.5rem;
+          font-size: 0.9rem;
+        }
       }
     }
 
@@ -48,6 +61,16 @@ import { CommonModule } from '@angular/common';
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 1.5rem;
+
+      @media (max-width: 1024px) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+      }
+
+      @media (max-width: 640px) {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
     }
 
     .stat-card {
@@ -63,6 +86,14 @@ import { CommonModule } from '@angular/common';
         transform: translateY(-2px);
       }
 
+      @media (max-width: 768px) {
+        padding: 1.25rem;
+      }
+
+      @media (max-width: 480px) {
+        padding: 1rem;
+      }
+
       h3 {
         font-size: 0.875rem;
         font-weight: 600;
@@ -70,6 +101,11 @@ import { CommonModule } from '@angular/common';
         margin-bottom: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
+
+        @media (max-width: 480px) {
+          font-size: 0.8125rem;
+          margin-bottom: 0.5rem;
+        }
       }
 
       .stat-number {
@@ -77,6 +113,14 @@ import { CommonModule } from '@angular/common';
         font-weight: 700;
         color: var(--color-primary);
         margin: 0;
+
+        @media (max-width: 768px) {
+          font-size: 1.75rem;
+        }
+
+        @media (max-width: 480px) {
+          font-size: 1.5rem;
+        }
       }
     }
   `]

@@ -11,10 +11,19 @@ import { RouterOutlet } from '@angular/router';
 })
 export class MainLayoutComponent {
   isSidebarExpanded = signal(true);
+  isMobileMenuOpen = signal(false);
   currentYear = new Date().getFullYear();
 
   toggleSidebar(): void {
     this.isSidebarExpanded.update(value => !value);
+  }
+
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen.update(value => !value);
+  }
+
+  closeMobileMenu(): void {
+    this.isMobileMenuOpen.set(false);
   }
 
   menuItems = [

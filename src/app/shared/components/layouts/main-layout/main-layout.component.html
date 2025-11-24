@@ -1,14 +1,19 @@
 <div class="main-layout" [class.sidebar-collapsed]="!isSidebarExpanded()">
+  <!-- Mobile Menu Toggle -->
+  <button class="mobile-menu-toggle" (click)="toggleMobileMenu()" aria-label="Toggle menu">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </button>
+
+  <!-- Mobile Overlay -->
+  <div class="mobile-overlay" [class.active]="isMobileMenuOpen()" (click)="closeMobileMenu()"></div>
+
   <!-- Sidebar -->
-  <aside class="sidebar">
+  <aside class="sidebar" [class.mobile-open]="isMobileMenuOpen()">
     <div class="sidebar-header">
-      <div class="logo">
-        @if (isSidebarExpanded()) {
-          <span class="logo-text">Lotise Admin</span>
-        } @else {
-          <span class="logo-icon">L</span>
-        }
-      </div>
       <button class="toggle-btn" (click)="toggleSidebar()" aria-label="Toggle sidebar">
         @if (isSidebarExpanded()) {
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -20,11 +25,18 @@
           </svg>
         }
       </button>
+      <div class="logo">
+        @if (isSidebarExpanded()) {
+          <span class="logo-text">Lotise Admin</span>
+        } @else {
+          <span class="logo-icon">L</span>
+        }
+      </div>
     </div>
 
     <nav class="sidebar-nav">
       @for (item of menuItems; track item.route) {
-        <a [href]="item.route" class="nav-item">
+        <a [href]="item.route" class="nav-item" (click)="closeMobileMenu()">
           <span class="nav-icon">{{ item.icon }}</span>
           @if (isSidebarExpanded()) {
             <span class="nav-label">{{ item.label }}</span>
