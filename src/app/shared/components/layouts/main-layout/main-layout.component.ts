@@ -26,22 +26,17 @@ export class MainLayoutComponent {
         const rootStyles = getComputedStyle(this.document.documentElement);
         
         // Get colors from CSS variables
-        const bgMain = rootStyles.getPropertyValue('--color-bg-main').trim();
         const bgSidebar = rootStyles.getPropertyValue('--color-bg-sidebar').trim();
         const bgFooter = rootStyles.getPropertyValue('--color-bg-footer').trim();
         
         if (this.isMobileMenuOpen()) {
-          // Sidebar open - use sidebar color for header, footer color for bottom
+          // Sidebar open - use sidebar color
           if (themeColor) themeColor.setAttribute('content', bgSidebar);
-          if (body) {
-            body.style.background = `linear-gradient(to bottom, ${bgSidebar} 0%, ${bgSidebar} calc(100% - 80px), ${bgFooter} calc(100% - 80px), ${bgFooter} 100%)`;
-          }
+          if (body) body.style.backgroundColor = bgSidebar;
         } else {
-          // Sidebar closed - use main content color for top, footer color for bottom
-          if (themeColor) themeColor.setAttribute('content', bgMain);
-          if (body) {
-            body.style.background = `linear-gradient(to bottom, ${bgMain} 0%, ${bgMain} calc(100% - 80px), ${bgFooter} calc(100% - 80px), ${bgFooter} 100%)`;
-          }
+          // Sidebar closed - use footer color
+          if (themeColor) themeColor.setAttribute('content', bgFooter);
+          if (body) body.style.backgroundColor = bgFooter;
         }
       }
     });
