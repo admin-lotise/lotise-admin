@@ -54,13 +54,30 @@ export class MainLayoutComponent {
     this.isMobileMenuOpen.set(false);
   }
 
+  // Desktop sidebar items (todos los items)
   menuItems = [
-    { icon: '📊', label: 'Dashboard', route: '/dashboard' },
-    { icon: '🎟️', label: 'Rifas', route: '/raffles' },
-    { icon: '👥', label: 'Contactos', route: '/contacts' },
-    { icon: '💳', label: 'Pagos', route: '/payments' },
-    { icon: '📈', label: 'Analíticas', route: '/analytics' },
-    { icon: '👤', label: 'Usuarios Admin', route: '/admin-users' },
-    { icon: '⚙️', label: 'Configuración', route: '/settings' }
+    { icon: 'dashboard', label: 'Dashboard', route: '/dashboard' },
+    { icon: 'confirmation_number', label: 'Rifas', route: '/raffles' },
+    { icon: 'groups', label: 'Contactos', route: '/contacts' },
+    { icon: 'credit_card', label: 'Pagos', route: '/payments' },
+    { icon: 'bar_chart', label: 'Analíticas', route: '/analytics' },
+    { icon: 'admin_panel_settings', label: 'Usuarios Admin', route: '/admin-users' },
+    { icon: 'settings', label: 'Configuración', route: '/settings' }
+  ];
+
+  // Mobile bottom navigation (4 items principales)
+  mobileBottomNavItems = [
+    { icon: 'home', label: 'Inicio', route: '/dashboard' },
+    { icon: 'add', label: 'Crear Rifa', route: '/raffles/create' },
+    { icon: 'credit_card', label: 'Pagos', route: '/payments' }
+  ];
+
+  // Mobile sidebar secondary items (resto de opciones)
+  mobileSecondaryItems = [
+    { icon: 'confirmation_number', label: 'Rifas', description: 'Administra tus rifas', route: '/raffles' },
+    { icon: 'groups', label: 'Contactos', description: 'Lista de contactos', route: '/contacts' },
+    { icon: 'bar_chart', label: 'Analíticas', description: 'Reportes y estadísticas', route: '/analytics' },
+    { icon: 'admin_panel_settings', label: 'Usuarios Admin', description: 'Gestión de administradores', route: '/admin-users' },
+    { icon: 'settings', label: 'Configuración', description: 'Ajustes del sistema', route: '/settings' }
   ];
 }
