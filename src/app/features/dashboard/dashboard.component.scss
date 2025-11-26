@@ -1,0 +1,25 @@
+.dashboard-indicators {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.indicator-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(30,58,95,0.08);
+  padding: 1.5rem;
+  color: #1e293b;
+}
+
+.indicator-value {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0.5rem 0;
+}
+
+.indicator-desc {
+  font-size: 0.95rem;
+  color: #64748b;
+}

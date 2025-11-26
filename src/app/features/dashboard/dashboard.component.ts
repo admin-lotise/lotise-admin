@@ -27,6 +27,22 @@ import { CommonModule } from '@angular/common';
           <h3>Activos</h3>
           <p class="stat-number">12</p>
         </div>
+        <div class="stat-card">
+          <h3>Indicador 1</h3>
+          <p class="stat-number">123</p>
+        </div>
+        <div class="stat-card">
+          <h3>Indicador 2</h3>
+          <p class="stat-number">456</p>
+        </div>
+        <div class="stat-card">
+          <h3>Indicador 3</h3>
+          <p class="stat-number">789</p>
+        </div>
+        <div class="stat-card">
+          <h3>Indicador 4</h3>
+          <p class="stat-number">101</p>
+        </div>
       </div>
     </div>
   `,
