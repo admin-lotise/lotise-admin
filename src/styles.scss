@@ -1,10 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
 
+/* Importar Font Awesome */
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+
 /* Importar fuentes recomendadas (global) */
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700;800&family=Bebas+Neue&display=swap');
 
 /* Importar Roboto desde Google Fonts (Roboto Sans) */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
+
+/* Importar Material Icons */
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
 // Color Scheme - Professional Dark Blue-Gray Palette
 :root {
