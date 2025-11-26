@@ -1,0 +1,31 @@
+// Evita overflow global en móviles
+@media (max-width: 600px) {
+  html, body {
+    overflow: hidden !important;
+    height: 100vh !important;
+    position: relative;
+    touch-action: pan-y;
+  }
+  .main-content {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    height: calc(100vh - 56px - 56px); // header y footer
+    max-height: calc(100vh - 56px - 56px);
+  }
+}
+
+// Evita overflow global en móviles
+@media (max-width: 600px) {
+  html, body {
+    overflow: hidden !important;
+    height: 100vh !important;
+    position: relative;
+    touch-action: pan-y;
+  }
+  .main-content {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    height: calc(100vh - 56px - 56px); // header y footer
+    max-height: calc(100vh - 56px - 56px);
+  }
+}

@@ -108,3 +108,5 @@ body {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.2) var(--color-primary-dark);
 }
+
+@import 'app/shared/styles/_mobile.scss';
