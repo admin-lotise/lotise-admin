@@ -389,6 +389,9 @@
     padding-top: calc(env(safe-area-inset-top, 0) + 1rem);
     padding-bottom: calc(70px + 1rem); // Espacio para el bottom nav
     min-height: 100dvh;
+    max-height: calc(100dvh - 70px);
+    overflow-y: auto;
+    box-sizing: border-box;
   }
 
   @media (max-width: 480px) {
@@ -406,7 +409,7 @@
   padding-bottom: calc(0.875rem + env(safe-area-inset-bottom, 0));
   text-align: center;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
-  min-height: 60px;
+  min-height: 53px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -521,6 +524,10 @@
   .logout-btn {
     padding: 0.75rem 1rem;
     font-size: 0.9rem;
+  }
+
+  .footer {
+    min-height: 50px;
   }
 }
 
