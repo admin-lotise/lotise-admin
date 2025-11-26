@@ -1,18 +1,9 @@
 <div class="main-layout" [class.sidebar-collapsed]="!isSidebarExpanded()">
-  <!-- Mobile Menu Toggle -->
-  <button class="mobile-menu-toggle" (click)="toggleMobileMenu()" aria-label="Toggle menu">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <line x1="3" y1="12" x2="21" y2="12"></line>
-      <line x1="3" y1="6" x2="21" y2="6"></line>
-      <line x1="3" y1="18" x2="21" y2="18"></line>
-    </svg>
-  </button>
-
   <!-- Mobile Overlay -->
   <div class="mobile-overlay" [class.active]="isMobileMenuOpen()" (click)="closeMobileMenu()"></div>
 
-  <!-- Sidebar -->
-  <aside class="sidebar" [class.mobile-open]="isMobileMenuOpen()">
+  <!-- Desktop Sidebar (Left) -->
+  <aside class="sidebar desktop-sidebar">
     <div class="sidebar-header">
       <button class="toggle-btn" (click)="toggleSidebar()" aria-label="Toggle sidebar">
         @if (isSidebarExpanded()) {
@@ -36,8 +27,8 @@
 
     <nav class="sidebar-nav">
       @for (item of menuItems; track item.route) {
-        <a [href]="item.route" class="nav-item" (click)="closeMobileMenu()">
-          <span class="nav-icon">{{ item.icon }}</span>
+        <a [href]="item.route" class="nav-item">
+          <span class="material-icons">{{ item.icon }}</span>
           @if (isSidebarExpanded()) {
             <span class="nav-label">{{ item.label }}</span>
           }
@@ -47,10 +38,47 @@
 
     <div class="sidebar-footer">
       <button class="logout-btn">
-        <span class="nav-icon">🚪</span>
+        <span class="material-icons">logout</span>
         @if (isSidebarExpanded()) {
           <span class="nav-label">Cerrar Sesión</span>
         }
+      </button>
+    </div>
+  </aside>
+
+  <!-- Mobile Sidebar (Bottom Sheet) -->
+  <aside *ngIf="isMobileMenuOpen()" class="sidebar mobile-sidebar mobile-open">
+    <div class="sidebar-header">
+      <div class="logo">
+        <span class="logo-text">Menú</span>
+      </div>
+      <button class="close-btn" (click)="closeMobileMenu()" aria-label="Close menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      @for (item of mobileSecondaryItems; track item.route) {
+        <a [href]="item.route" class="nav-item" (click)="closeMobileMenu()">
+          <span class="material-icons">{{ item.icon }}</span>
+          <div class="nav-content">
+            <span class="nav-label">{{ item.label }}</span>
+            <span class="nav-description">{{ item.description }}</span>
+          </div>
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="logout-btn" (click)="closeMobileMenu()">
+        <span class="material-icons">logout</span>
+        <div class="nav-content">
+          <span class="nav-label">Cerrar Sesión</span>
+          <span class="nav-description">Salir de la aplicación</span>
+        </div>
       </button>
     </div>
   </aside>
@@ -61,10 +89,25 @@
       <router-outlet />
     </main>
 
-    <footer class="footer">
+    <!-- Desktop Footer -->
+    <footer class="footer desktop-footer">
       <p class="footer-text">
         Sitio desarrollado por <strong>Lotise Team</strong> © {{ currentYear }}
       </p>
     </footer>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+      @for (item of mobileBottomNavItems; track item.route) {
+        <a [href]="item.route" class="bottom-nav-item">
+          <span class="material-icons">{{ item.icon }}</span>
+          <span class="bottom-nav-label">{{ item.label }}</span>
+        </a>
+      }
+      <button class="bottom-nav-item" (click)="toggleMobileMenu()" aria-label="Toggle menu">
+        <span class="material-icons">menu</span>
+        <span class="bottom-nav-label">Menú</span>
+      </button>
+    </nav>
   </div>
 </div>
