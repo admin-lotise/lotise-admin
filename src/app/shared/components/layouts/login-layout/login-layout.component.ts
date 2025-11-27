@@ -33,15 +33,18 @@ export class LoginLayoutComponent {
       const { identifier, password } = this.loginForm.value;
       this.auth.login(identifier, password).subscribe({
         next: () => {
+          // Resetear el scroll ANTES de navegar y desactivar el scroll global
+          window.scrollTo(0, 0);
+          document.body.scrollTop = 0;
+          document.documentElement.scrollTop = 0;
           this.isLoading = false;
           this.router.navigate(['/dashboard']);
           setTimeout(() => {
             if (typeof (window as any).closeMobileMenu === 'function') {
               (window as any).closeMobileMenu();
             }
-            window.scrollTo(0, 0);
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
+            // Si usas una clase para desactivar el scroll global, aplícala aquí
+            // document.body.classList.add('no-scroll');
           }, 100);
         },
         error: err => {
