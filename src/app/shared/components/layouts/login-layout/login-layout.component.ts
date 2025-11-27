@@ -36,6 +36,9 @@ export class LoginLayoutComponent {
           this.isLoading = false;
           this.router.navigate(['/dashboard']);
           setTimeout(() => {
+            if (typeof (window as any).closeMobileMenu === 'function') {
+              (window as any).closeMobileMenu();
+            }
             window.scrollTo(0, 0);
             document.body.scrollTop = 0;
             document.documentElement.scrollTop = 0;
