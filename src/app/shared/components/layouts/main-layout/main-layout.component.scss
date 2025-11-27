@@ -1,3 +1,8 @@
+.main-content {
+  @media (max-width: 768px) {
+    overflow-y: auto;
+  }
+}
 // Mobile Header Styles
 .mobile-header {
   display: none;
