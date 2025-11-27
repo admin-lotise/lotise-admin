@@ -1,3 +1,29 @@
+// Mobile Header Styles
+.mobile-header {
+  display: none;
+  @media (max-width: 768px) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 56px;
+    background: var(--color-bg-main);
+    color: var(--color-text-dark);
+    font-size: 1.25rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+  }
+}
+
+.main-content {
+  @media (max-width: 768px) {
+    margin-top: 56px;
+  }
+}
 .main-layout {
   display: grid;
   grid-template-columns: var(--sidebar-width-expanded) 1fr;
