@@ -28,3 +28,29 @@
   font-size: 0.95rem;
   color: #64748b;
 }
+
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .dashboard-title {
+    font-size: 1.3rem;
+  }
+  .indicator-value {
+    font-size: 1.2rem;
+  }
+  .indicator-card {
+    padding: 1rem;
+  }
+  .indicator-desc {
+    font-size: 0.8rem;
+  }
+  .dashboard-indicators {
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+/* llave extra eliminada */
