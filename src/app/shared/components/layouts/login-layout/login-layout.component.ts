@@ -36,12 +36,9 @@ export class LoginLayoutComponent {
           this.isLoading = false;
           this.router.navigate(['/dashboard']);
           setTimeout(() => {
-            const mainContent = document.querySelector('.main-content');
-            if (mainContent) {
-              (mainContent as HTMLElement).scrollTo(0, 0);
-            } else {
-              window.scrollTo(0, 0);
-            }
+            window.scrollTo(0, 0);
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
           }, 100);
         },
         error: err => {
