@@ -1,6 +1,7 @@
 import { Component, signal, Renderer2, inject, PLATFORM_ID, effect } from '@angular/core';
 import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
+import { AuthService } from '../../../../core/auth/auth.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -12,6 +13,7 @@ import { RouterOutlet } from '@angular/router';
 export class MainLayoutComponent {
   private document = inject(DOCUMENT);
   private platformId = inject(PLATFORM_ID);
+    private auth = inject(AuthService);
   
   isSidebarExpanded = signal(true);
   isMobileMenuOpen = signal(false);
@@ -80,4 +82,8 @@ export class MainLayoutComponent {
     { icon: 'admin_panel_settings', label: 'Usuarios Admin', description: 'Gestión de administradores', route: '/admin-users' },
     { icon: 'settings', label: 'Configuración', description: 'Ajustes del sistema', route: '/settings' }
   ];
+  logout(): void {
+    this.auth.logout();
+    this.closeMobileMenu();
+  }
 }

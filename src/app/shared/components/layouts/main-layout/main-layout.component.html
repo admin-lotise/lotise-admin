@@ -37,7 +37,7 @@
     </nav>
 
     <div class="sidebar-footer">
-      <button class="logout-btn">
+      <button class="logout-btn" (click)="logout()">
         <span class="material-icons">logout</span>
         @if (isSidebarExpanded()) {
           <span class="nav-label">Cerrar Sesión</span>
@@ -73,7 +73,7 @@
     </nav>
 
     <div class="sidebar-footer">
-      <button class="logout-btn" (click)="closeMobileMenu()">
+      <button class="logout-btn" (click)="logout()">
         <span class="material-icons">logout</span>
         <div class="nav-content">
           <span class="nav-label">Cerrar Sesión</span>
