@@ -35,6 +35,7 @@ export class LoginLayoutComponent {
         next: () => {
           this.isLoading = false;
           this.router.navigate(['/dashboard']);
+          setTimeout(() => window.scrollTo(0, 0), 100);
         },
         error: err => {
           this.isLoading = false;
