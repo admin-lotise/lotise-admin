@@ -20,10 +20,16 @@ export class DashboardComponent implements AfterViewInit {
       { title: 'Indicador 4', value: 101, description: 'Descripción 4' }
     ];
   ngAfterViewInit() {
+    // Quitar overflow hidden temporalmente
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
     setTimeout(() => {
       window.scrollTo(0, 0);
       document.body.scrollTop = 0;
       document.documentElement.scrollTop = 0;
+      // Volver a poner overflow hidden
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
     }, 100);
   }
 }
