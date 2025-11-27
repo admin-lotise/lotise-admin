@@ -1,6 +1,7 @@
 .main-content {
   @media (max-width: 768px) {
     overflow-y: auto;
+    padding-top: 56px !important;
   }
 }
 // Mobile Header Styles
