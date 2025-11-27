@@ -30,15 +30,62 @@
 }
 
 .dashboard-title {
-  font-size: 2rem;
-  font-weight: 600;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--primary, #ff497c);
   margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0 0 0.25rem 0;
+  border-radius: 0;
+  min-height: unset;
+  letter-spacing: 0.5px;
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+  border-bottom: 2px solid var(--primary, #ff497c);
+  width: fit-content;
+}
+
+.brand-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  background: var(--primary, #ff497c);
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  box-shadow: 0 1px 4px rgba(255,73,124,0.12);
+}
+
+.breadcrumb-symbol {
+  font-size: 1.2em;
+  color: var(--primary, #ff497c);
+  font-weight: 700;
+  margin-right: 0.5rem;
+  text-shadow: none;
+}
+
+.breadcrumb-symbol {
+  font-size: 1.5em;
+  color: var(--primary, #ff497c);
+  font-weight: 700;
+  margin-right: 0.5rem;
+  text-shadow: 0 1px 2px rgba(59,130,246,0.15);
 }
 
 @media (max-width: 768px) {
   .dashboard-title {
-    font-size: 1.3rem;
-    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    padding: 0 0 0.15rem 0;
+    border-bottom-width: 1.5px;
+  }
+  .breadcrumb-symbol {
+    font-size: 1em;
+    margin-right: 0.3rem;
   }
   .indicator-value {
     font-size: 1.2rem;
@@ -54,4 +101,3 @@
     margin-bottom: 1rem;
   }
 }
-/* llave extra eliminada */
