@@ -19,11 +19,6 @@
   }
 }
 
-.main-content {
-  @media (max-width: 768px) {
-    margin-top: 64px !important;
-  }
-}
 .main-layout {
   display: grid;
   grid-template-columns: var(--sidebar-width-expanded) 1fr;
