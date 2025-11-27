@@ -631,8 +631,13 @@
   text-align: left;
 }
 
+.mobile-sidebar .logout-btn {
+  padding: 0.675rem 1.5rem;
+  align-items: center;
+}
+
 .mobile-sidebar .close-btn-footer {
   justify-content: center;
   flex: 0 1 100px;
-  padding: 1.275rem 1.25rem;
+  padding: 0.975rem 1.25rem;
 }
