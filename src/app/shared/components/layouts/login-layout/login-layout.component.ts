@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../../core/auth/auth.service';
 
 @Component({
   selector: 'app-login-layout',
@@ -14,10 +15,10 @@ export class LoginLayoutComponent {
   loginForm: FormGroup;
   isLoading = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private router: Router
-  ) {
+  private auth = inject(AuthService);
+  private router = inject(Router);
+
+  constructor(private fb: FormBuilder) {
     this.loginForm = this.fb.group({
       identifier: ['', [Validators.required]], // Phone/Email/Domain
       password: ['', [Validators.required, Validators.minLength(6)]]
@@ -27,14 +28,17 @@ export class LoginLayoutComponent {
   onSubmit(): void {
     if (this.loginForm.valid) {
       this.isLoading = true;
-      // TODO: Implement authentication logic
-      console.log('Login attempt:', this.loginForm.value);
-      
-      // Simulate login - Remove this and implement real authentication
-      setTimeout(() => {
-        this.isLoading = false;
-        this.router.navigate(['/dashboard']);
-      }, 1000);
+      const { identifier, password } = this.loginForm.value;
+      this.auth.login(identifier, password).subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.router.navigate(['/dashboard']);
+        },
+        error: err => {
+          this.isLoading = false;
+          // Aquí puedes mostrar un mensaje de error en el formulario
+        }
+      });
     } else {
       this.loginForm.markAllAsTouched();
     }
