@@ -25,6 +25,9 @@
       </div>
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+            @if (errorMessage) {
+              <div class="error-message form-error">{{ errorMessage }}</div>
+            }
       <div class="form-group">
         <label for="identifier" class="form-label">
           Teléfono / Correo / Dominio

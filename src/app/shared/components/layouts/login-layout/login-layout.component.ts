@@ -14,6 +14,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
 export class LoginLayoutComponent {
   loginForm: FormGroup;
   isLoading = false;
+  errorMessage: string | null = null;
 
   private auth = inject(AuthService);
   private router = inject(Router);
@@ -26,6 +27,7 @@ export class LoginLayoutComponent {
   }
 
   onSubmit(): void {
+    this.errorMessage = null;
     if (this.loginForm.valid) {
       this.isLoading = true;
       const { identifier, password } = this.loginForm.value;
@@ -36,7 +38,11 @@ export class LoginLayoutComponent {
         },
         error: err => {
           this.isLoading = false;
-          // Aquí puedes mostrar un mensaje de error en el formulario
+          if (err?.error?.message) {
+            this.errorMessage = `Error al iniciar sesión: ${err.error.message}`;
+          } else {
+            this.errorMessage = 'Error al iniciar sesión. Intenta de nuevo.';
+          }
         }
       });
     } else {
