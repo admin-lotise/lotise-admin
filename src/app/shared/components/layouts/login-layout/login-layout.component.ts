@@ -35,7 +35,14 @@ export class LoginLayoutComponent {
         next: () => {
           this.isLoading = false;
           this.router.navigate(['/dashboard']);
-          setTimeout(() => window.scrollTo(0, 0), 100);
+          setTimeout(() => {
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) {
+              (mainContent as HTMLElement).scrollTo(0, 0);
+            } else {
+              window.scrollTo(0, 0);
+            }
+          }, 100);
         },
         error: err => {
           this.isLoading = false;
