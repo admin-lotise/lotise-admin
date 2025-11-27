@@ -57,6 +57,10 @@ export class MainLayoutComponent {
 
   closeMobileMenu(): void {
     this.isMobileMenuOpen.set(false);
+      // Refuerza el reset del scroll al cerrar el menú móvil
+      window.scrollTo(0, 0);
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
   }
 
   // Desktop sidebar items (todos los items)
