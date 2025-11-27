@@ -11,6 +11,9 @@ import { AuthService } from '../../../../core/auth/auth.service';
   styleUrls: ['./main-layout.component.scss']
 })
 export class MainLayoutComponent {
+    ngOnInit() {
+      (window as any).closeMobileMenu = this.closeMobileMenu.bind(this);
+    }
   private document = inject(DOCUMENT);
   private platformId = inject(PLATFORM_ID);
     private auth = inject(AuthService);
