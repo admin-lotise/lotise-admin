@@ -405,6 +405,7 @@
   padding: 2rem;
   min-height: calc(100vh - 60px); // Subtract footer height
   overflow-x: hidden;
+  overflow-y: auto;
   background: var(--color-bg-main);
 
   @media (max-width: 1024px) {
