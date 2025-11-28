@@ -32,13 +32,17 @@ export class LoginLayoutComponent {
       this.isLoading = true;
       const { identifier, password } = this.loginForm.value;
       this.auth.login(identifier, password).subscribe({
-        next: () => {
+        next: (response) => {
           // Resetear el scroll ANTES de navegar y desactivar el scroll global
           window.scrollTo(0, 0);
           document.body.scrollTop = 0;
           document.documentElement.scrollTop = 0;
           this.isLoading = false;
-          this.router.navigate(['/dashboard']);
+          if (response?.tenant?.isProvisionalPassword) {
+            this.router.navigate(['/update-password']);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
           setTimeout(() => {
             if (typeof (window as any).closeMobileMenu === 'function') {
               (window as any).closeMobileMenu();
