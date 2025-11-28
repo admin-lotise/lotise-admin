@@ -3,6 +3,7 @@ import { LoginLayoutComponent } from './shared/components/layouts/login-layout/l
 import { MainLayoutComponent } from './shared/components/layouts/main-layout/main-layout.component';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { AuthGuard } from './core/auth/auth.guard';
+import { UpdatePasswordLayoutComponent } from './shared/components/layouts/update-password-layout/update-password-layout.component';
 
 export const routes: Routes = [
   {
@@ -24,6 +25,11 @@ export const routes: Routes = [
         pathMatch: 'full'
       }
     ]
+  },
+  {
+    path: 'update-password',
+    component: UpdatePasswordLayoutComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: '**',

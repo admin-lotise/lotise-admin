@@ -1,19 +1,30 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { CanActivate, Router, UrlTree, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
-  canActivate(): boolean {
-    if (this.authService.isLoggedIn()) {
-      // Si está logueado, permitir acceso
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree {
+    if (!this.authService.isLoggedIn()) {
+      return this.router.createUrlTree(['/login']);
+    }
+    const tenant = this.authService.getTenant();
+    const requestedUrl = state.url;
+
+    if (tenant?.isProvisionalPassword) {
+      // Si tiene contraseña provisional, solo permite /update-password
+      if (requestedUrl !== '/update-password') {
+        return this.router.createUrlTree(['/update-password']);
+      }
       return true;
     } else {
-      // Si no, redirigir al login
-      this.router.navigate(['/login']);
-      return false;
+      // Si la contraseña ya fue actualizada, nunca permite /update-password
+      if (requestedUrl === '/update-password') {
+        return this.router.createUrlTree(['/dashboard']);
+      }
+      return true;
     }
   }
 }

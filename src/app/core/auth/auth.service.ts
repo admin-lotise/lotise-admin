@@ -1,10 +1,10 @@
-
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { StorageService } from './storage.service';
+import { throwError } from 'rxjs';
 
 export interface Tenant {
   tenantId: string;
@@ -15,9 +15,15 @@ export interface Tenant {
   subscriptionStatus: string;
   stripeCustomerId: string;
   planId: string;
+  planName: string;
+  planType: string;
+  priceAmount: number;
+  stripeSubscriptionId: string;
+  subscriptionItemId: string;
   createdAt: string;
   updatedAt: string;
   domain: string | null;
+  isProvisionalPassword: boolean;
 }
 
 export interface LoginResponse {
@@ -66,5 +72,38 @@ export class AuthService {
     this.storage.remove(this.TENANT_KEY);
     this.storage.clear();
     this.router.navigate(['/login']);
+  }
+
+  updatePassword(newPassword: string): Observable<LoginResponse> {
+    const tenant = this.getTenant();
+    const token = this.getAccessToken();
+    if (!tenant || !token) {
+      return throwError(() => new Error('No se encontró información de sesión.'));
+    }
+    return this.http.put<any>(
+      'https://api.lotise.com/tenants/update-password',
+      {
+        tenantId: tenant.tenantId,
+        newPassword
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    ).pipe(
+      map((response) => {
+        if (response?.result?.token && response?.result?.tenant) {
+          this.storage.set(this.TOKEN_KEY, response.result.token);
+          this.storage.set(this.TENANT_KEY, response.result.tenant);
+          return {
+            token: response.result.token,
+            tenant: response.result.tenant
+          } as LoginResponse;
+        }
+        throw new Error('No se pudo actualizar la contraseña.');
+      })
+    );
   }
 }
