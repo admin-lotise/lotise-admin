@@ -1,75 +1,106 @@
 import { Component, inject } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { HttpClient } from '@angular/common/http';
+import { finalize, tap, catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 @Component({
   selector: 'app-update-password-layout',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './update-password-layout.component.html',
-  styleUrls: ['./update-password-layout.component.scss']
+  styleUrl: './update-password-layout.component.scss'
 })
 export class UpdatePasswordLayoutComponent {
-  updateForm: FormGroup;
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
+  updatePasswordForm: FormGroup;
   isLoading = false;
   errorMessage: string | null = null;
   successMessage: string | null = null;
 
-  private auth = inject(AuthService);
-  private router = inject(Router);
-  private http = inject(HttpClient);
-
-  constructor(private fb: FormBuilder) {
-    this.updateForm = this.fb.group({
-      password: ['', [Validators.required, Validators.minLength(6)]],
+  constructor() {
+    this.updatePasswordForm = this.fb.group({
+      password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', [Validators.required]]
-    }, { validators: this.passwordsMatchValidator });
+    }, {
+      validators: this.passwordMatchValidator
+    });
   }
 
-  passwordsMatchValidator(form: FormGroup) {
-    const pass = form.get('password')?.value;
-    const confirm = form.get('confirmPassword')?.value;
-    return pass === confirm ? null : { mismatch: true };
+  passwordMatchValidator(group: FormGroup) {
+    const password = group.get('password')?.value;
+    const confirmPassword = group.get('confirmPassword')?.value;
+    return password === confirmPassword ? null : { mismatch: true };
   }
 
-  onSubmit(): void {
+  // ✅ NUEVO MÉTODO: Obtener mensajes de error específicos
+  getErrorMessage(fieldName: string): string {
+    const field = this.updatePasswordForm.get(fieldName);
+    
+    if (!field) return '';
+
+    if (fieldName === 'password') {
+      if (field.hasError('required')) {
+        return 'La contraseña es requerida';
+      }
+      if (field.hasError('minlength')) {
+        return 'La contraseña debe tener al menos 8 caracteres';
+      }
+    }
+
+    if (fieldName === 'confirmPassword') {
+      if (field.hasError('required')) {
+        return 'Debes confirmar tu contraseña';
+      }
+      if (this.updatePasswordForm.hasError('mismatch')) {
+        return 'Las contraseñas no coinciden';
+      }
+    }
+
+    return '';
+  }
+
+  onSubmit() {
+    if (this.updatePasswordForm.invalid) {
+      this.errorMessage = 'Por favor completa todos los campos correctamente';
+      // Marcar todos los campos como tocados para mostrar errores
+      Object.keys(this.updatePasswordForm.controls).forEach(key => {
+        this.updatePasswordForm.get(key)?.markAsTouched();
+      });
+      return;
+    }
+
+    this.isLoading = true;
     this.errorMessage = null;
     this.successMessage = null;
-    if (this.updateForm.valid) {
-      this.isLoading = true;
-      const { password } = this.updateForm.value;
-      this.auth.updatePassword(password).subscribe({
-        next: () => {
+
+    const newPassword = this.updatePasswordForm.get('password')?.value;
+
+    this.authService.updatePassword(newPassword)
+      .pipe(
+        tap((response) => {
+          console.log('✅ Contraseña actualizada:', response);
           this.successMessage = 'Contraseña actualizada correctamente';
-          this.isLoading = false;
+          
+          // ✅ Redirigir al dashboard después de 1.5 segundos
           setTimeout(() => {
             this.router.navigate(['/dashboard']);
-          }, 1200);
-        },
-        error: (err) => {
+          }, 1500);
+        }),
+        catchError((error) => {
+          console.error('❌ Error al actualizar contraseña:', error);
+          this.errorMessage = error.message || 'Error al actualizar la contraseña';
+          return throwError(() => error);
+        }),
+        finalize(() => {
           this.isLoading = false;
-          this.errorMessage = err?.message || 'Error al actualizar la contraseña.';
-        }
-      });
-    } else {
-      this.updateForm.markAllAsTouched();
-    }
-  }
-
-  getErrorMessage(fieldName: string): string {
-    const control = this.updateForm.get(fieldName);
-    if (control?.hasError('required')) {
-      return 'Este campo es requerido';
-    }
-    if (control?.hasError('minlength')) {
-      return 'La contraseña debe tener al menos 6 caracteres';
-    }
-    if (fieldName === 'confirmPassword' && this.updateForm.hasError('mismatch')) {
-      return 'Las contraseñas no coinciden';
-    }
-    return '';
+        })
+      )
+      .subscribe();
   }
 }

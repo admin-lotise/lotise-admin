@@ -31,27 +31,36 @@ export class LoginLayoutComponent {
     if (this.loginForm.valid) {
       this.isLoading = true;
       const { identifier, password } = this.loginForm.value;
-      this.auth.login(identifier, password).subscribe({
+      
+      // ✅ CORREGIDO: Usar 'login' en lugar de 'identifier'
+      this.auth.login({ login: identifier, password }).subscribe({
         next: (response) => {
-          // Resetear el scroll ANTES de navegar y desactivar el scroll global
+          console.log('✅ Login exitoso:', response); // ✅ DEBUG
+          
           window.scrollTo(0, 0);
           document.body.scrollTop = 0;
           document.documentElement.scrollTop = 0;
           this.isLoading = false;
-          if (response?.tenant?.isProvisionalPassword) {
+          
+          // ✅ VERIFICAR: isProvisionalPassword
+          console.log('✅ Verificando isProvisionalPassword:', response?.tenant?.isProvisionalPassword);
+          
+          if (response?.tenant?.isProvisionalPassword === true) {
+            console.log('✅ Redirigiendo a /update-password');
             this.router.navigate(['/update-password']);
           } else {
+            console.log('✅ Redirigiendo a /dashboard');
             this.router.navigate(['/dashboard']);
           }
+          
           setTimeout(() => {
             if (typeof (window as any).closeMobileMenu === 'function') {
               (window as any).closeMobileMenu();
             }
-            // Si usas una clase para desactivar el scroll global, aplícala aquí
-            // document.body.classList.add('no-scroll');
           }, 100);
         },
         error: err => {
+          console.error('❌ Error en login:', err);
           this.isLoading = false;
           if (err?.error?.message) {
             this.errorMessage = `Error al iniciar sesión: ${err.error.message}`;
