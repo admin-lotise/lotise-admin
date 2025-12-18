@@ -4,20 +4,29 @@ import { MainLayoutComponent } from './shared/components/layouts/main-layout/mai
 import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { AuthGuard } from './core/auth/auth.guard';
 import { UpdatePasswordLayoutComponent } from './shared/components/layouts/update-password-layout/update-password-layout.component';
+import { BusinessProfileComponent } from './features/settings/business-profile/business-profile.component';
 
 export const routes: Routes = [
+  // 🔓 Ruta pública: Login
   {
     path: 'login',
     component: LoginLayoutComponent
   },
+  
+  // 🔐 Rutas protegidas: Dentro de MainLayoutComponent
   {
     path: '',
     component: MainLayoutComponent,
+    canActivate: [AuthGuard],
     children: [
       {
         path: 'dashboard',
-        component: DashboardComponent,
-        canActivate: [AuthGuard]
+        component: DashboardComponent
+      },
+      // ✅ NUEVA RUTA: Business Profile
+      {
+        path: 'settings/business-profile',
+        component: BusinessProfileComponent
       },
       {
         path: '',
@@ -26,11 +35,14 @@ export const routes: Routes = [
       }
     ]
   },
+  
+  // 🔓 Update Password (Sin AuthGuard porque es parte del flujo inicial)
   {
     path: 'update-password',
-    component: UpdatePasswordLayoutComponent,
-    canActivate: [AuthGuard]
+    component: UpdatePasswordLayoutComponent
   },
+  
+  // ⚠️ Fallback: Cualquier ruta no encontrada
   {
     path: '**',
     redirectTo: 'dashboard'

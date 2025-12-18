@@ -1,0 +1,93 @@
+<div class="business-profile-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <i class="fas fa-store"></i>
+        Perfil del Negocio
+      </h1>
+      <p class="page-subtitle">
+        Configura la información de tu negocio que se mostrará a tus clientes
+      </p>
+    </div>
+    
+    @if (isLoading()) {
+      <div class="reload-button loading">
+        <i class="fas fa-spinner fa-spin"></i>
+      </div>
+    } @else {
+      <button class="reload-button" (click)="reloadData()" title="Recargar datos">
+        <i class="fas fa-sync-alt"></i>
+      </button>
+    }
+  </div>
+
+  <!-- Error Alert -->
+  @if (error()) {
+    <div class="alert alert-error">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>{{ error() }}</span>
+      <button class="close-btn" (click)="settingsState.clearBusinessProfileError()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  }
+
+  <!-- Loading State (Initial) -->
+  @if (isInitialLoad() && isLoading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando información del perfil...</p>
+    </div>
+  } @else {
+    <!-- Tabs Navigation -->
+    <div class="tabs-container">
+      <div class="tabs-header">
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab() === 'general'"
+          (click)="changeTab('general')">
+          <i class="fas fa-info-circle"></i>
+          <span>Datos Generales</span>
+        </button>
+        
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab() === 'contacts'"
+          (click)="changeTab('contacts')">
+          <i class="fab fa-whatsapp"></i>
+          <span>Contactos WhatsApp</span>
+          @if (settingsState.whatsappContactsCount() > 0) {
+            <span class="badge">{{ settingsState.whatsappContactsCount() }}</span>
+          }
+        </button>
+        
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab() === 'social'"
+          (click)="changeTab('social')">
+          <i class="fas fa-share-alt"></i>
+          <span>Redes Sociales</span>
+          @if (settingsState.hasSocialMedia()) {
+            <span class="badge-dot"></span>
+          }
+        </button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        @switch (activeTab()) {
+          @case ('general') {
+            <app-general-info />
+          }
+          @case ('contacts') {
+            <app-contact-numbers />
+          }
+          @case ('social') {
+            <app-social-media />
+          }
+        }
+      </div>
+    </div>
+  }
+</div>
