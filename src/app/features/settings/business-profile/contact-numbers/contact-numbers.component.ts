@@ -1,4 +1,4 @@
-import { Component, signal, inject, computed } from '@angular/core';
+import { Component, signal, inject, computed, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { SettingsStateService } from '../../../../core/signals/settings-state.service';
@@ -17,7 +17,7 @@ import { WhatsAppContact } from '../../../../shared/models/settings.model';
   templateUrl: './contact-numbers.component.html',
   styleUrl: './contact-numbers.component.scss'
 })
-export class ContactNumbersComponent {
+export class ContactNumbersComponent implements OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly settingsState = inject(SettingsStateService);
   private readonly settingsApi = inject(SettingsApiService);
@@ -64,6 +64,12 @@ export class ContactNumbersComponent {
     this.initializeForm();
   }
 
+  // ✅ NUEVO: Limpieza al destruir el componente
+  ngOnDestroy(): void {
+    // Asegurar que se restaure el scroll si el componente se destruye con el modal abierto
+    this.unlockBodyScroll();
+  }
+
   /**
    * Inicializar formulario
    */
@@ -94,6 +100,7 @@ export class ContactNumbersComponent {
       visibleOnWeb: true
     });
     this.isModalOpen.set(true);
+    this.lockBodyScroll(); // ✅ NUEVO
     this.clearMessages();
   }
 
@@ -110,6 +117,7 @@ export class ContactNumbersComponent {
       visibleOnWeb: contact.visibleOnWeb
     });
     this.isModalOpen.set(true);
+    this.lockBodyScroll(); // ✅ NUEVO
     this.clearMessages();
   }
 
@@ -121,6 +129,7 @@ export class ContactNumbersComponent {
     this.isEditing.set(false);
     this.editingContactId.set(null);
     this.contactForm.reset();
+    this.unlockBodyScroll(); // ✅ NUEVO
   }
 
   /**
@@ -232,6 +241,31 @@ export class ContactNumbersComponent {
       return `(${number.slice(0, 3)}) ${number.slice(3, 6)}-${number.slice(6)}`;
     }
     return number;
+  }
+
+  // ==================== MODAL SCROLL CONTROL ====================
+
+  /**
+   * ✅ NUEVO: Bloquear scroll del body cuando el modal está abierto
+   */
+  private lockBodyScroll(): void {
+    document.body.style.overflow = 'hidden';
+    document.body.style.paddingRight = this.getScrollbarWidth() + 'px';
+  }
+
+  /**
+   * ✅ NUEVO: Restaurar scroll del body cuando el modal se cierra
+   */
+  private unlockBodyScroll(): void {
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+  }
+
+  /**
+   * ✅ NUEVO: Calcular ancho del scrollbar para evitar "salto" del contenido
+   */
+  private getScrollbarWidth(): number {
+    return window.innerWidth - document.documentElement.clientWidth;
   }
 
   // ==================== HELPERS ====================
