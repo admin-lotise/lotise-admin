@@ -53,11 +53,16 @@ export class MainLayoutComponent {
       label: 'Usuarios Admin', 
       route: '/admin-users' 
     },
-    // ✅ NUEVO: Business Profile
     { 
       icon: 'business', 
       label: 'Mi Negocio', 
       route: '/settings/business-profile' 
+    },
+    // ✅ NUEVO: Raffle Settings
+    { 
+      icon: 'tune', 
+      label: 'Config. Rifas', 
+      route: '/settings/raffle-settings' 
     },
     { 
       icon: 'settings', 
@@ -111,12 +116,18 @@ export class MainLayoutComponent {
       description: 'Gestiona administradores',
       route: '/admin-users' 
     },
-    // ✅ NUEVO: Business Profile en Mobile
     { 
       icon: 'business', 
       label: 'Mi Negocio', 
       description: 'Información de tu empresa',
       route: '/settings/business-profile' 
+    },
+    // ✅ NUEVO: Raffle Settings en Mobile
+    { 
+      icon: 'tune', 
+      label: 'Configuración de Rifas', 
+      description: 'Personaliza tus rifas',
+      route: '/settings/raffle-settings' 
     },
     { 
       icon: 'settings', 

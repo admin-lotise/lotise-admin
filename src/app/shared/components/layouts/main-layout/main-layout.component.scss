@@ -20,9 +20,19 @@
 }
 
 .main-content {
-  @media (max-width: 600px) {
-    overflow-y: auto;
-    padding-top: 15px !important;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1.5rem;
+  background-color: var(--color-bg-main);
+  --main-padding: 1.5rem; // ✅ NUEVO: Variable CSS para el padding
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
+    --main-padding: 1rem; // ✅ NUEVO: Variable CSS para mobile
+    padding-bottom: calc(70px + env(safe-area-inset-bottom));
+    overflow-x: hidden; // ✅ NUEVO: Prevenir scroll horizontal
+    width: 100%; // ✅ NUEVO: Ancho completo
   }
 }
 
