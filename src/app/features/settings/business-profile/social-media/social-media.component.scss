@@ -54,7 +54,6 @@
 
 // ==================== SECTION HEADER ====================
 .section-header {
-  margin-bottom: 2rem;
   padding-bottom: 1.5rem;
   border-bottom: 2px solid var(--color-bg-main);
 
@@ -409,10 +408,52 @@
     font-size: 1rem;
   }
 
+  .section-header {
+    padding-bottom: 1rem;
+
+    .section-title {
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+
+      i {
+        font-size: 1.25rem;
+      }
+    }
+
+    .section-subtitle {
+      font-size: 0.9rem;
+    }
+  }
+
   .form-actions {
+    flex-direction: column;
+    margin-bottom: 2rem;
+    width: 100%;
+    
     .btn {
       width: 100%;
       justify-content: center;
+    }
+  }
+
+  .info-box {
+    font-size: 0.85rem;
+    padding: 1rem;
+
+    i {
+      font-size: 1.1rem;
+    }
+
+    ul {
+      padding-left: 1rem;
+
+      li {
+        font-size: 0.85rem;
+
+        code {
+          font-size: 0.8rem;
+        }
+      }
     }
   }
 }
