@@ -79,14 +79,14 @@
           }
           @case ('ticket') {
             <app-ticket-settings 
-              [webPageConfig]="raffleSettings()?.webPageConfig || null"
+              [webPageConfig]="raffleSettings().webPageConfig || null"
               [isLoading]="isSaving()"
               (save)="onTicketSettingsSave($event)"
             />
           }
           @case ('timing') {
             <app-timing-settings 
-              [webPageConfig]="raffleSettings()?.webPageConfig || null"
+              [webPageConfig]="raffleSettings().webPageConfig || null"
               [isLoading]="isSaving()"
               (save)="onTimingSettingsSave($event)"
             />

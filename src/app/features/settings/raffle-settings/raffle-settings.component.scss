@@ -1,4 +1,4 @@
-@import '../../../shared/styles/settings-shared';
+@use 'app/shared/styles/settings-shared' as *;
 
 :host {
   display: block;

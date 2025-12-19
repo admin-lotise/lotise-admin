@@ -1,7 +1,6 @@
-@import '../../../../shared/styles/settings-shared';
+@use 'app/shared/styles/settings-shared' as *;
 
 .general-config-container {
-  max-width: 800px;
   margin: 0 auto;
 }
 
@@ -51,7 +50,6 @@
 }
 
 .settings-form {
-  max-width: 800px;
   margin: 0 auto;
 }
 
