@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { finalize, tap, catchError } from 'rxjs/operators';
@@ -9,7 +9,7 @@ import { throwError } from 'rxjs';
 @Component({
   selector: 'app-update-password-layout',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './update-password-layout.component.html',
   styleUrl: './update-password-layout.component.scss'
 })
