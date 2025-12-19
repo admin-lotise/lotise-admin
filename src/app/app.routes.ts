@@ -5,6 +5,7 @@ import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { AuthGuard } from './core/auth/auth.guard';
 import { UpdatePasswordLayoutComponent } from './shared/components/layouts/update-password-layout/update-password-layout.component';
 import { BusinessProfileComponent } from './features/settings/business-profile/business-profile.component';
+import { RaffleSettingsComponent } from './features/settings/raffle-settings/raffle-settings.component';
 
 export const routes: Routes = [
   // 🔓 Ruta pública: Login
@@ -23,10 +24,15 @@ export const routes: Routes = [
         path: 'dashboard',
         component: DashboardComponent
       },
-      // ✅ NUEVA RUTA: Business Profile
+      // ✅ SETTINGS: Business Profile
       {
         path: 'settings/business-profile',
         component: BusinessProfileComponent
+      },
+      // ✅ SETTINGS: Raffle Settings
+      {
+        path: 'settings/raffle-settings',
+        component: RaffleSettingsComponent
       },
       {
         path: '',
