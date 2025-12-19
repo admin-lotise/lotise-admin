@@ -291,13 +291,6 @@
     i { font-size: 1rem; }
   }
 
-  .tabs-container {
-    margin-left: calc(-1 * var(--main-padding, 1rem));
-    margin-right: calc(-1 * var(--main-padding, 1rem));
-    border-radius: 0;
-    overflow: hidden;
-  }
-
   .tabs-header {
     border-radius: 0;
 

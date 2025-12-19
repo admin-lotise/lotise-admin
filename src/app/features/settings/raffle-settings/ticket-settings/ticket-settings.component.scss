@@ -265,3 +265,54 @@
     transform: translateY(0);
   }
 }
+
+@media (max-width: 768px) {
+  .form-section {
+    .section-title {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+
+      i {
+        font-size: 1.25rem;
+      }
+    }
+
+    .section-description {
+      font-size: 0.9rem;
+    }
+  }
+
+  .toggles-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .toggle-item {
+    padding: 1rem;
+    margin: 0;
+  }
+
+  .toggle-label {
+    gap: 0.75rem;
+    .toggle-text { font-size: 0.875rem; }
+  }
+
+  .toggle-hint {
+    margin-left: 0;
+    padding-left: 0;
+    width: 100%;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}

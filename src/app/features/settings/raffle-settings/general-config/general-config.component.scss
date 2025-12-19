@@ -218,6 +218,18 @@
 }
 
 @media (max-width: 768px) {
+  .form-section {
+    .section-title {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+
+      i {
+        font-size: 1.25rem;
+      }
+    }
+  }
+
   .form-actions {
     flex-direction: column;
     margin-bottom: 2rem;
