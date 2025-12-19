@@ -32,28 +32,6 @@
     </div>
   }
 
-  <!-- Success Message -->
-  @if (successMessage()) {
-    <div class="alert alert-success">
-      <i class="fas fa-check-circle"></i>
-      <span>{{ successMessage() }}</span>
-      <button class="close-btn" (click)="successMessage.set(null)">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-  }
-
-  <!-- Error Message -->
-  @if (errorMessage()) {
-    <div class="alert alert-error">
-      <i class="fas fa-exclamation-circle"></i>
-      <span>{{ errorMessage() }}</span>
-      <button class="close-btn" (click)="errorMessage.set(null)">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-  }
-
   <!-- Loading State (Initial) -->
   @if (isLoading()) {
     <div class="loading-container">
@@ -74,8 +52,16 @@
         
         <button 
           class="tab-button" 
-          [class.active]="activeTab() === 'webpage'"
-          (click)="changeTab('webpage')">
+          [class.active]="activeTab() === 'ticket'"
+          (click)="changeTab('ticket')">
+          <i class="fas fa-eye"></i>
+          <span>Elementos Visibles</span>
+        </button>
+
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab() === 'timing'"
+          (click)="changeTab('timing')">
           <i class="fas fa-palette"></i>
           <span>Apariencia Web</span>
         </button>
@@ -85,423 +71,25 @@
       <div class="tab-content">
         @switch (activeTab()) {
           @case ('general') {
-            <!-- General Settings Form -->
-            <form [formGroup]="generalForm" (ngSubmit)="onSubmitGeneral()" class="settings-form">
-              <div class="form-section">
-                <h2 class="section-title">
-                  <i class="fas fa-sliders-h"></i>
-                  Parámetros Generales
-                </h2>
-
-                <!-- Minutes to Close -->
-                <div class="form-group">
-                  <label for="minutesToClose" class="form-label">
-                    <i class="fas fa-clock"></i>
-                    Minutos para cerrar antes del sorteo
-                    <span class="required">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    id="minutesToClose"
-                    formControlName="minutesToClose"
-                    class="form-control"
-                    [class.is-invalid]="minutesToClose?.invalid && minutesToClose?.touched"
-                    min="5"
-                    max="120"
-                    placeholder="30"
-                  />
-                  @if (minutesToClose?.invalid && minutesToClose?.touched) {
-                    <div class="error-message">
-                      @if (minutesToClose?.errors?.['required']) {
-                        <span>Este campo es requerido</span>
-                      }
-                      @if (minutesToClose?.errors?.['min']) {
-                        <span>Debe ser al menos 5 minutos</span>
-                      }
-                      @if (minutesToClose?.errors?.['max']) {
-                        <span>No puede superar los 120 minutos</span>
-                      }
-                    </div>
-                  }
-                  <small class="form-hint">
-                    Tiempo antes del sorteo en que se deja de vender boletos
-                  </small>
-                </div>
-
-                <!-- Tickets Per Page -->
-                <div class="form-group">
-                  <label for="ticketsPerPage" class="form-label">
-                    <i class="fas fa-ticket-alt"></i>
-                    Boletos por página
-                    <span class="required">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    id="ticketsPerPage"
-                    formControlName="ticketsPerPage"
-                    class="form-control"
-                    [class.is-invalid]="ticketsPerPage?.invalid && ticketsPerPage?.touched"
-                    min="10"
-                    max="200"
-                    placeholder="50"
-                  />
-                  @if (ticketsPerPage?.invalid && ticketsPerPage?.touched) {
-                    <div class="error-message">
-                      @if (ticketsPerPage?.errors?.['required']) {
-                        <span>Este campo es requerido</span>
-                      }
-                      @if (ticketsPerPage?.errors?.['min']) {
-                        <span>Debe ser al menos 10 boletos</span>
-                      }
-                      @if (ticketsPerPage?.errors?.['max']) {
-                        <span>No puede superar los 200 boletos</span>
-                      }
-                    </div>
-                  }
-                  <small class="form-hint">
-                    Cantidad de boletos que se muestran por página en la vista de selección
-                  </small>
-                </div>
-
-                <!-- Lucky Machine Options -->
-                <div class="form-group">
-                  <label for="luckyMachineOptions" class="form-label">
-                    <i class="fas fa-dice"></i>
-                    Opciones de Máquina de la Suerte
-                    <span class="required">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="luckyMachineOptions"
-                    formControlName="luckyMachineOptions"
-                    class="form-control"
-                    [class.is-invalid]="luckyMachineOptions?.invalid && luckyMachineOptions?.touched"
-                    placeholder="1,2,3,4,5,6,7,8,9,10"
-                  />
-                  @if (luckyMachineOptions?.invalid && luckyMachineOptions?.touched) {
-                    <div class="error-message">
-                      <span>Este campo es requerido</span>
-                    </div>
-                  }
-                  <small class="form-hint">
-                    Números de boletos separados por comas que el cliente puede elegir con "Máquina de la Suerte"
-                  </small>
-                </div>
-
-                <!-- Submit Button -->
-                <div class="form-actions">
-                  <button
-                    type="submit"
-                    class="btn btn-primary"
-                    [disabled]="generalForm.invalid || isSaving()"
-                  >
-                    @if (isSaving()) {
-                      <i class="fas fa-spinner fa-spin"></i>
-                      <span>Guardando...</span>
-                    } @else {
-                      <i class="fas fa-save"></i>
-                      <span>Guardar Configuración General</span>
-                    }
-                  </button>
-                </div>
-              </div>
-            </form>
+            <app-general-config 
+              [raffleSettings]="raffleSettings()"
+              [isLoading]="isSaving()"
+              (save)="onGeneralConfigSave($event)"
+            />
           }
-
-          @case ('webpage') {
-            <!-- Web Page Config Form -->
-            <form [formGroup]="webPageForm" (ngSubmit)="onSubmitWebPage()" class="settings-form">
-              <!-- Visibility Toggles Section -->
-              <div class="form-section">
-                <h2 class="section-title">
-                  <i class="fas fa-eye"></i>
-                  Elementos Visibles
-                </h2>
-                <p class="section-description">
-                  Elige qué elementos quieres mostrar en la página pública de rifas
-                </p>
-
-                <div class="toggles-grid">
-                  <div class="toggle-item">
-                    <label class="toggle-label">
-                      <input
-                        type="checkbox"
-                        formControlName="showVerifier"
-                        class="toggle-input"
-                      />
-                      <span class="toggle-switch"></span>
-                      <span class="toggle-text">
-                        <i class="fas fa-check-circle"></i>
-                        Mostrar Verificador
-                      </span>
-                    </label>
-                    <small class="toggle-hint">Permite a los usuarios verificar boletos</small>
-                  </div>
-
-                  <div class="toggle-item">
-                    <label class="toggle-label">
-                      <input
-                        type="checkbox"
-                        formControlName="showParticipants"
-                        class="toggle-input"
-                      />
-                      <span class="toggle-switch"></span>
-                      <span class="toggle-text">
-                        <i class="fas fa-users"></i>
-                        Mostrar Participantes
-                      </span>
-                    </label>
-                    <small class="toggle-hint">Muestra lista de participantes en la rifa</small>
-                  </div>
-
-                  <div class="toggle-item">
-                    <label class="toggle-label">
-                      <input
-                        type="checkbox"
-                        formControlName="showTimer"
-                        class="toggle-input"
-                      />
-                      <span class="toggle-switch"></span>
-                      <span class="toggle-text">
-                        <i class="fas fa-hourglass-half"></i>
-                        Mostrar Temporizador
-                      </span>
-                    </label>
-                    <small class="toggle-hint">Cuenta regresiva hasta el sorteo</small>
-                  </div>
-
-                  <div class="toggle-item">
-                    <label class="toggle-label">
-                      <input
-                        type="checkbox"
-                        formControlName="showTicketsSold"
-                        class="toggle-input"
-                      />
-                      <span class="toggle-switch"></span>
-                      <span class="toggle-text">
-                        <i class="fas fa-chart-line"></i>
-                        Mostrar Boletos Vendidos
-                      </span>
-                    </label>
-                    <small class="toggle-hint">Muestra el progreso de venta de boletos</small>
-                  </div>
-
-                  <div class="toggle-item">
-                    <label class="toggle-label">
-                      <input
-                        type="checkbox"
-                        formControlName="showPrivacyPolicy"
-                        class="toggle-input"
-                      />
-                      <span class="toggle-switch"></span>
-                      <span class="toggle-text">
-                        <i class="fas fa-shield-alt"></i>
-                        Mostrar Aviso de Privacidad
-                      </span>
-                    </label>
-                    <small class="toggle-hint">Link al aviso de privacidad en el footer</small>
-                  </div>
-
-                  <div class="toggle-item">
-                    <label class="toggle-label">
-                      <input
-                        type="checkbox"
-                        formControlName="showTerms"
-                        class="toggle-input"
-                      />
-                      <span class="toggle-switch"></span>
-                      <span class="toggle-text">
-                        <i class="fas fa-file-contract"></i>
-                        Mostrar Términos y Condiciones
-                      </span>
-                    </label>
-                    <small class="toggle-hint">Link a términos y condiciones en el footer</small>
-                  </div>
-
-                  <div class="toggle-item">
-                    <label class="toggle-label">
-                      <input
-                        type="checkbox"
-                        formControlName="openWhatsAppDirect"
-                        class="toggle-input"
-                      />
-                      <span class="toggle-switch"></span>
-                      <span class="toggle-text">
-                        <i class="fab fa-whatsapp"></i>
-                        Abrir WhatsApp Directo
-                      </span>
-                    </label>
-                    <small class="toggle-hint">Al hacer clic en contacto, abre WhatsApp automáticamente</small>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Colors Section -->
-              <div class="form-section">
-                <h2 class="section-title">
-                  <i class="fas fa-palette"></i>
-                  Colores de la Página
-                </h2>
-                <p class="section-description">
-                  Personaliza los colores principales de tu página de rifas
-                </p>
-
-                <div class="colors-grid">
-                  <!-- Primary Color -->
-                  <div class="color-group">
-                    <label for="primaryColor" class="form-label">
-                      <i class="fas fa-circle" [style.color]="primaryColor?.value"></i>
-                      Color Primario
-                      <span class="required">*</span>
-                    </label>
-                    <div class="color-input-wrapper">
-                      <input
-                        type="color"
-                        id="primaryColor"
-                        formControlName="primaryColor"
-                        class="color-picker"
-                      />
-                      <input
-                        type="text"
-                        formControlName="primaryColor"
-                        class="color-text"
-                        [class.is-invalid]="primaryColor?.invalid && primaryColor?.touched"
-                        placeholder="#ff497c"
-                      />
-                    </div>
-                    @if (primaryColor?.invalid && primaryColor?.touched) {
-                      <div class="error-message">
-                        <span>Debe ser un color hexadecimal válido (ej: #ff497c)</span>
-                      </div>
-                    }
-                    <small class="form-hint">Color principal de botones y elementos destacados</small>
-                  </div>
-
-                  <!-- Primary Color Contrast -->
-                  <div class="color-group">
-                    <label for="primaryColorContrast" class="form-label">
-                      <i class="fas fa-circle" [style.color]="primaryColorContrast?.value"></i>
-                      Contraste Primario
-                      <span class="required">*</span>
-                    </label>
-                    <div class="color-input-wrapper">
-                      <input
-                        type="color"
-                        id="primaryColorContrast"
-                        formControlName="primaryColorContrast"
-                        class="color-picker"
-                      />
-                      <input
-                        type="text"
-                        formControlName="primaryColorContrast"
-                        class="color-text"
-                        [class.is-invalid]="primaryColorContrast?.invalid && primaryColorContrast?.touched"
-                        placeholder="#ffffff"
-                      />
-                    </div>
-                    @if (primaryColorContrast?.invalid && primaryColorContrast?.touched) {
-                      <div class="error-message">
-                        <span>Debe ser un color hexadecimal válido</span>
-                      </div>
-                    }
-                    <small class="form-hint">Color del texto sobre el color primario</small>
-                  </div>
-
-                  <!-- Secondary Color -->
-                  <div class="color-group">
-                    <label for="secondaryColor" class="form-label">
-                      <i class="fas fa-circle" [style.color]="secondaryColor?.value"></i>
-                      Color Secundario
-                      <span class="required">*</span>
-                    </label>
-                    <div class="color-input-wrapper">
-                      <input
-                        type="color"
-                        id="secondaryColor"
-                        formControlName="secondaryColor"
-                        class="color-picker"
-                      />
-                      <input
-                        type="text"
-                        formControlName="secondaryColor"
-                        class="color-text"
-                        [class.is-invalid]="secondaryColor?.invalid && secondaryColor?.touched"
-                        placeholder="#3b82f6"
-                      />
-                    </div>
-                    @if (secondaryColor?.invalid && secondaryColor?.touched) {
-                      <div class="error-message">
-                        <span>Debe ser un color hexadecimal válido</span>
-                      </div>
-                    }
-                    <small class="form-hint">Color secundario para elementos complementarios</small>
-                  </div>
-
-                  <!-- Secondary Color Contrast -->
-                  <div class="color-group">
-                    <label for="secondaryColorContrast" class="form-label">
-                      <i class="fas fa-circle" [style.color]="secondaryColorContrast?.value"></i>
-                      Contraste Secundario
-                      <span class="required">*</span>
-                    </label>
-                    <div class="color-input-wrapper">
-                      <input
-                        type="color"
-                        id="secondaryColorContrast"
-                        formControlName="secondaryColorContrast"
-                        class="color-picker"
-                      />
-                      <input
-                        type="text"
-                        formControlName="secondaryColorContrast"
-                        class="color-text"
-                        [class.is-invalid]="secondaryColorContrast?.invalid && secondaryColorContrast?.touched"
-                        placeholder="#ffffff"
-                      />
-                    </div>
-                    @if (secondaryColorContrast?.invalid && secondaryColorContrast?.touched) {
-                      <div class="error-message">
-                        <span>Debe ser un color hexadecimal válido</span>
-                      </div>
-                    }
-                    <small class="form-hint">Color del texto sobre el color secundario</small>
-                  </div>
-                </div>
-
-                <!-- Color Preview -->
-                <div class="color-preview-section">
-                  <h3 class="preview-title">
-                    <i class="fas fa-eye"></i>
-                    Vista Previa de Colores
-                  </h3>
-                  <div class="color-preview-grid">
-                    <div class="preview-card" [style.background-color]="primaryColor?.value">
-                      <span [style.color]="primaryColorContrast?.value">Botón Primario</span>
-                    </div>
-                    <div class="preview-card" [style.background-color]="secondaryColor?.value">
-                      <span [style.color]="secondaryColorContrast?.value">Botón Secundario</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Submit Button -->
-              <div class="form-actions">
-                <button
-                  type="submit"
-                  class="btn btn-primary"
-                  [disabled]="webPageForm.invalid || isSaving()"
-                >
-                  @if (isSaving()) {
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <span>Guardando...</span>
-                  } @else {
-                    <i class="fas fa-save"></i>
-                    <span>Guardar Configuración de Apariencia</span>
-                  }
-                </button>
-              </div>
-            </form>
+          @case ('ticket') {
+            <app-ticket-settings 
+              [webPageConfig]="raffleSettings().webPageConfig || null"
+              [isLoading]="isSaving()"
+              (save)="onTicketSettingsSave($event)"
+            />
+          }
+          @case ('timing') {
+            <app-timing-settings 
+              [webPageConfig]="raffleSettings().webPageConfig || null"
+              [isLoading]="isSaving()"
+              (save)="onTimingSettingsSave($event)"
+            />
           }
         }
       </div>
