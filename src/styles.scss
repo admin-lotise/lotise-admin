@@ -110,4 +110,26 @@ body {
   scrollbar-color: rgba(255, 255, 255, 0.2) var(--color-primary-dark);
 }
 
+// ✅ NUEVO: Prevenir crecimiento del body en mobile
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden !important;
+    width: 100%;
+    position: relative;
+  }
+
+  body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  html {
+    height: -webkit-fill-available;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
 @import 'app/shared/styles/_mobile.scss';
