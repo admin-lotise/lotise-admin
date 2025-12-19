@@ -1,0 +1,178 @@
+<div class="ticket-settings-container">
+  <!-- Success Message -->
+  @if (successMessage()) {
+    <div class="alert alert-success">
+      <i class="fas fa-check-circle"></i>
+      <span>{{ successMessage() }}</span>
+      <button class="close-btn" (click)="successMessage.set(null)">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  }
+
+  <!-- Form -->
+  <form [formGroup]="ticketForm" (ngSubmit)="onSubmit()" class="settings-form">
+    <div class="form-section">
+      <h2 class="section-title">
+        <i class="fas fa-eye"></i>
+        Elementos Visibles
+      </h2>
+      <p class="section-description">
+        Controla qué elementos se muestran en la página web de la rifa
+      </p>
+
+      <!-- Toggles Grid -->
+      <div class="toggles-grid">
+        <!-- Mostrar Verificador -->
+        <div class="toggle-item">
+          <label class="toggle-label">
+            <input
+              type="checkbox"
+              formControlName="showVerifier"
+              class="toggle-input"
+            />
+            <span class="toggle-switch"></span>
+            <span class="toggle-text">
+              <i class="fas fa-check-circle"></i>
+              Mostrar Verificador
+            </span>
+          </label>
+          <small class="toggle-hint">
+            Permite a los usuarios verificar sus boletos comprados
+          </small>
+        </div>
+
+        <!-- Mostrar Participantes -->
+        <div class="toggle-item">
+          <label class="toggle-label">
+            <input
+              type="checkbox"
+              formControlName="showParticipants"
+              class="toggle-input"
+            />
+            <span class="toggle-switch"></span>
+            <span class="toggle-text">
+              <i class="fas fa-users"></i>
+              Mostrar Participantes
+            </span>
+          </label>
+          <small class="toggle-hint">
+            Muestra la lista de participantes en la rifa
+          </small>
+        </div>
+
+        <!-- Mostrar Temporizador -->
+        <div class="toggle-item">
+          <label class="toggle-label">
+            <input
+              type="checkbox"
+              formControlName="showTimer"
+              class="toggle-input"
+            />
+            <span class="toggle-switch"></span>
+            <span class="toggle-text">
+              <i class="fas fa-clock"></i>
+              Mostrar Temporizador
+            </span>
+          </label>
+          <small class="toggle-hint">
+            Cuenta regresiva hasta el sorteo
+          </small>
+        </div>
+
+        <!-- Mostrar Boletos Vendidos -->
+        <div class="toggle-item">
+          <label class="toggle-label">
+            <input
+              type="checkbox"
+              formControlName="showTicketsSold"
+              class="toggle-input"
+            />
+            <span class="toggle-switch"></span>
+            <span class="toggle-text">
+              <i class="fas fa-ticket-alt"></i>
+              Mostrar Boletos Vendidos
+            </span>
+          </label>
+          <small class="toggle-hint">
+            Muestra el contador de boletos vendidos
+          </small>
+        </div>
+
+        <!-- Mostrar Aviso de Privacidad -->
+        <div class="toggle-item">
+          <label class="toggle-label">
+            <input
+              type="checkbox"
+              formControlName="showPrivacyPolicy"
+              class="toggle-input"
+            />
+            <span class="toggle-switch"></span>
+            <span class="toggle-text">
+              <i class="fas fa-shield-alt"></i>
+              Mostrar Aviso de Privacidad
+            </span>
+          </label>
+          <small class="toggle-hint">
+            Enlace al aviso de privacidad en el footer
+          </small>
+        </div>
+
+        <!-- Mostrar Términos y Condiciones -->
+        <div class="toggle-item">
+          <label class="toggle-label">
+            <input
+              type="checkbox"
+              formControlName="showTerms"
+              class="toggle-input"
+            />
+            <span class="toggle-switch"></span>
+            <span class="toggle-text">
+              <i class="fas fa-file-contract"></i>
+              Mostrar Términos y Condiciones
+            </span>
+          </label>
+          <small class="toggle-hint">
+            Enlace a términos y condiciones en el footer
+          </small>
+        </div>
+
+        <!-- Abrir WhatsApp Directo -->
+        <div class="toggle-item">
+          <label class="toggle-label">
+            <input
+              type="checkbox"
+              formControlName="openWhatsAppDirect"
+              class="toggle-input"
+            />
+            <span class="toggle-switch"></span>
+            <span class="toggle-text">
+              <i class="fab fa-whatsapp"></i>
+              Abrir WhatsApp Directo
+            </span>
+          </label>
+          <small class="toggle-hint">
+            Abre WhatsApp directamente sin confirmación
+          </small>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="isLoading"
+        >
+          @if (isLoading) {
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Guardando...</span>
+          } @else {
+            <i class="fas fa-save"></i>
+            <span>Guardar Elementos Visibles</span>
+          }
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
