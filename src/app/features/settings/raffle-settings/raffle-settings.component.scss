@@ -1,18 +1,16 @@
 @import '../../../shared/styles/settings-shared';
 
-// ==================== HOST COMPONENT ====================
 :host {
   display: block;
   width: 100%;
-  overflow-x: hidden; // ✅ NUEVO: Prevenir scroll horizontal
+  overflow-x: hidden;
   
   @media (max-width: 768px) {
-    padding: 0; // ✅ NUEVO: Sin padding en mobile
-    margin: 0; // ✅ NUEVO: Sin margin en mobile
+    padding: 0;
+    margin: 0;
   }
 }
 
-// ==================== CONTAINER ====================
 .raffle-settings-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -20,17 +18,16 @@
   scroll-behavior: smooth;
   
   @media (max-width: 768px) {
-    max-width: 100%; // ✅ NUEVO: Ancho completo en mobile
-    width: 100vw; // ✅ NUEVO: Forzar ancho del viewport
-    margin-left: calc(-1 * var(--main-padding, 1rem)); // ✅ NUEVO: Compensar padding del main-content
-    margin-right: calc(-1 * var(--main-padding, 1rem)); // ✅ NUEVO: Compensar padding del main-content
-    padding-left: var(--main-padding, 1rem); // ✅ NUEVO: Restaurar padding interno
-    padding-right: var(--main-padding, 1rem); // ✅ NUEVO: Restaurar padding interno
-    overflow-x: hidden; // ✅ NUEVO: Prevenir scroll horizontal
+    max-width: 100%;
+    width: 100vw;
+    margin-left: calc(-1 * var(--main-padding, 1rem));
+    margin-right: calc(-1 * var(--main-padding, 1rem));
+    padding-left: var(--main-padding, 1rem);
+    padding-right: var(--main-padding, 1rem);
+    overflow-x: hidden;
   }
 }
 
-// ==================== HEADER ====================
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -39,9 +36,7 @@
   padding-bottom: 0;
   border-bottom: none;
 
-  .header-content {
-    flex: 1;
-  }
+  .header-content { flex: 1; }
 
   .page-title {
     font-size: 1.35rem;
@@ -57,9 +52,7 @@
     letter-spacing: 0.5px;
     font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
 
-    i {
-      display: none;
-    }
+    i { display: none; }
   }
 
   .page-subtitle {
@@ -87,10 +80,7 @@
     &.loading {
       cursor: not-allowed;
       opacity: 0.6;
-
-      i {
-        animation: spin 0.8s linear infinite;
-      }
+      i { animation: spin 0.8s linear infinite; }
     }
 
     &:focus-visible {
@@ -105,7 +95,6 @@
   }
 }
 
-// ==================== ALERTS ====================
 .alert {
   padding: 1rem 1.25rem;
   border-radius: 8px;
@@ -119,20 +108,14 @@
     background: #ecfdf5;
     border: 1px solid #a7f3d0;
     color: #065f46;
-
-    i {
-      color: #10b981;
-    }
+    i { color: #10b981; }
   }
 
   &.alert-error {
     background: #fee;
     border: 1px solid #fcc;
     color: #c33;
-
-    i {
-      color: #c33;
-    }
+    i { color: #c33; }
   }
 
   span {
@@ -149,10 +132,7 @@
     opacity: 0.7;
     transition: opacity 0.2s;
 
-    &:hover {
-      opacity: 1;
-    }
-
+    &:hover { opacity: 1; }
     &:focus-visible {
       outline: 2px solid currentColor;
       outline-offset: 2px;
@@ -160,7 +140,6 @@
   }
 }
 
-// ==================== LOADING ====================
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -176,7 +155,6 @@
     border-top-color: var(--color-accent);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
-    will-change: transform;
   }
 
   p {
@@ -185,7 +163,6 @@
   }
 }
 
-// ==================== TABS ====================
 .tabs-container {
   background: var(--color-bg-white);
   border-radius: 12px;
@@ -198,12 +175,8 @@
   background: var(--color-bg-main);
   border-bottom: 2px solid #e2e8f0;
   overflow-x: auto;
-
-  &::-webkit-scrollbar {
-    height: 0;
-  }
-
   scrollbar-width: none;
+  &::-webkit-scrollbar { height: 0; }
 
   .tab-button {
     flex: 1;
@@ -222,9 +195,7 @@
     transition: all 0.2s ease;
     white-space: nowrap;
 
-    i {
-      font-size: 1.1rem;
-    }
+    i { font-size: 1.1rem; }
 
     &:hover:not(.active) {
       background: rgba(59, 130, 246, 0.05);
@@ -237,9 +208,7 @@
       z-index: 1;
     }
 
-    &:active:not(.loading) {
-      transform: scale(0.98);
-    }
+    &:active:not(.loading) { transform: scale(0.98); }
 
     &.active {
       background: var(--color-bg-white);
@@ -263,17 +232,14 @@
   animation: fadeIn 0.3s ease;
 }
 
-// ==================== FORMS ====================
 .settings-form {
+  max-width: 800px;
   margin: 0 auto;
 }
 
 .form-section {
   margin-bottom: 2.5rem;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
+  &:last-child { margin-bottom: 0; }
 
   .section-title {
     font-size: 1.5rem;
@@ -300,10 +266,7 @@
 
 .form-group {
   margin-bottom: 1.5rem;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
+  &:last-child { margin-bottom: 0; }
 }
 
 .form-label {
@@ -344,19 +307,13 @@
 
   &.is-invalid {
     border-color: #ef4444;
-
-    &:focus {
-      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-    }
+    &:focus { box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1); }
   }
 
-  &::placeholder {
-    color: var(--color-text-tertiary);
-  }
+  &::placeholder { color: var(--color-text-tertiary); }
 
   &[type="number"] {
     appearance: textfield;
-
     &::-webkit-inner-spin-button,
     &::-webkit-outer-spin-button {
       appearance: none;
@@ -381,24 +338,20 @@
   font-size: 0.8125rem;
   margin-top: 0.5rem;
   animation: shake 0.3s ease-in-out;
-
-  span {
-    line-height: 1.4;
-  }
+  span { line-height: 1.4; }
 }
 
-// ==================== TOGGLES GRID ====================
 .toggles-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.25rem;
   
   @media (max-width: 768px) {
-    grid-template-columns: 1fr; // ✅ Una sola columna en mobile
+    grid-template-columns: 1fr;
     gap: 1rem;
-    width: 100%; // ✅ Forzar ancho completo
-    max-width: 100%; // ✅ No exceder el ancho
-    overflow: hidden; // ✅ Prevenir overflow
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
   }
 }
 
@@ -408,10 +361,10 @@
   border-radius: 8px;
   padding: 1.25rem;
   transition: all 0.3s ease;
-  position: relative; // ✅ NUEVO: Necesario para contener el contenido
-  overflow: hidden; // ✅ NUEVO: Prevenir que el contenido se salga
-  width: 100%; // ✅ NUEVO: Ancho completo
-  box-sizing: border-box; // ✅ NUEVO: Incluir padding/border en el ancho
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
 
   &:hover {
     border-color: var(--color-accent);
@@ -424,22 +377,20 @@
     color: var(--color-text-tertiary);
     margin-top: 0.5rem;
     margin-left: 3.5rem;
-    word-wrap: break-word; // ✅ NUEVO: Permitir división de palabras
-    overflow-wrap: break-word; // ✅ NUEVO: Compatibilidad
-    hyphens: auto; // ✅ NUEVO: Guiones automáticos
-    max-width: 100%; // ✅ NUEVO: No exceder el ancho
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 100%;
   }
 
   @media (max-width: 768px) {
-    padding: 1rem; // ✅ Reducir padding en mobile
-    margin: 0; // ✅ Sin márgenes extra
+    padding: 1rem;
+    margin: 0;
     
     .toggle-hint {
-      margin-left: 0; // ✅ Sin margen izquierdo en mobile
+      margin-left: 0;
       padding-left: 0;
-      margin-top: 0.5rem;
-      width: 100%; // ✅ Ancho completo
-      max-width: 100%; // ✅ No exceder
+      width: 100%;
     }
   }
 }
@@ -450,9 +401,9 @@
   gap: 1rem;
   cursor: pointer;
   user-select: none;
-  width: 100%; // ✅ NUEVO: Ancho completo
-  max-width: 100%; // ✅ NUEVO: No exceder
-  overflow: hidden; // ✅ NUEVO: Prevenir overflow
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 
   .toggle-input {
     position: absolute;
@@ -461,10 +412,7 @@
 
     &:checked + .toggle-switch {
       background-color: var(--primary, #ff497c);
-
-      &::before {
-        transform: translateX(1.5rem);
-      }
+      &::before { transform: translateX(1.5rem); }
     }
 
     &:focus + .toggle-switch {
@@ -479,7 +427,7 @@
     background-color: #cbd5e1;
     border-radius: 9999px;
     transition: all 0.3s ease;
-    flex-shrink: 0; // ✅ IMPORTANTE: No permitir que se encoja
+    flex-shrink: 0;
 
     &::before {
       content: '';
@@ -502,28 +450,24 @@
     font-size: 0.9375rem;
     font-weight: 500;
     color: var(--color-text-primary);
-    flex: 1; // ✅ NUEVO: Ocupar espacio disponible
-    min-width: 0; // ✅ NUEVO: Permitir shrinking
-    overflow-wrap: break-word; // ✅ NUEVO: Permitir división de palabras
-    word-break: break-word; // ✅ NUEVO: Compatibilidad
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
 
     i {
       color: var(--color-text-secondary);
       font-size: 1rem;
-      flex-shrink: 0; // ✅ NUEVO: El icono no se encoge
+      flex-shrink: 0;
     }
   }
 
   @media (max-width: 768px) {
-    gap: 0.75rem; // ✅ Reducir gap en mobile
-    
-    .toggle-text {
-      font-size: 0.875rem; // ✅ Texto más pequeño en mobile
-    }
+    gap: 0.75rem;
+    .toggle-text { font-size: 0.875rem; }
   }
 }
 
-// ==================== COLORS GRID ====================
 .colors-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -531,13 +475,7 @@
   margin-bottom: 2rem;
 }
 
-.color-group {
-  .form-label {
-    i {
-      font-size: 1.25rem;
-    }
-  }
-}
+.color-group .form-label i { font-size: 1.25rem; }
 
 .color-input-wrapper {
   display: flex;
@@ -553,10 +491,7 @@
     transition: all 0.3s ease;
     padding: 0.25rem;
 
-    &::-webkit-color-swatch-wrapper {
-      padding: 0;
-    }
-
+    &::-webkit-color-swatch-wrapper { padding: 0; }
     &::-webkit-color-swatch {
       border: none;
       border-radius: 4px;
@@ -581,7 +516,6 @@
   }
 }
 
-// ==================== COLOR PREVIEW ====================
 .color-preview-section {
   margin-top: 2rem;
   padding: 1.5rem;
@@ -597,10 +531,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-
-    i {
-      color: var(--primary, #ff497c);
-    }
+    i { color: var(--primary, #ff497c); }
   }
 }
 
@@ -610,7 +541,7 @@
   gap: 1rem;
 
   .preview-card {
-    padding: 0.75rem 1.25rem; // ✅ CAMBIADO: de 1.5rem a 0.75rem vertical y 1.25rem horizontal
+    padding: 0.75rem 1.25rem;
     border-radius: 8px;
     text-align: center;
     transition: all 0.3s ease;
@@ -622,13 +553,12 @@
     }
 
     span {
-      font-size: 0.9375rem; // ✅ OPCIONAL: También reducir el font-size de 1rem a 0.9375rem
+      font-size: 0.9375rem;
       font-weight: 600;
     }
   }
 }
 
-// ==================== FORM ACTIONS ====================
 .form-actions {
   margin-top: 2rem;
   padding-top: 2rem;
@@ -652,9 +582,7 @@
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
-  i {
-    font-size: 1rem;
-  }
+  i { font-size: 1rem; }
 
   &:focus {
     outline: none;
@@ -664,10 +592,7 @@
   &:disabled {
     cursor: not-allowed;
     opacity: 0.6;
-
-    &:hover {
-      transform: none;
-    }
+    &:hover { transform: none; }
   }
 
   &.btn-primary {
@@ -680,13 +605,10 @@
       box-shadow: 0 4px 12px rgba(255, 73, 124, 0.3);
     }
 
-    &:active:not(:disabled) {
-      transform: translateY(0);
-    }
+    &:active:not(:disabled) { transform: translateY(0); }
   }
 }
 
-// ==================== ANIMATIONS ====================
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -710,36 +632,20 @@
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 
 @keyframes shake {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-5px);
-  }
-  75% {
-    transform: translateX(5px);
-  }
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
 }
 
-// ==================== RESPONSIVE ====================
 @media (min-width: 769px) and (max-width: 1024px) {
-  .page-header {
-    .page-title {
-      font-size: 1.35rem;
-    }
-  }
-
-  .tabs-header {
-    .tab-button {
-      padding: 1rem 1.5rem;
-      font-size: 0.9rem;
-    }
+  .page-header .page-title { font-size: 1.35rem; }
+  .tabs-header .tab-button {
+    padding: 1rem 1.5rem;
+    font-size: 0.9rem;
   }
 }
 
@@ -749,7 +655,7 @@
     margin: 0;
     max-width: 100%;
     overflow-x: hidden;
-    position: relative; // ✅ NUEVO: Establecer contexto de posicionamiento
+    position: relative;
   }
 
   .page-header {
@@ -764,9 +670,7 @@
       border-bottom-width: 1.5px;
     }
 
-    .reload-button {
-      align-self: flex-start;
-    }
+    .reload-button { align-self: flex-start; }
   }
 
   .alert {
@@ -774,17 +678,14 @@
     font-size: 0.85rem;
     margin-left: 0;
     margin-right: 0;
-
-    i {
-      font-size: 1rem;
-    }
+    i { font-size: 1rem; }
   }
 
   .tabs-container {
     margin-left: calc(-1 * var(--main-padding, 1rem));
     margin-right: calc(-1 * var(--main-padding, 1rem));
     border-radius: 0;
-    overflow: hidden; // ✅ NUEVO: Prevenir overflow del container
+    overflow: hidden;
   }
 
   .tabs-header {
@@ -793,14 +694,8 @@
     .tab-button {
       padding: 1rem;
       font-size: 0.85rem;
-
-      span {
-        display: none;
-      }
-
-      i {
-        font-size: 1.3rem;
-      }
+      span { display: none; }
+      i { font-size: 1.3rem; }
     }
   }
 
@@ -808,27 +703,24 @@
     padding: 1rem;
     padding-bottom: 2rem;
     overflow-x: hidden;
-    overflow-y: visible; // ✅ NUEVO: Permitir scroll vertical
-    position: relative; // ✅ NUEVO: Contexto de posicionamiento
+    overflow-y: visible;
+    position: relative;
   }
 
   .settings-form {
     width: 100%;
     max-width: 100%;
     overflow-x: hidden;
-    overflow-y: visible; // ✅ NUEVO: Permitir scroll vertical
-    position: relative; // ✅ NUEVO: Contexto de posicionamiento
+    overflow-y: visible;
+    position: relative;
   }
 
   .form-section {
     overflow-x: hidden;
-    overflow-y: visible; // ✅ NUEVO: Permitir scroll vertical
+    overflow-y: visible;
     margin-bottom: 2rem;
-    position: relative; // ✅ NUEVO: Contexto de posicionamiento
-    
-    &:last-child {
-      margin-bottom: 1rem;
-    }
+    position: relative;
+    &:last-child { margin-bottom: 1rem; }
   }
 
   .colors-grid {
@@ -846,9 +738,6 @@
     flex-direction: column;
     margin-bottom: 2rem;
     width: 100%;
-
-    .btn {
-      width: 100%;
-    }
+    .btn { width: 100%; }
   }
 }
