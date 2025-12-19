@@ -1,27 +1,27 @@
 // ==================== VARIABLES COMPARTIDAS ====================
-$primary-color: #ff497c;
-$secondary-color: #3b82f6;
-$success-color: #10b981;
-$error-color: #ef4444;
-$warning-color: #f59e0b;
+$primary-color: #ff497c !default;
+$secondary-color: #3b82f6 !default;
+$success-color: #10b981 !default;
+$error-color: #ef4444 !default;
+$warning-color: #f59e0b !default;
 
-$text-primary: #1f2937;
-$text-secondary: #6b7280;
-$text-tertiary: #9ca3af;
+$text-primary: #1f2937 !default;
+$text-secondary: #6b7280 !default;
+$text-tertiary: #9ca3af !default;
 
-$border-color: #e5e7eb;
-$background-light: #f9fafb;
-$background-white: #ffffff;
+$border-color: #e5e7eb !default;
+$background-light: #f9fafb !default;
+$background-white: #ffffff !default;
 
-$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !default;
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !default;
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !default;
 
-$border-radius: 8px;
-$border-radius-sm: 6px;
-$border-radius-lg: 12px;
+$border-radius: 8px !default;
+$border-radius-sm: 6px !default;
+$border-radius-lg: 12px !default;
 
-$transition: all 0.3s ease;
+$transition: all 0.3s ease !default;
 
 // ==================== MIXINS COMPARTIDOS ====================
 @mixin page-header {
