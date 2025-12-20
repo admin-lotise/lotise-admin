@@ -1,6 +1,6 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, finalize } from 'rxjs';
 import { PaymentMethodsStateService } from '../../../core/signals/payment-methods-state.service';
 import { PaymentMethodsApiService } from '../../../core/http/payment-methods-api.service';
 import { PaymentMethodCardComponent } from './payment-method-card/payment-method-card.component';
@@ -80,50 +80,31 @@ export class PaymentMethodsComponent implements OnInit {
   }
 
   /**
-   * Cerrar formulario
-   */
-  closeForm(): void {
-    this.showForm.set(false);
-    this.editingMethod.set(null);
-  }
-
-  /**
    * Guardar método de pago (crear o actualizar)
    */
   async onSave(data: CreatePaymentMethodDto | UpdatePaymentMethodDto): Promise<void> {
-    try {
-      const tenantId = 'tenant-demo';
-      const editingId = this.editingMethod()?.id;
+    const tenantId = 'tenant-demo';
+    const editingId = this.editingMethod()?.id;
 
+    try {
       if (editingId) {
-        // Actualizar
-        const updateDto: UpdatePaymentMethodDto = {
-          paymentType: data.paymentType,
-          bank: data.bank,
-          bankAccountType: data.bankAccountType, // ✅ Incluir
-          accountNumber: data.accountNumber,
-          clabe: data.clabe,
-          cardNumber: data.cardNumber,
-          accountHolder: data.accountHolder,
-          isActive: data.isActive,
-          isPrimary: data.isPrimary
-        };
+        const updateDto: UpdatePaymentMethodDto = { ...data };
         
         const updated = await firstValueFrom(
           this.paymentMethodsApi.updatePaymentMethod(tenantId, editingId, updateDto)
+            .pipe(
+              finalize(() => {
+                console.log('Finalizado update');
+              })
+            )
         );
         
-        // ✅ IMPORTANTE: Actualizar con el objeto completo retornado por el API
         this.paymentMethodsState.updatePaymentMethod(editingId, updated);
       } else {
-        // Crear
+        // ✅ CORREGIDO: Spread primero, luego valores por defecto
         const createDto: CreatePaymentMethodDto = {
+          ...data,
           paymentType: data.paymentType!,
-          bank: data.bank,
-          bankAccountType: data.bankAccountType, // ✅ Incluir
-          accountNumber: data.accountNumber,
-          clabe: data.clabe,
-          cardNumber: data.cardNumber,
           accountHolder: data.accountHolder!,
           isActive: data.isActive ?? true,
           isPrimary: data.isPrimary ?? false
@@ -131,15 +112,30 @@ export class PaymentMethodsComponent implements OnInit {
         
         const created = await firstValueFrom(
           this.paymentMethodsApi.createPaymentMethod(tenantId, createDto)
+            .pipe(
+              finalize(() => {
+                console.log('Finalizado create');
+              })
+            )
         );
+        
         this.paymentMethodsState.addPaymentMethod(created);
       }
 
       this.closeForm();
     } catch (err: any) {
+      console.error('Error saving:', err);
       this.error.set(err?.message || 'Error al guardar método de pago');
-      throw err;
     }
+  }
+
+  /**
+   * Cerrar formulario
+   */
+  closeForm(): void {
+    this.showForm.set(false);
+    this.editingMethod.set(null);
+    // ✅ El effect del form-component reseteará isSaving automáticamente
   }
 
   /**
