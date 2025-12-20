@@ -1,4 +1,7 @@
-<div class="payment-card" [class.inactive]="!paymentMethod.isActive" [class.deleting]="isDeleting">
+<div class="payment-card" 
+     [class.inactive]="!method().isActive" 
+     [class.deleting]="isDeleting()">
+  
   <!-- Header -->
   <div class="card-header">
     <div class="bank-info">
@@ -6,7 +9,7 @@
         <i [class]="bankLogo()"></i>
       </div>
       <div class="bank-details">
-        <h3 class="bank-name">{{ paymentMethod.bank }}</h3>
+        <h3 class="bank-name">{{ getBankName(method().bank) }}</h3>
         <span class="payment-type" [style.color]="paymentTypeColor()">
           <i [class]="paymentTypeIcon()"></i>
           {{ paymentTypeText() }}
@@ -19,7 +22,7 @@
       <button 
         class="actions-trigger"
         (click)="toggleActions()"
-        [disabled]="isDeleting">
+        [disabled]="isDeleting()">
         <i class="fas fa-ellipsis-v"></i>
       </button>
 
@@ -30,7 +33,7 @@
             <span>Editar</span>
           </button>
 
-          @if (!isPrimary) {
+          @if (!method().isPrimary) {
             <button class="action-item" (click)="onSetPrimary()">
               <i class="fas fa-star"></i>
               <span>Marcar como Principal</span>
@@ -38,8 +41,10 @@
           }
 
           <button class="action-item" (click)="onToggleActive()">
-            <i class="fas" [class.fa-toggle-on]="paymentMethod.isActive" [class.fa-toggle-off]="!paymentMethod.isActive"></i>
-            <span>{{ paymentMethod.isActive ? 'Desactivar' : 'Activar' }}</span>
+            <i class="fas" 
+               [class.fa-toggle-on]="method().isActive" 
+               [class.fa-toggle-off]="!method().isActive"></i>
+            <span>{{ method().isActive ? 'Desactivar' : 'Activar' }}</span>
           </button>
 
           <div class="divider"></div>
@@ -56,24 +61,14 @@
   <!-- Account Info -->
   <div class="card-body">
     <div class="account-info">
-      <span class="label">
-        @if (paymentMethod.accountNumber) {
-          Cuenta
-        } @else if (paymentMethod.clabe) {
-          CLABE
-        } @else if (paymentMethod.cardNumber) {
-          Tarjeta
-        } @else {
-          Número
-        }
-      </span>
+      <span class="label">{{ accountLabel() }}</span>
       <span class="value">{{ maskedAccount() }}</span>
     </div>
 
-    @if (paymentMethod.accountHolder) {
+    @if (method().accountHolder) {
       <div class="account-info">
         <span class="label">Titular</span>
-        <span class="value">{{ paymentMethod.accountHolder }}</span>
+        <span class="value">{{ method().accountHolder }}</span>
       </div>
     }
   </div>
@@ -81,16 +76,20 @@
   <!-- Footer -->
   <div class="card-footer">
     <div class="badges">
-      @if (isPrimary) {
+      @if (method().isPrimary) {
         <span class="badge badge-primary">
           <i class="fas fa-star"></i>
           Principal
         </span>
       }
 
-      <span class="badge" [class.badge-success]="paymentMethod.isActive" [class.badge-gray]="!paymentMethod.isActive">
-        <i class="fas" [class.fa-check-circle]="paymentMethod.isActive" [class.fa-times-circle]="!paymentMethod.isActive"></i>
-        {{ paymentMethod.isActive ? 'Activo' : 'Inactivo' }}
+      <span class="badge" 
+            [class.badge-success]="method().isActive" 
+            [class.badge-gray]="!method().isActive">
+        <i class="fas" 
+           [class.fa-check-circle]="method().isActive" 
+           [class.fa-times-circle]="!method().isActive"></i>
+        {{ method().isActive ? 'Activo' : 'Inactivo' }}
       </span>
     </div>
 
@@ -98,16 +97,16 @@
       <button 
         class="quick-action-btn"
         (click)="onEdit()"
-        [disabled]="isDeleting"
+        [disabled]="isDeleting()"
         title="Editar">
         <i class="fas fa-edit"></i>
       </button>
 
-      @if (!isPrimary) {
+      @if (!method().isPrimary) {
         <button 
           class="quick-action-btn"
           (click)="onSetPrimary()"
-          [disabled]="isDeleting"
+          [disabled]="isDeleting()"
           title="Marcar como principal">
           <i class="fas fa-star"></i>
         </button>
@@ -116,9 +115,9 @@
       <button 
         class="quick-action-btn danger"
         (click)="onDelete()"
-        [disabled]="isDeleting"
+        [disabled]="isDeleting()"
         title="Eliminar">
-        @if (isDeleting) {
+        @if (isDeleting()) {
           <i class="fas fa-spinner fa-spin"></i>
         } @else {
           <i class="fas fa-trash"></i>
@@ -128,7 +127,7 @@
   </div>
 
   <!-- Deleting Overlay -->
-  @if (isDeleting) {
+  @if (isDeleting()) {
     <div class="deleting-overlay">
       <i class="fas fa-spinner fa-spin"></i>
       <span>Eliminando...</span>

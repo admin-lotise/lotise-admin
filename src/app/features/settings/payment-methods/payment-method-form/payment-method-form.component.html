@@ -44,40 +44,116 @@
         Selecciona el Banco
       </label>
 
+      <!-- ✅ NUEVO: BUSCADOR DE BANCOS -->
+      <div class="bank-search-container">
+        <div class="search-input-wrapper">
+          <i class="fas fa-search search-icon"></i>
+          <input 
+            type="text"
+            class="form-input search-input"
+            placeholder="Buscar banco... (Ej: BBVA, Santander, Nu)"
+            [value]="bankSearchTerm()"
+            (input)="onBankSearch($event)"
+          />
+          @if (bankSearchTerm()) {
+            <button 
+              type="button" 
+              class="clear-search-btn"
+              (click)="clearBankSearch()"
+              aria-label="Limpiar búsqueda">
+              <i class="fas fa-times"></i>
+            </button>
+          }
+        </div>
+        
+        <!-- Contador de resultados -->
+        @if (bankSearchTerm()) {
+          <div class="search-results-count">
+            <i class="fas fa-filter"></i>
+            {{ getFilteredBanksCount() }} banco(s) encontrado(s)
+          </div>
+        }
+      </div>
+
       <!-- Bancos agrupados por categoría -->
-      @for (category of getBanksByCategory(); track category.name) {
-        <div class="bank-category">
-          <div class="category-title">
-            <i [class]="getCategoryIcon(category.name)"></i>
-            {{ category.label }}
+      @if (getBanksByCategory().length > 0) {
+        @for (category of getBanksByCategory(); track category.name) {
+          <div class="bank-category">
+            <div class="category-title">
+              <i [class]="getCategoryIcon(category.name)"></i>
+              {{ category.label }} ({{ category.banks.length }})
+            </div>
+            
+            <div class="bank-grid">
+              @for (bank of category.banks; track bank.code) {
+                <label 
+                  class="bank-option"
+                  [class.selected]="form.get('bank')?.value === bank.code">
+                  
+                  <!-- Input oculto -->
+                  <input 
+                    type="radio" 
+                    formControlName="bank"
+                    [value]="bank.code"
+                  />
+                  
+                  <!-- Contenido visual (icono + nombre) -->
+                  <div class="bank-content">
+                    <i [class]="bank.logo"></i>
+                    <span>{{ bank.name }}</span>
+                  </div>
+                </label>
+              }
+            </div>
           </div>
-          
-          <div class="bank-grid">
-            @for (bank of category.banks; track bank.code) {
-              <label 
-                class="bank-option"
-                [class.selected]="form.get('bank')?.value === bank.code">
-                
-                <!-- Input oculto -->
-                <input 
-                  type="radio" 
-                  formControlName="bank"
-                  [value]="bank.code"
-                />
-                
-                <!-- Contenido visual (icono + nombre) -->
-                <div class="bank-content">
-                  <i [class]="bank.logo"></i>
-                  <span>{{ bank.name }}</span>
-                </div>
-              </label>
-            }
-          </div>
+        }
+      } @else {
+        <!-- Mensaje cuando no hay resultados -->
+        <div class="no-results">
+          <i class="fas fa-search"></i>
+          <p>No se encontraron bancos con "<strong>{{ bankSearchTerm() }}</strong>"</p>
+          <button 
+            type="button" 
+            class="btn-link"
+            (click)="clearBankSearch()">
+            Limpiar búsqueda
+          </button>
         </div>
       }
       
       @if (isFieldInvalid('bank')) {
         <span class="error-message">{{ getErrorMessage('bank') }}</span>
+      }
+    </div>
+  }
+
+  <!-- ✅ NUEVO: Bank Account Type Selector (solo para transferencias) -->
+  @if (showBankAccountTypeSelector()) {
+    <div class="form-group">
+      <label class="form-label required">
+        <i class="fas fa-list-ul"></i>
+        Tipo de Datos Bancarios
+      </label>
+      <div class="bank-account-type-grid">
+        @for (type of bankAccountTypes; track type) {
+          <label 
+            class="bank-account-type-option" 
+            [class.selected]="form.get('bankAccountType')?.value === type">
+            <input 
+              type="radio" 
+              formControlName="bankAccountType" 
+              [value]="type"
+              (change)="onBankAccountTypeChange()"
+              class="radio-input">
+            <div class="option-content">
+              <i [class]="getBankAccountTypeIcon(type)"></i>
+              <span>{{ getBankAccountTypeName(type) }}</span>
+            </div>
+          </label>
+        }
+      </div>
+      @if (isFieldInvalid('bankAccountType')) {
+        <span class="error-message">{{ getErrorMessage('bankAccountType') }}</span>
       }
     </div>
   }
@@ -215,7 +291,7 @@
         <span>Guardando...</span>
       } @else {
         <i class="fas fa-save"></i>
-        <span>{{ paymentMethod ? 'Actualizar' : 'Guardar' }} Método</span>
+        <span>{{ paymentMethod() ? 'Actualizar' : 'Guardar' }} Método</span>
       }
     </button>
   </div>

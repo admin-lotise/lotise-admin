@@ -39,11 +39,16 @@ export class PaymentMethodsStateService {
   }
 
   /**
-   * Actualizar método existente
+   * Actualizar método de pago
+   * ✅ CORREGIDO: Usar _paymentMethods en vez de paymentMethods
    */
-  updatePaymentMethod(id: string, updates: Partial<PaymentMethod>): void {
-    this._paymentMethods.update(methods =>
-      methods.map(m => m.id === id ? { ...m, ...updates, updatedAt: new Date() } : m)
+  updatePaymentMethod(id: string, updates: Partial<PaymentMethod> | PaymentMethod): void {
+    this._paymentMethods.update((methods: PaymentMethod[]) =>
+      methods.map((method: PaymentMethod) =>
+        method.id === id
+          ? { ...method, ...updates, updatedAt: new Date() }
+          : method
+      )
     );
   }
 
