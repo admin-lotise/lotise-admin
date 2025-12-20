@@ -41,23 +41,41 @@
     <div class="form-group">
       <label class="form-label required">
         <i class="fas fa-university"></i>
-        Banco
+        Selecciona el Banco
       </label>
-      <div class="bank-grid">
-        @for (bank of banks; track bank) {
-          <label class="bank-option" [class.selected]="form.get('bank')?.value === bank">
-            <input 
-              type="radio" 
-              formControlName="bank" 
-              [value]="bank"
-              class="radio-input">
-            <div class="bank-content">
-              <i [class]="getBankLogo(bank)"></i>
-              <span>{{ bank }}</span>
-            </div>
-          </label>
-        }
-      </div>
+
+      <!-- Bancos agrupados por categoría -->
+      @for (category of getBanksByCategory(); track category.name) {
+        <div class="bank-category">
+          <div class="category-title">
+            <i [class]="getCategoryIcon(category.name)"></i>
+            {{ category.label }}
+          </div>
+          
+          <div class="bank-grid">
+            @for (bank of category.banks; track bank.code) {
+              <label 
+                class="bank-option"
+                [class.selected]="form.get('bank')?.value === bank.code">
+                
+                <!-- Input oculto -->
+                <input 
+                  type="radio" 
+                  formControlName="bank"
+                  [value]="bank.code"
+                />
+                
+                <!-- Contenido visual (icono + nombre) -->
+                <div class="bank-content">
+                  <i [class]="bank.logo"></i>
+                  <span>{{ bank.name }}</span>
+                </div>
+              </label>
+            }
+          </div>
+        </div>
+      }
+      
       @if (isFieldInvalid('bank')) {
         <span class="error-message">{{ getErrorMessage('bank') }}</span>
       }

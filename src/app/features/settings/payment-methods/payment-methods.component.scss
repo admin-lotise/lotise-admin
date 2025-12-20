@@ -5,7 +5,7 @@
   display: block;
   width: 100%;
   overflow-x: hidden;
-
+  
   @media (max-width: 768px) {
     padding: 0;
     margin: 0;
@@ -17,7 +17,7 @@
   margin: 0 auto;
   animation: fadeIn 0.3s ease-in-out;
   scroll-behavior: smooth;
-
+  
   @media (max-width: 768px) {
     max-width: 100%;
     width: 100vw;
@@ -106,71 +106,12 @@
 
 // ==================== ALERTS ====================
 .alert {
-  padding: 1rem 1.25rem;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  animation: slideDown 0.3s ease;
-
-  &.alert-error {
-    background: #fee;
-    border: 1px solid #fcc;
-    color: #c33;
-
-    i {
-      color: #c33;
-    }
-  }
-
-  span {
-    flex: 1;
-    font-size: 0.95rem;
-  }
-
-  .close-btn {
-    background: none;
-    border: none;
-    color: inherit;
-    cursor: pointer;
-    padding: 0.25rem;
-    opacity: 0.7;
-    transition: opacity 0.2s;
-
-    &:hover {
-      opacity: 1;
-    }
-
-    &:focus-visible {
-      outline: 2px solid currentColor;
-      outline-offset: 2px;
-    }
-  }
+  @include alert-styles;
 }
 
 // ==================== LOADING ====================
 .loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem 2rem;
-  gap: 1rem;
-
-  .spinner {
-    width: 50px;
-    height: 50px;
-    border: 4px solid var(--color-bg-main);
-    border-top-color: var(--color-accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-
-  p {
-    color: var(--color-text-secondary);
-    font-size: 0.95rem;
-  }
+  @include loading-container;
 }
 
 // ==================== EMPTY STATE ====================
@@ -239,7 +180,7 @@
   border-radius: $border-radius-lg;
   box-shadow: $shadow-sm;
   border: 1px solid $border-color;
-  gap: 1.5rem; // ✅ CAMBIAR: Aumentar gap
+  gap: 1.5rem;
   flex-wrap: wrap;
 
   .stats {
@@ -248,7 +189,7 @@
     align-items: center;
     flex-wrap: wrap;
     flex: 1;
-    min-width: 300px; // ✅ CAMBIAR: Aumentar min-width
+    min-width: 300px;
 
     .stat-item {
       display: flex;
@@ -403,13 +344,18 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999;
   padding: 1rem;
-  animation: fadeIn 0.2s ease-out;
+  animation: fadeIn 0.2s ease;
+
+  @media (max-width: 768px) {
+    align-items: flex-start;
+    padding: 0;
+  }
 }
 
 .modal-content {
@@ -421,7 +367,13 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.3s ease-out;
+  animation: slideUp 0.3s ease;
+
+  @media (max-width: 768px) {
+    margin: 0;
+    max-height: calc(100vh - 80px);
+    border-radius: 0;
+  }
 }
 
 .modal-header {
@@ -429,40 +381,44 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 2rem;
-  border-bottom: 1px solid $border-color;
+  border-bottom: 2px solid var(--color-bg-main); // ✅ ACTUALIZADO (antes 1px solid $border-color)
 
   .modal-title {
-    font-size: 1.375rem;
+    font-size: 1.25rem; // ✅ ACTUALIZADO (antes 1.375rem - para que coincida con contact-numbers)
     font-weight: 700;
     color: var(--color-text-primary);
     margin: 0;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.5rem; // ✅ ACTUALIZADO (antes 0.75rem)
 
     i {
       color: $primary-color;
+      font-size: 1.25rem; // ✅ NUEVO (tamaño del icono)
     }
   }
 
-  .close-modal-btn {
-    background: none;
-    border: none;
-    color: var(--color-text-secondary);
-    cursor: pointer;
-    padding: 0.5rem;
-    border-radius: 50%;
-    transition: $transition;
+  .close-modal-btn,
+  .modal-close {
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.2s ease; // ✅ ACTUALIZADO (antes $transition)
 
     i {
       font-size: 1.25rem;
     }
 
     &:hover {
-      background-color: $background-light;
+      background-color: #f1f5f9; // ✅ ACTUALIZADO (antes $background-light - para hardcodear el color)
       color: var(--color-text-primary);
     }
   }
@@ -471,17 +427,39 @@
 .modal-body {
   padding: 2rem;
   overflow-y: auto;
+
+  @media (max-width: 768px) {
+    padding: 1.25rem;
+    flex: 1;
+    overflow-y: auto; // ✅ NUEVO (redundante pero explícito)
+  }
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  border-top: 2px solid var(--color-bg-main);
+  background: var(--color-bg-main);
+
+  @media (max-width: 768px) {
+    flex-direction: column-reverse;
+
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
 }
 
 // ==================== ANIMATIONS ====================
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -499,7 +477,7 @@
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px); // ✅ ACTUALIZADO (antes 30px - para que coincida con contact-numbers)
   }
   to {
     opacity: 1;
@@ -515,7 +493,9 @@
 
 // ==================== RESPONSIVE ====================
 @media (min-width: 769px) and (max-width: 1024px) {
-  .page-header .page-title { font-size: 1.35rem; }
+  .page-header .page-title {
+    font-size: 1.35rem;
+  }
   
   .payment-methods-grid {
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -538,7 +518,6 @@
   }
 }
 
-// ✅ CAMBIAR: Aumentar breakpoint de 920px a 1050px
 @media (max-width: 1050px) {
   .action-bar {
     justify-content: center;
@@ -577,7 +556,9 @@
       border-bottom-width: 1.5px;
     }
 
-    .reload-button { align-self: flex-start; }
+    .reload-button {
+      align-self: flex-start;
+    }
   }
 
   .alert {
@@ -585,7 +566,10 @@
     font-size: 0.85rem;
     margin-left: 0;
     margin-right: 0;
-    i { font-size: 1rem; }
+
+    i {
+      font-size: 1rem;
+    }
   }
 
   .action-bar {
@@ -614,15 +598,5 @@
   .info-box {
     padding: 1rem;
     border-radius: 0;
-  }
-
-  .modal-content {
-    max-width: 100%;
-    max-height: 100vh;
-    border-radius: 0;
-  }
-
-  .modal-body {
-    padding: 1.5rem;
   }
 }
