@@ -6,6 +6,7 @@ import { AuthGuard } from './core/auth/auth.guard';
 import { UpdatePasswordLayoutComponent } from './shared/components/layouts/update-password-layout/update-password-layout.component';
 import { BusinessProfileComponent } from './features/settings/business-profile/business-profile.component';
 import { RaffleSettingsComponent } from './features/settings/raffle-settings/raffle-settings.component';
+import { PaymentMethodsComponent } from './features/settings/payment-methods/payment-methods.component';
 
 export const routes: Routes = [
   // 🔓 Ruta pública: Login
@@ -33,6 +34,11 @@ export const routes: Routes = [
       {
         path: 'settings/raffle-settings',
         component: RaffleSettingsComponent
+      },
+      // ✅ SETTINGS: Payment Methods
+      {
+        path: 'settings/payment-methods',
+        component: PaymentMethodsComponent
       },
       {
         path: '',
