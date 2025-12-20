@@ -108,7 +108,11 @@ export class PaymentMethodCardComponent {
     }
     
     if (method.cardNumber) {
-      return `**** **** **** ${method.cardNumber}`;
+      // ✅ CORREGIDO: Tomar solo los últimos 4 dígitos
+      const lastFour = method.cardNumber.length > 4 
+        ? method.cardNumber.slice(-4) 
+        : method.cardNumber;
+      return `**** **** **** ${lastFour}`;
     }
 
     return 'N/A';
