@@ -1,3 +1,6 @@
+@use 'app/shared/styles/settings-shared' as *;
+@use 'sass:color';
+
 .general-info-container {
   animation: fadeIn 0.3s ease;
 }

@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, signal, computed, effect, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { PaymentMethod, PaymentType, Bank, CreatePaymentMethodDto, BANK_LOGOS } from '../../../../shared/models/payment-method.model';
+import { PaymentMethod, PaymentType, Bank, CreatePaymentMethodDto, BANK_LOGOS, BANKS_CATALOG } from '../../../../shared/models/payment-method.model';
 
 @Component({
   selector: 'app-payment-method-form',
@@ -262,6 +262,39 @@ export class PaymentMethodFormComponent implements OnInit {
 
     input.value = value;
     this.form.get('clabe')?.setValue(value, { emitEvent: false });
+  }
+
+  /**
+   * Obtener bancos por categoría
+   */
+  getBanksByCategory() {
+    const categories = {
+      principal: { name: 'principal', label: 'Bancos Principales', banks: [] as any[] },
+      digital: { name: 'digital', label: 'Bancos Digitales', banks: [] as any[] },
+      regional: { name: 'regional', label: 'Bancos Regionales', banks: [] as any[] },
+      gubernamental: { name: 'gubernamental', label: 'Bancos Gubernamentales', banks: [] as any[] },
+      otro: { name: 'otro', label: 'Otros Bancos', banks: [] as any[] }
+    };
+
+    BANKS_CATALOG.forEach(bank => {
+      categories[bank.category].banks.push(bank);
+    });
+
+    return Object.values(categories).filter(cat => cat.banks.length > 0);
+  }
+
+  /**
+   * Obtener ícono de categoría
+   */
+  getCategoryIcon(categoryName: string): string {
+    const icons: Record<string, string> = {
+      principal: 'fas fa-star',
+      digital: 'fas fa-mobile-alt',
+      regional: 'fas fa-map-marker-alt',
+      gubernamental: 'fas fa-landmark',
+      otro: 'fas fa-ellipsis-h'
+    };
+    return icons[categoryName] || 'fas fa-university';
   }
 
   /**
