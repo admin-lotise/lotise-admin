@@ -5,7 +5,7 @@ import { PaymentMethodsStateService } from '../../../core/signals/payment-method
 import { PaymentMethodsApiService } from '../../../core/http/payment-methods-api.service';
 import { PaymentMethodCardComponent } from './payment-method-card/payment-method-card.component';
 import { PaymentMethodFormComponent } from './payment-method-form/payment-method-form.component';
-import { PaymentMethod, CreatePaymentMethodDto } from '../../../shared/models/payment-method.model';
+import { PaymentMethod, CreatePaymentMethodDto, UpdatePaymentMethodDto } from '../../../shared/models/payment-method.model';
 
 @Component({
   selector: 'app-payment-methods',
@@ -89,22 +89,45 @@ export class PaymentMethodsComponent implements OnInit {
 
   /**
    * Guardar método de pago (crear o actualizar)
+   * ✅ CORREGIDO: Acepta ambos tipos de DTO
    */
-  async onSave(data: CreatePaymentMethodDto): Promise<void> {
+  async onSave(data: CreatePaymentMethodDto | UpdatePaymentMethodDto): Promise<void> {
     try {
       const tenantId = 'tenant-demo'; // TODO: Obtener desde AuthStateService
       const editingId = this.editingMethod()?.id;
 
       if (editingId) {
-        // Actualizar
+        // Actualizar - convertir a UpdatePaymentMethodDto si es necesario
+        const updateDto: UpdatePaymentMethodDto = {
+          paymentType: data.paymentType,
+          bank: data.bank,
+          accountNumber: data.accountNumber,
+          clabe: data.clabe,
+          cardNumber: data.cardNumber,
+          accountHolder: data.accountHolder,
+          isActive: data.isActive,
+          isPrimary: data.isPrimary
+        };
+        
         const updated = await firstValueFrom(
-          this.paymentMethodsApi.updatePaymentMethod(tenantId, editingId, data)
+          this.paymentMethodsApi.updatePaymentMethod(tenantId, editingId, updateDto)
         );
         this.paymentMethodsState.updatePaymentMethod(editingId, updated);
       } else {
-        // Crear
+        // Crear - asegurar que es CreatePaymentMethodDto
+        const createDto: CreatePaymentMethodDto = {
+          paymentType: data.paymentType!,
+          bank: data.bank,
+          accountNumber: data.accountNumber,
+          clabe: data.clabe,
+          cardNumber: data.cardNumber,
+          accountHolder: data.accountHolder!,
+          isActive: data.isActive ?? true,
+          isPrimary: data.isPrimary ?? false
+        };
+        
         const created = await firstValueFrom(
-          this.paymentMethodsApi.createPaymentMethod(tenantId, data)
+          this.paymentMethodsApi.createPaymentMethod(tenantId, createDto)
         );
         this.paymentMethodsState.addPaymentMethod(created);
       }
