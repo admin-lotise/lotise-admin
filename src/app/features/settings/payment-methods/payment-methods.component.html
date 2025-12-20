@@ -1,0 +1,145 @@
+<div class="payment-methods-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        Métodos de Pago
+      </h1>
+      <p class="page-subtitle">
+        Administra las cuentas bancarias y métodos de pago para recibir pagos de tus rifas
+      </p>
+    </div>
+    
+    @if (isLoading()) {
+      <div class="reload-button loading">
+        <i class="fas fa-spinner fa-spin"></i>
+      </div>
+    } @else {
+      <button class="reload-button" (click)="reloadData()" title="Recargar datos">
+        <i class="fas fa-sync-alt"></i>
+      </button>
+    }
+  </div>
+
+  <!-- Error Alert -->
+  @if (error()) {
+    <div class="alert alert-error">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>{{ error() }}</span>
+      <button class="close-btn" (click)="error.set(null)">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (isLoading() && hasNoMethods()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando métodos de pago...</p>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @else if (hasNoMethods() && !isLoading()) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <i class="fas fa-credit-card"></i>
+      </div>
+      <h2 class="empty-title">No hay métodos de pago configurados</h2>
+      <p class="empty-description">
+        Agrega al menos un método de pago para empezar a recibir pagos de tus rifas.
+        Puedes agregar cuentas bancarias, CLABE interbancaria o tarjetas.
+      </p>
+      <button class="btn btn-primary" (click)="openCreateForm()">
+        <i class="fas fa-plus"></i>
+        <span>Agregar Primer Método</span>
+      </button>
+    </div>
+  }
+
+  <!-- Payment Methods Grid -->
+  @else {
+    <div class="content-section">
+      <!-- Action Bar -->
+      <div class="action-bar">
+        <div class="stats">
+          <span class="stat-item">
+            <i class="fas fa-credit-card"></i>
+            <strong>{{ paymentMethods().length }}</strong>
+            {{ paymentMethods().length === 1 ? 'método' : 'métodos' }}
+          </span>
+          <span class="stat-item">
+            <i class="fas fa-check-circle"></i>
+            <strong>{{ activeMethods().length }}</strong>
+            {{ activeMethods().length === 1 ? 'activo' : 'activos' }}
+          </span>
+          @if (primaryMethod()) {
+            <span class="stat-item primary">
+              <i class="fas fa-star"></i>
+              <strong>{{ primaryMethod()!.bank }}</strong>
+              principal
+            </span>
+          }
+        </div>
+        <button class="btn btn-primary" (click)="openCreateForm()">
+          <i class="fas fa-plus"></i>
+          <span>Agregar Método</span>
+        </button>
+      </div>
+
+      <!-- Grid -->
+      <div class="payment-methods-grid">
+        @for (method of paymentMethods(); track method.id) {
+          <app-payment-method-card
+            [paymentMethod]="method"
+            [isPrimary]="primaryMethod()?.id === method.id"
+            [isDeleting]="isDeleting() === method.id"
+            (edit)="onEdit(method)"
+            (delete)="onDelete(method)"
+            (setPrimary)="onSetPrimary(method)"
+            (toggleActive)="onToggleActive(method)"
+          />
+        }
+      </div>
+
+      <!-- Info Box -->
+      <div class="info-box">
+        <i class="fas fa-info-circle"></i>
+        <div class="info-content">
+          <strong>Información importante:</strong>
+          <ul>
+            <li>El método marcado como <strong>"Principal"</strong> será el predeterminado para nuevos pagos</li>
+            <li>Solo los métodos <strong>"Activos"</strong> estarán disponibles para tus clientes</li>
+            <li>Puedes tener múltiples métodos de pago configurados</li>
+            <li>Los datos bancarios se muestran parcialmente por seguridad (últimos 4 dígitos)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Modal Form -->
+  @if (showForm()) {
+    <div class="modal-overlay" (click)="closeForm()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2 class="modal-title">
+            <i class="fas" [class.fa-plus]="!editingMethod()" [class.fa-edit]="editingMethod()"></i>
+            {{ editingMethod() ? 'Editar Método de Pago' : 'Agregar Método de Pago' }}
+          </h2>
+          <button class="close-modal-btn" (click)="closeForm()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <app-payment-method-form
+            [paymentMethod]="editingMethod()"
+            (save)="onSave($event)"
+            (cancel)="closeForm()"
+          />
+        </div>
+      </div>
+    </div>
+  }
+</div>

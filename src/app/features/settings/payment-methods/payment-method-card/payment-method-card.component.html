@@ -1,0 +1,137 @@
+<div class="payment-card" [class.inactive]="!paymentMethod.isActive" [class.deleting]="isDeleting">
+  <!-- Header -->
+  <div class="card-header">
+    <div class="bank-info">
+      <div class="bank-logo" [style.background-color]="paymentTypeColor()">
+        <i [class]="bankLogo()"></i>
+      </div>
+      <div class="bank-details">
+        <h3 class="bank-name">{{ paymentMethod.bank }}</h3>
+        <span class="payment-type" [style.color]="paymentTypeColor()">
+          <i [class]="paymentTypeIcon()"></i>
+          {{ paymentTypeText() }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Actions Menu -->
+    <div class="actions-menu">
+      <button 
+        class="actions-trigger"
+        (click)="toggleActions()"
+        [disabled]="isDeleting">
+        <i class="fas fa-ellipsis-v"></i>
+      </button>
+
+      @if (showActions()) {
+        <div class="actions-dropdown" (clickOutside)="closeActions()">
+          <button class="action-item" (click)="onEdit()">
+            <i class="fas fa-edit"></i>
+            <span>Editar</span>
+          </button>
+
+          @if (!isPrimary) {
+            <button class="action-item" (click)="onSetPrimary()">
+              <i class="fas fa-star"></i>
+              <span>Marcar como Principal</span>
+            </button>
+          }
+
+          <button class="action-item" (click)="onToggleActive()">
+            <i class="fas" [class.fa-toggle-on]="paymentMethod.isActive" [class.fa-toggle-off]="!paymentMethod.isActive"></i>
+            <span>{{ paymentMethod.isActive ? 'Desactivar' : 'Activar' }}</span>
+          </button>
+
+          <div class="divider"></div>
+
+          <button class="action-item danger" (click)="onDelete()">
+            <i class="fas fa-trash"></i>
+            <span>Eliminar</span>
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Account Info -->
+  <div class="card-body">
+    <div class="account-info">
+      <span class="label">
+        @if (paymentMethod.accountNumber) {
+          Cuenta
+        } @else if (paymentMethod.clabe) {
+          CLABE
+        } @else if (paymentMethod.cardNumber) {
+          Tarjeta
+        } @else {
+          Número
+        }
+      </span>
+      <span class="value">{{ maskedAccount() }}</span>
+    </div>
+
+    @if (paymentMethod.accountHolder) {
+      <div class="account-info">
+        <span class="label">Titular</span>
+        <span class="value">{{ paymentMethod.accountHolder }}</span>
+      </div>
+    }
+  </div>
+
+  <!-- Footer -->
+  <div class="card-footer">
+    <div class="badges">
+      @if (isPrimary) {
+        <span class="badge badge-primary">
+          <i class="fas fa-star"></i>
+          Principal
+        </span>
+      }
+
+      <span class="badge" [class.badge-success]="paymentMethod.isActive" [class.badge-gray]="!paymentMethod.isActive">
+        <i class="fas" [class.fa-check-circle]="paymentMethod.isActive" [class.fa-times-circle]="!paymentMethod.isActive"></i>
+        {{ paymentMethod.isActive ? 'Activo' : 'Inactivo' }}
+      </span>
+    </div>
+
+    <div class="quick-actions">
+      <button 
+        class="quick-action-btn"
+        (click)="onEdit()"
+        [disabled]="isDeleting"
+        title="Editar">
+        <i class="fas fa-edit"></i>
+      </button>
+
+      @if (!isPrimary) {
+        <button 
+          class="quick-action-btn"
+          (click)="onSetPrimary()"
+          [disabled]="isDeleting"
+          title="Marcar como principal">
+          <i class="fas fa-star"></i>
+        </button>
+      }
+
+      <button 
+        class="quick-action-btn danger"
+        (click)="onDelete()"
+        [disabled]="isDeleting"
+        title="Eliminar">
+        @if (isDeleting) {
+          <i class="fas fa-spinner fa-spin"></i>
+        } @else {
+          <i class="fas fa-trash"></i>
+        }
+      </button>
+    </div>
+  </div>
+
+  <!-- Deleting Overlay -->
+  @if (isDeleting) {
+    <div class="deleting-overlay">
+      <i class="fas fa-spinner fa-spin"></i>
+      <span>Eliminando...</span>
+    </div>
+  }
+</div>

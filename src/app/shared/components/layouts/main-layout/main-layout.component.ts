@@ -58,11 +58,16 @@ export class MainLayoutComponent {
       label: 'Mi Negocio', 
       route: '/settings/business-profile' 
     },
-    // ✅ NUEVO: Raffle Settings
     { 
       icon: 'tune', 
       label: 'Config. Rifas', 
       route: '/settings/raffle-settings' 
+    },
+    // ✅ NUEVO: Payment Methods
+    { 
+      icon: 'account_balance', 
+      label: 'Métodos de Pago', 
+      route: '/settings/payment-methods' 
     },
     { 
       icon: 'settings', 
@@ -122,12 +127,18 @@ export class MainLayoutComponent {
       description: 'Información de tu empresa',
       route: '/settings/business-profile' 
     },
-    // ✅ NUEVO: Raffle Settings en Mobile
     { 
       icon: 'tune', 
       label: 'Configuración de Rifas', 
       description: 'Personaliza tus rifas',
       route: '/settings/raffle-settings' 
+    },
+    // ✅ NUEVO: Payment Methods en Mobile
+    { 
+      icon: 'account_balance', 
+      label: 'Métodos de Pago', 
+      description: 'Cuentas bancarias y tarjetas',
+      route: '/settings/payment-methods' 
     },
     { 
       icon: 'settings', 
