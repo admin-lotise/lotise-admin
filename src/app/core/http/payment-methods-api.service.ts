@@ -96,13 +96,21 @@ export class PaymentMethodsApiService {
       const newMethod: PaymentMethod = {
         id: `${Date.now()}`,
         tenantId,
-        ...dto,
+        paymentType: dto.paymentType,
+        bank: dto.bank,
+        bankAccountType: dto.bankAccountType, // ✅ NUEVO
+        accountNumber: dto.accountNumber,
+        clabe: dto.clabe,
+        cardNumber: dto.cardNumber,
+        accountHolder: dto.accountHolder,
+        isActive: dto.isActive ?? true, // ✅ CORREGIDO - valor por defecto
+        isPrimary: dto.isPrimary ?? false, // ✅ CORREGIDO - valor por defecto
         createdAt: new Date(),
         updatedAt: new Date()
       };
 
       // Si es principal, quitar el flag de otros métodos
-      if (dto.isPrimary) {
+      if (newMethod.isPrimary) {
         this.mockMethods = this.mockMethods.map(m => ({ ...m, isPrimary: false }));
       }
 
