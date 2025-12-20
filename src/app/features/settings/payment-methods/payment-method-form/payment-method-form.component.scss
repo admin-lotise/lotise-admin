@@ -1,5 +1,4 @@
 @use 'app/shared/styles/settings-shared' as *;
-@use 'sass:color';
 
 .payment-form {
   display: flex;
@@ -7,7 +6,6 @@
   gap: 1.5rem;
 }
 
-// ==================== ALERT ====================
 .alert {
   display: flex;
   align-items: center;
@@ -41,9 +39,6 @@
     color: inherit;
     opacity: 0.7;
     transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     border-radius: 4px;
 
     &:hover {
@@ -57,7 +52,6 @@
   }
 }
 
-// ==================== FORM GROUP ====================
 .form-group {
   display: flex;
   flex-direction: column;
@@ -143,12 +137,11 @@
   margin-top: -0.25rem;
 }
 
-// ==================== PAYMENT TYPE GRID ====================
 .payment-type-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 0.75rem;
-  grid-auto-rows: 1fr; // ✅ NUEVO - Todas las filas con misma altura
+  grid-auto-rows: 1fr;
 
   @media (max-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
@@ -156,11 +149,12 @@
   }
 }
 
-.payment-type-option {
+.payment-type-option,
+.bank-account-type-option {
   position: relative;
   cursor: pointer;
-  display: flex; // ✅ NUEVO - Para que el contenido ocupe todo el espacio
-  height: 100%; // ✅ NUEVO - Ocupar toda la altura de la celda del grid
+  display: flex;
+  height: 100%;
 
   .radio-input {
     position: absolute;
@@ -172,26 +166,26 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; // ✅ Centrado vertical
+    justify-content: center;
     gap: 0.5rem;
     padding: 1rem;
     border: 2px solid #e5e7eb;
     border-radius: 8px;
     background-color: var(--color-bg-white);
     transition: all 0.2s ease;
-    width: 100%; // ✅ NUEVO - Ocupar todo el ancho
-    min-height: 100px; // ✅ NUEVO - Altura mínima consistente
+    width: 100%;
+    min-height: 100px;
 
     @media (max-width: 768px) {
       padding: 0.75rem 0.5rem;
-      min-height: 85px; // ✅ NUEVO - Altura mínima en mobile
+      min-height: 85px;
     }
 
     i {
       font-size: 1.5rem;
       color: #6b7280;
       transition: all 0.2s ease;
-      flex-shrink: 0; // ✅ NUEVO - El icono no se encoge
+      flex-shrink: 0;
 
       @media (max-width: 768px) {
         font-size: 1.25rem;
@@ -205,10 +199,8 @@
       text-align: center;
       line-height: 1.3;
       transition: all 0.2s ease;
-      display: -webkit-box; // ✅ NUEVO - Para limitar líneas si es necesario
-      -webkit-box-orient: vertical;
-      overflow-wrap: break-word; // ✅ NUEVO - Partir palabras largas
-      hyphens: auto; // ✅ NUEVO - Guiones automáticos
+      overflow-wrap: break-word;
+      hyphens: auto;
 
       @media (max-width: 768px) {
         font-size: 0.75rem;
@@ -227,18 +219,41 @@
     background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
     box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
 
-    i {
+    i, span {
       color: #3b82f6;
     }
 
     span {
-      color: #3b82f6;
       font-weight: 600;
     }
   }
 }
 
-// ==================== BANK GRID ====================
+.bank-account-type-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .option-content {
+    @media (max-width: 768px) {
+      flex-direction: row;
+      justify-content: flex-start;
+      padding: 0.875rem 1rem;
+      min-height: auto;
+
+      span {
+        text-align: left;
+        font-size: 0.875rem;
+      }
+    }
+  }
+}
+
 .bank-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -256,10 +271,10 @@
 }
 
 .bank-option {
-  display: flex; // ✅ CAMBIADO de block a flex
-  flex-direction: column; // ✅ NUEVO
-  align-items: center; // ✅ NUEVO - centrado horizontal
-  justify-content: center; // ✅ NUEVO - centrado vertical
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: 0.875rem 0.5rem;
   border: 2px solid $border-color;
   border-radius: $border-radius;
@@ -276,9 +291,7 @@
     border-width: 1.5px;
   }
 
-  // ✅ INPUT COMPLETAMENTE OCULTO
-  input[type="radio"],
-  input[type="checkbox"] {
+  input {
     position: absolute;
     opacity: 0;
     width: 0;
@@ -286,15 +299,14 @@
     pointer-events: none;
   }
 
-  // ✅ CONTENEDOR DEL CONTENIDO VISUAL
   .bank-content {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 0.375rem;
-    width: 100%; // ✅ NUEVO - tomar todo el ancho
-    height: 100%; // ✅ NUEVO - tomar toda la altura
+    width: 100%;
+    height: 100%;
     pointer-events: none;
 
     @media (max-width: 768px) {
@@ -320,6 +332,14 @@
     @media (max-width: 768px) {
       box-shadow: 0 0 0 2px rgba($primary-color, 0.1);
     }
+
+    i, span {
+      color: $primary-color;
+    }
+
+    span {
+      font-weight: 600;
+    }
   }
 
   i {
@@ -331,10 +351,6 @@
     }
   }
 
-  &.selected i {
-    color: $primary-color;
-  }
-
   span {
     font-size: 0.8125rem;
     font-weight: 500;
@@ -343,21 +359,15 @@
     line-height: 1.2;
     word-break: break-word;
     hyphens: auto;
-    max-width: 100%; // ✅ NUEVO
+    max-width: 100%;
 
     @media (max-width: 768px) {
       font-size: 0.625rem;
       line-height: 1.1;
     }
   }
-
-  &.selected span {
-    color: $primary-color;
-    font-weight: 600;
-  }
 }
 
-// ==================== CATEGORÍAS DE BANCOS ====================
 .bank-category {
   margin-bottom: 1.25rem;
 
@@ -400,7 +410,6 @@
   }
 }
 
-// ==================== TOGGLES SECTION ====================
 .toggles-section {
   display: flex;
   flex-direction: column;
@@ -510,7 +519,6 @@
   }
 }
 
-// ==================== FORM ACTIONS ====================
 .form-actions {
   display: flex;
   gap: 1rem;
@@ -600,7 +608,6 @@
   }
 }
 
-// ==================== BANK SEARCH ====================
 .bank-search-container {
   display: flex;
   flex-direction: column;
@@ -641,9 +648,6 @@
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
     transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 
     &:hover {
       color: $primary-color;
@@ -720,7 +724,6 @@
   }
 }
 
-// ==================== ANIMATIONS ====================
 @keyframes slideDown {
   from {
     opacity: 0;
@@ -729,97 +732,5 @@
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-// ==================== BANK ACCOUNT TYPE GRID ====================
-.bank-account-type-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-  }
-}
-
-.bank-account-type-option {
-  position: relative;
-  cursor: pointer;
-  display: flex;
-  height: 100%;
-
-  .radio-input {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  .option-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 1rem;
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
-    background-color: var(--color-bg-white);
-    transition: all 0.2s ease;
-    width: 100%;
-    min-height: 90px;
-
-    @media (max-width: 768px) {
-      flex-direction: row;
-      justify-content: flex-start;
-      padding: 0.875rem 1rem;
-      min-height: auto;
-    }
-
-    i {
-      font-size: 1.5rem;
-      color: #6b7280;
-      transition: all 0.2s ease;
-      flex-shrink: 0;
-
-      @media (max-width: 768px) {
-        font-size: 1.25rem;
-      }
-    }
-
-    span {
-      font-size: 0.8125rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      text-align: center;
-      line-height: 1.3;
-      transition: all 0.2s ease;
-
-      @media (max-width: 768px) {
-        text-align: left;
-        font-size: 0.875rem;
-      }
-    }
-  }
-
-  &:hover .option-content {
-    border-color: #3b82f6;
-    background-color: rgba(59, 130, 246, 0.02);
-  }
-
-  &.selected .option-content {
-    border-color: #3b82f6;
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
-
-    i {
-      color: #3b82f6;
-    }
-
-    span {
-      color: #3b82f6;
-      font-weight: 600;
-    }
   }
 }

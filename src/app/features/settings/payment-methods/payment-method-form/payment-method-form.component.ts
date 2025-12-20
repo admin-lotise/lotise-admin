@@ -1,4 +1,4 @@
-import { Component, inject, input, output, effect, signal } from '@angular/core';
+import { Component, inject, input, output, effect, signal, computed } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { 
@@ -32,32 +32,69 @@ export class PaymentMethodFormComponent {
   error = signal<string | null>(null);
   isSaving = signal(false);
   bankSearchTerm = signal('');
+  isEditing = signal(false);
 
   // Data
   paymentTypes = Object.values(PaymentType);
-  bankAccountTypes = Object.values(BankAccountType); // ✅ NUEVO
+  bankAccountTypes = Object.values(BankAccountType);
+
+  // ✅ NUEVO: Computed para habilitar botón
+  canSubmit = computed(() => {
+    if (!this.form) return false;
+    
+    const isValid = this.form.valid;
+    const notSaving = !this.isSaving();
+    
+    // Si estamos editando, permitir guardar si es válido
+    // (no requerir dirty porque puede haber cambios desde fuera del form)
+    if (this.isEditing()) {
+      return isValid && notSaving;
+    }
+    
+    // Si estamos creando, solo validar
+    return isValid && notSaving;
+  });
 
   constructor() {
     this.initForm();
     
+    // Effect para cargar datos al editar
     effect(() => {
       const method = this.paymentMethod();
       if (method) {
+        this.isEditing.set(true);
+        this.isSaving.set(false); // ✅ RESETEAR al cargar nuevo método
         this.patchForm(method);
+      } else {
+        this.isEditing.set(false);
+        this.isSaving.set(false); // ✅ RESETEAR al crear nuevo
+        this.form.reset({
+          paymentType: null,
+          bank: null,
+          bankAccountType: null,
+          accountNumber: '',
+          clabe: '',
+          cardNumber: '',
+          accountHolder: '',
+          isActive: true,
+          isPrimary: false
+        });
       }
     });
 
-    effect(() => {
-      const paymentType = this.form?.get('paymentType')?.value;
-      this.updateValidators(paymentType);
-    }, { allowSignalWrites: true });
+    // Usar valueChanges en vez de effect
+    this.form.get('paymentType')?.valueChanges.subscribe(paymentType => {
+      if (paymentType) {
+        this.updateValidators(paymentType);
+      }
+    });
   }
 
   private initForm(): void {
     this.form = this.fb.group({
       paymentType: [null, Validators.required],
       bank: [null],
-      bankAccountType: [null], // ✅ NUEVO
+      bankAccountType: [null],
       accountNumber: [''],
       clabe: [''],
       cardNumber: [''],
@@ -68,11 +105,10 @@ export class PaymentMethodFormComponent {
   }
 
   private patchForm(method: PaymentMethod): void {
-    // ✅ INFERIR bankAccountType si no existe en el método (retrocompatibilidad)
+    // Inferir bankAccountType si no existe
     let inferredBankAccountType = method.bankAccountType;
     
     if (!inferredBankAccountType && method.paymentType === PaymentType.BANK_TRANSFER) {
-      // Inferir según qué campo tiene datos
       if (method.accountNumber) {
         inferredBankAccountType = BankAccountType.ACCOUNT_NUMBER;
       } else if (method.clabe) {
@@ -82,10 +118,11 @@ export class PaymentMethodFormComponent {
       }
     }
 
+    // ✅ Usar patchValue sin { emitEvent: false } para que detecte cambios
     this.form.patchValue({
       paymentType: method.paymentType,
       bank: method.bank,
-      bankAccountType: inferredBankAccountType, // ✅ CORREGIDO
+      bankAccountType: inferredBankAccountType,
       accountNumber: method.accountNumber || '',
       clabe: method.clabe || '',
       cardNumber: method.cardNumber || '',
@@ -94,22 +131,22 @@ export class PaymentMethodFormComponent {
       isPrimary: method.isPrimary
     });
 
-    // ✅ IMPORTANTE: Disparar validaciones después de cargar
+    // Disparar validaciones
     if (inferredBankAccountType) {
-      this.onBankAccountTypeChange();
+      setTimeout(() => this.onBankAccountTypeChange(), 0);
     }
   }
 
   private updateValidators(paymentType: PaymentType): void {
     const bankControl = this.form.get('bank');
-    const bankAccountTypeControl = this.form.get('bankAccountType'); // ✅ NUEVO
+    const bankAccountTypeControl = this.form.get('bankAccountType');
     const accountNumberControl = this.form.get('accountNumber');
     const clabeControl = this.form.get('clabe');
     const cardNumberControl = this.form.get('cardNumber');
 
     // Reset validators
     bankControl?.clearValidators();
-    bankAccountTypeControl?.clearValidators(); // ✅ NUEVO
+    bankAccountTypeControl?.clearValidators();
     accountNumberControl?.clearValidators();
     clabeControl?.clearValidators();
     cardNumberControl?.clearValidators();
@@ -118,8 +155,7 @@ export class PaymentMethodFormComponent {
     switch (paymentType) {
       case PaymentType.BANK_TRANSFER:
         bankControl?.setValidators([Validators.required]);
-        bankAccountTypeControl?.setValidators([Validators.required]); // ✅ NUEVO
-        // Las validaciones de cuenta/clabe/tarjeta se manejan dinámicamente
+        bankAccountTypeControl?.setValidators([Validators.required]);
         break;
 
       case PaymentType.CLABE:
@@ -146,18 +182,70 @@ export class PaymentMethodFormComponent {
 
     // Update validity
     bankControl?.updateValueAndValidity();
-    bankAccountTypeControl?.updateValueAndValidity(); // ✅ NUEVO
+    bankAccountTypeControl?.updateValueAndValidity();
     accountNumberControl?.updateValueAndValidity();
     clabeControl?.updateValueAndValidity();
     cardNumberControl?.updateValueAndValidity();
   }
 
-  // ✅ NUEVO - Mostrar selector de tipo de cuenta
+  getBanksByCategory() {
+    const searchTerm = this.bankSearchTerm().toLowerCase().trim();
+    
+    const categories: Record<string, { name: string; label: string; banks: BankInfo[] }> = {
+      principal: { name: 'principal', label: 'Bancos Principales', banks: [] },
+      digital: { name: 'digital', label: 'Bancos Digitales', banks: [] },
+      regional: { name: 'regional', label: 'Bancos Regionales', banks: [] },
+      gubernamental: { name: 'gubernamental', label: 'Bancos Gubernamentales', banks: [] },
+      otro: { name: 'otro', label: 'Otros Bancos', banks: [] }
+    };
+
+    BANKS_CATALOG.forEach((bank: BankInfo) => {
+      if (!searchTerm || bank.name.toLowerCase().includes(searchTerm)) {
+        categories[bank.category].banks.push(bank);
+      }
+    });
+
+    return Object.values(categories).filter(cat => cat.banks.length > 0);
+  }
+
+  getFilteredBanksCount(): number {
+    return this.getBanksByCategory().reduce((acc, cat) => acc + cat.banks.length, 0);
+  }
+
+  onBankSearch(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.bankSearchTerm.set(input.value);
+  }
+
+  clearBankSearch(): void {
+    this.bankSearchTerm.set('');
+  }
+
+  getCategoryIcon(categoryName: string): string {
+    const icons: Record<string, string> = {
+      principal: 'fas fa-star',
+      digital: 'fas fa-mobile-alt',
+      regional: 'fas fa-map-marker-alt',
+      gubernamental: 'fas fa-landmark',
+      otro: 'fas fa-ellipsis-h'
+    };
+    return icons[categoryName] || 'fas fa-university';
+  }
+
+  showBankSelect(): boolean {
+    const type = this.form.get('paymentType')?.value;
+    return [
+      PaymentType.BANK_TRANSFER,
+      PaymentType.CLABE,
+      PaymentType.DEBIT_CARD,
+      PaymentType.CREDIT_CARD
+    ].includes(type);
+  }
+
   showBankAccountTypeSelector(): boolean {
     return this.form.get('paymentType')?.value === PaymentType.BANK_TRANSFER;
   }
 
-  // ✅ MODIFICADO - Actualizar validaciones cuando cambia el tipo de cuenta
   onBankAccountTypeChange(): void {
     const bankAccountType = this.form.get('bankAccountType')?.value;
     const accountNumberControl = this.form.get('accountNumber');
@@ -170,9 +258,9 @@ export class PaymentMethodFormComponent {
     cardNumberControl?.clearValidators();
 
     // Limpiar valores de los otros campos
-    accountNumberControl?.setValue('');
-    clabeControl?.setValue('');
-    cardNumberControl?.setValue('');
+    accountNumberControl?.setValue('', { emitEvent: false });
+    clabeControl?.setValue('', { emitEvent: false });
+    cardNumberControl?.setValue('', { emitEvent: false });
 
     // Aplicar validadores según el tipo seleccionado
     switch (bankAccountType) {
@@ -209,7 +297,6 @@ export class PaymentMethodFormComponent {
     cardNumberControl?.updateValueAndValidity();
   }
 
-  // ✅ MODIFICADO - Mostrar campos según tipo de cuenta
   showAccountNumber(): boolean {
     const paymentType = this.form.get('paymentType')?.value;
     const bankAccountType = this.form.get('bankAccountType')?.value;
@@ -234,27 +321,6 @@ export class PaymentMethodFormComponent {
            (paymentType === PaymentType.BANK_TRANSFER && bankAccountType === BankAccountType.CARD);
   }
 
-  // ✅ NUEVO - Obtener nombre del tipo de cuenta
-  getBankAccountTypeName(type: BankAccountType): string {
-    const names: Record<BankAccountType, string> = {
-      [BankAccountType.ACCOUNT_NUMBER]: 'Número de Cuenta',
-      [BankAccountType.CLABE]: 'CLABE Interbancaria',
-      [BankAccountType.CARD]: 'Tarjeta'
-    };
-    return names[type] || type;
-  }
-
-  // ✅ NUEVO - Obtener icono del tipo de cuenta
-  getBankAccountTypeIcon(type: BankAccountType): string {
-    const icons: Record<BankAccountType, string> = {
-      [BankAccountType.ACCOUNT_NUMBER]: 'fas fa-hashtag',
-      [BankAccountType.CLABE]: 'fas fa-barcode',
-      [BankAccountType.CARD]: 'fas fa-credit-card'
-    };
-    return icons[type] || 'fas fa-money-check-alt';
-  }
-
-  // ✅ NUEVO - Obtener icono del tipo de pago
   getPaymentTypeIcon(type: PaymentType): string {
     const icons: Record<PaymentType, string> = {
       [PaymentType.BANK_TRANSFER]: 'fas fa-exchange-alt',
@@ -268,7 +334,6 @@ export class PaymentMethodFormComponent {
     return icons[type] || 'fas fa-money-check-alt';
   }
 
-  // ✅ NUEVO - Obtener nombre del tipo de pago
   getPaymentTypeName(type: PaymentType): string {
     const names: Record<PaymentType, string> = {
       [PaymentType.BANK_TRANSFER]: 'Transferencia Bancaria',
@@ -282,59 +347,22 @@ export class PaymentMethodFormComponent {
     return names[type] || type;
   }
 
-  getBanksByCategory() {
-    const searchTerm = this.bankSearchTerm().toLowerCase().trim();
-    
-    const categories: Record<string, { name: string; label: string; banks: BankInfo[] }> = {
-      principal: { name: 'principal', label: 'Bancos Principales', banks: [] },
-      digital: { name: 'digital', label: 'Bancos Digitales', banks: [] },
-      regional: { name: 'regional', label: 'Bancos Regionales', banks: [] },
-      gubernamental: { name: 'gubernamental', label: 'Bancos Gubernamentales', banks: [] },
-      otro: { name: 'otro', label: 'Otros Bancos', banks: [] }
+  getBankAccountTypeName(type: BankAccountType): string {
+    const names: Record<BankAccountType, string> = {
+      [BankAccountType.ACCOUNT_NUMBER]: 'Número de Cuenta',
+      [BankAccountType.CLABE]: 'CLABE Interbancaria',
+      [BankAccountType.CARD]: 'Tarjeta'
     };
-
-    BANKS_CATALOG.forEach((bank: BankInfo) => {
-      if (!searchTerm || bank.name.toLowerCase().includes(searchTerm)) {
-        categories[bank.category].banks.push(bank);
-      }
-    });
-
-    return Object.values(categories).filter(cat => cat.banks.length > 0);
+    return names[type] || type;
   }
 
-  // ✅ NUEVO - Contar bancos encontrados
-  getFilteredBanksCount(): number {
-    return this.getBanksByCategory().reduce((acc, cat) => acc + cat.banks.length, 0);
-  }
-
-  onBankSearch(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.bankSearchTerm.set(input.value);
-  }
-
-  clearBankSearch(): void {
-    this.bankSearchTerm.set('');
-  }
-
-  getCategoryIcon(categoryName: string): string {
-    const icons: Record<string, string> = {
-      principal: 'fas fa-star',
-      digital: 'fas fa-mobile-alt',
-      regional: 'fas fa-map-marker-alt',
-      gubernamental: 'fas fa-landmark',
-      otro: 'fas fa-ellipsis-h'
+  getBankAccountTypeIcon(type: BankAccountType): string {
+    const icons: Record<BankAccountType, string> = {
+      [BankAccountType.ACCOUNT_NUMBER]: 'fas fa-hashtag',
+      [BankAccountType.CLABE]: 'fas fa-barcode',
+      [BankAccountType.CARD]: 'fas fa-credit-card'
     };
-    return icons[categoryName] || 'fas fa-university';
-  }
-
-  showBankSelect(): boolean {
-    const type = this.form.get('paymentType')?.value;
-    return [
-      PaymentType.BANK_TRANSFER,
-      PaymentType.CLABE,
-      PaymentType.DEBIT_CARD,
-      PaymentType.CREDIT_CARD
-    ].includes(type);
+    return icons[type] || 'fas fa-money-check-alt';
   }
 
   onClabeInput(event: Event): void {
@@ -398,6 +426,7 @@ export class PaymentMethodFormComponent {
     };
 
     this.save.emit(dto);
+    // ✅ NO resetear isSaving aquí, se resetea en el effect cuando se cierra el form
   }
 
   onCancel(): void {
