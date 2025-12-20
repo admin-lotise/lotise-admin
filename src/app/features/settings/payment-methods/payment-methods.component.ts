@@ -89,18 +89,18 @@ export class PaymentMethodsComponent implements OnInit {
 
   /**
    * Guardar método de pago (crear o actualizar)
-   * ✅ CORREGIDO: Acepta ambos tipos de DTO
    */
   async onSave(data: CreatePaymentMethodDto | UpdatePaymentMethodDto): Promise<void> {
     try {
-      const tenantId = 'tenant-demo'; // TODO: Obtener desde AuthStateService
+      const tenantId = 'tenant-demo';
       const editingId = this.editingMethod()?.id;
 
       if (editingId) {
-        // Actualizar - convertir a UpdatePaymentMethodDto si es necesario
+        // Actualizar
         const updateDto: UpdatePaymentMethodDto = {
           paymentType: data.paymentType,
           bank: data.bank,
+          bankAccountType: data.bankAccountType, // ✅ Incluir
           accountNumber: data.accountNumber,
           clabe: data.clabe,
           cardNumber: data.cardNumber,
@@ -112,12 +112,15 @@ export class PaymentMethodsComponent implements OnInit {
         const updated = await firstValueFrom(
           this.paymentMethodsApi.updatePaymentMethod(tenantId, editingId, updateDto)
         );
+        
+        // ✅ IMPORTANTE: Actualizar con el objeto completo retornado por el API
         this.paymentMethodsState.updatePaymentMethod(editingId, updated);
       } else {
-        // Crear - asegurar que es CreatePaymentMethodDto
+        // Crear
         const createDto: CreatePaymentMethodDto = {
           paymentType: data.paymentType!,
           bank: data.bank,
+          bankAccountType: data.bankAccountType, // ✅ Incluir
           accountNumber: data.accountNumber,
           clabe: data.clabe,
           cardNumber: data.cardNumber,
@@ -135,7 +138,7 @@ export class PaymentMethodsComponent implements OnInit {
       this.closeForm();
     } catch (err: any) {
       this.error.set(err?.message || 'Error al guardar método de pago');
-      throw err; // Re-lanzar para que el form lo maneje
+      throw err;
     }
   }
 
