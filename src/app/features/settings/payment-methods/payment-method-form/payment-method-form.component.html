@@ -1,0 +1,204 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="payment-form">
+  <!-- Error Alert -->
+  @if (error()) {
+    <div class="alert alert-error">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>{{ error() }}</span>
+      <button type="button" class="close-btn" (click)="error.set(null)">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  }
+
+  <!-- Payment Type -->
+  <div class="form-group">
+    <label class="form-label required">
+      <i class="fas fa-list"></i>
+      Tipo de Pago
+    </label>
+    <div class="payment-type-grid">
+      @for (type of paymentTypes; track type) {
+        <label class="payment-type-option" [class.selected]="form.get('paymentType')?.value === type">
+          <input 
+            type="radio" 
+            formControlName="paymentType" 
+            [value]="type"
+            class="radio-input">
+          <div class="option-content">
+            <i [class]="getPaymentTypeIcon(type)"></i>
+            <span>{{ getPaymentTypeName(type) }}</span>
+          </div>
+        </label>
+      }
+    </div>
+    @if (isFieldInvalid('paymentType')) {
+      <span class="error-message">{{ getErrorMessage('paymentType') }}</span>
+    }
+  </div>
+
+  <!-- Bank Select (conditional) -->
+  @if (showBankSelect()) {
+    <div class="form-group">
+      <label class="form-label required">
+        <i class="fas fa-university"></i>
+        Banco
+      </label>
+      <div class="bank-grid">
+        @for (bank of banks; track bank) {
+          <label class="bank-option" [class.selected]="form.get('bank')?.value === bank">
+            <input 
+              type="radio" 
+              formControlName="bank" 
+              [value]="bank"
+              class="radio-input">
+            <div class="bank-content">
+              <i [class]="getBankLogo(bank)"></i>
+              <span>{{ bank }}</span>
+            </div>
+          </label>
+        }
+      </div>
+      @if (isFieldInvalid('bank')) {
+        <span class="error-message">{{ getErrorMessage('bank') }}</span>
+      }
+    </div>
+  }
+
+  <!-- Account Number (conditional) -->
+  @if (showAccountNumber()) {
+    <div class="form-group">
+      <label class="form-label required">
+        <i class="fas fa-hashtag"></i>
+        Número de Cuenta
+      </label>
+      <input 
+        type="text" 
+        formControlName="accountNumber"
+        class="form-input"
+        [class.invalid]="isFieldInvalid('accountNumber')"
+        placeholder="Ej: 1234567890"
+        maxlength="18">
+      @if (isFieldInvalid('accountNumber')) {
+        <span class="error-message">{{ getErrorMessage('accountNumber') }}</span>
+      }
+      <span class="field-hint">Entre 10 y 18 dígitos</span>
+    </div>
+  }
+
+  <!-- CLABE (conditional) -->
+  @if (showClabe()) {
+    <div class="form-group">
+      <label class="form-label required">
+        <i class="fas fa-barcode"></i>
+        CLABE Interbancaria
+      </label>
+      <input 
+        type="text" 
+        formControlName="clabe"
+        class="form-input monospace"
+        [class.invalid]="isFieldInvalid('clabe')"
+        placeholder="012345678901234567"
+        maxlength="18"
+        (input)="onClabeInput($event)">
+      @if (isFieldInvalid('clabe')) {
+        <span class="error-message">{{ getErrorMessage('clabe') }}</span>
+      }
+      <span class="field-hint">Exactamente 18 dígitos</span>
+    </div>
+  }
+
+  <!-- Card Number (conditional) -->
+  @if (showCardNumber()) {
+    <div class="form-group">
+      <label class="form-label required">
+        <i class="fas fa-credit-card"></i>
+        Número de Tarjeta
+      </label>
+      <input 
+        type="text" 
+        formControlName="cardNumber"
+        class="form-input monospace"
+        [class.invalid]="isFieldInvalid('cardNumber')"
+        placeholder="1234 5678 9012 3456"
+        maxlength="16"
+        (input)="onCardNumberInput($event)">
+      @if (isFieldInvalid('cardNumber')) {
+        <span class="error-message">{{ getErrorMessage('cardNumber') }}</span>
+      }
+      <span class="field-hint">16 dígitos sin espacios</span>
+    </div>
+  }
+
+  <!-- Account Holder -->
+  <div class="form-group">
+    <label class="form-label required">
+      <i class="fas fa-user"></i>
+      Titular de la Cuenta
+    </label>
+    <input 
+      type="text" 
+      formControlName="accountHolder"
+      class="form-input"
+      [class.invalid]="isFieldInvalid('accountHolder')"
+      placeholder="Nombre completo del titular">
+    @if (isFieldInvalid('accountHolder')) {
+      <span class="error-message">{{ getErrorMessage('accountHolder') }}</span>
+    }
+  </div>
+
+  <!-- Toggles -->
+  <div class="toggles-section">
+    <div class="toggle-item">
+      <label class="toggle-label">
+        <input 
+          type="checkbox" 
+          formControlName="isActive"
+          class="toggle-input">
+        <span class="toggle-switch"></span>
+        <div class="toggle-text">
+          <strong>Método Activo</strong>
+          <span class="toggle-hint">Los clientes podrán usar este método de pago</span>
+        </div>
+      </label>
+    </div>
+
+    <div class="toggle-item">
+      <label class="toggle-label">
+        <input 
+          type="checkbox" 
+          formControlName="isPrimary"
+          class="toggle-input">
+        <span class="toggle-switch"></span>
+        <div class="toggle-text">
+          <strong>Método Principal</strong>
+          <span class="toggle-hint">Se mostrará como opción predeterminada</span>
+        </div>
+      </label>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="form-actions">
+    <button 
+      type="button" 
+      class="btn btn-secondary"
+      (click)="onCancel()"
+      [disabled]="isSaving()">
+      <i class="fas fa-times"></i>
+      <span>Cancelar</span>
+    </button>
+
+    <button 
+      type="submit" 
+      class="btn btn-primary"
+      [disabled]="form.invalid || isSaving()">
+      @if (isSaving()) {
+        <i class="fas fa-spinner fa-spin"></i>
+        <span>Guardando...</span>
+      } @else {
+        <i class="fas fa-save"></i>
+        <span>{{ paymentMethod ? 'Actualizar' : 'Guardar' }} Método</span>
+      }
+    </button>
+  </div>
+</form>
