@@ -7,7 +7,8 @@ import {
   CreatePaymentMethodDto, 
   UpdatePaymentMethodDto,
   PaymentType,
-  Bank
+  Bank,
+  BankAccountType
 } from '../../shared/models/payment-method.model';
 import { environment } from '../../environments/environment';
 
@@ -125,7 +126,6 @@ export class PaymentMethodsApiService {
 
   /**
    * Actualizar método de pago
-   * ✅ CORREGIDO: Ahora acepta UpdatePaymentMethodDto
    */
   updatePaymentMethod(tenantId: string, methodId: string, dto: UpdatePaymentMethodDto): Observable<PaymentMethod> {
     if (this.USE_MOCK_DATA) {
@@ -142,21 +142,42 @@ export class PaymentMethodsApiService {
         this.mockMethods = this.mockMethods.map(m => ({ ...m, isPrimary: false }));
       }
 
-      // ✅ Actualizar solo los campos que vienen en el DTO
-      this.mockMethods[index] = {
+      // ✅ CORREGIDO: Limpiar campos que no corresponden al nuevo tipo
+      const updatedMethod: PaymentMethod = {
         ...existingMethod,
         paymentType: dto.paymentType ?? existingMethod.paymentType,
         bank: dto.bank ?? existingMethod.bank,
-        accountNumber: dto.accountNumber ?? existingMethod.accountNumber,
-        clabe: dto.clabe ?? existingMethod.clabe,
-        cardNumber: dto.cardNumber ?? existingMethod.cardNumber,
+        bankAccountType: dto.bankAccountType ?? existingMethod.bankAccountType,
         accountHolder: dto.accountHolder ?? existingMethod.accountHolder,
         isActive: dto.isActive ?? existingMethod.isActive,
         isPrimary: dto.isPrimary ?? existingMethod.isPrimary,
         updatedAt: new Date()
       };
 
-      return of(this.mockMethods[index]).pipe(delay(800));
+      // ✅ NUEVO: Actualizar solo el campo correspondiente según bankAccountType
+      // y limpiar los demás
+      if (dto.bankAccountType === BankAccountType.ACCOUNT_NUMBER) {
+        updatedMethod.accountNumber = dto.accountNumber ?? existingMethod.accountNumber;
+        updatedMethod.clabe = undefined; // ✅ Limpiar CLABE
+        updatedMethod.cardNumber = undefined; // ✅ Limpiar tarjeta
+      } else if (dto.bankAccountType === BankAccountType.CLABE) {
+        updatedMethod.accountNumber = undefined; // ✅ Limpiar cuenta
+        updatedMethod.clabe = dto.clabe ?? existingMethod.clabe;
+        updatedMethod.cardNumber = undefined; // ✅ Limpiar tarjeta
+      } else if (dto.bankAccountType === BankAccountType.CARD) {
+        updatedMethod.accountNumber = undefined; // ✅ Limpiar cuenta
+        updatedMethod.clabe = undefined; // ✅ Limpiar CLABE
+        updatedMethod.cardNumber = dto.cardNumber ?? existingMethod.cardNumber;
+      } else {
+        // Si no hay bankAccountType definido, mantener lo que viene en el DTO
+        updatedMethod.accountNumber = dto.accountNumber ?? existingMethod.accountNumber;
+        updatedMethod.clabe = dto.clabe ?? existingMethod.clabe;
+        updatedMethod.cardNumber = dto.cardNumber ?? existingMethod.cardNumber;
+      }
+
+      this.mockMethods[index] = updatedMethod;
+
+      return of(updatedMethod).pipe(delay(800));
     }
 
     return this.http.put<PaymentMethod>(`${this.apiUrl}/tenants/${tenantId}/payment-methods/${methodId}`, dto).pipe(
