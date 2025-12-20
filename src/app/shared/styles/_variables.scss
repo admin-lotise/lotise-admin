@@ -1,0 +1,135 @@
+/**
+ * ============================================
+ * VARIABLES GLOBALES
+ * Colores, tipografía, espaciados, sombras
+ * ============================================
+ */
+
+// ==================== COLORES PRINCIPALES ====================
+:root {
+  // Brand Colors
+  --primary: #ff497c;
+  --secondary: #3b82f6;
+  --accent: #8b5cf6;
+
+  // Status Colors
+  --success: #10b981;
+  --error: #ef4444;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+
+  // Text Colors
+  --color-text-primary: #1f2937;
+  --color-text-secondary: #6b7280;
+  --color-text-tertiary: #9ca3af;
+  --color-text-disabled: #d1d5db;
+
+  // Background Colors
+  --color-bg-white: #ffffff;
+  --color-bg-main: #f8fafc;
+  --color-bg-secondary: #f1f5f9;
+  --color-bg-hover: #e2e8f0;
+
+  // Border Colors
+  --color-border: #e5e7eb;
+  --color-border-light: #f3f4f6;
+  --color-border-dark: #d1d5db;
+
+  // Overlay
+  --overlay-dark: rgba(0, 0, 0, 0.6);
+  --overlay-light: rgba(0, 0, 0, 0.3);
+}
+
+// ==================== COLORES SASS (para compatibilidad) ====================
+$primary-color: #ff497c !default;
+$secondary-color: #3b82f6 !default;
+$accent-color: #8b5cf6 !default;
+
+$success-color: #10b981 !default;
+$error-color: #ef4444 !default;
+$warning-color: #f59e0b !default;
+$info-color: #3b82f6 !default;
+
+$text-primary: #1f2937 !default;
+$text-secondary: #6b7280 !default;
+$text-tertiary: #9ca3af !default;
+$text-disabled: #d1d5db !default;
+
+$border-color: #e5e7eb !default;
+$border-light: #f3f4f6 !default;
+$border-dark: #d1d5db !default;
+
+$background-white: #ffffff !default;
+$background-light: #f9fafb !default;
+$background-main: #f8fafc !default;
+
+// ==================== TIPOGRAFÍA ====================
+$font-family-primary: 'Segoe UI', 'Roboto', Arial, sans-serif !default;
+$font-family-mono: 'Courier New', monospace !default;
+
+$font-size-xs: 0.75rem !default;      // 12px
+$font-size-sm: 0.875rem !default;     // 14px
+$font-size-base: 1rem !default;       // 16px
+$font-size-lg: 1.125rem !default;     // 18px
+$font-size-xl: 1.25rem !default;      // 20px
+$font-size-2xl: 1.5rem !default;      // 24px
+$font-size-3xl: 1.875rem !default;    // 30px
+$font-size-4xl: 2.25rem !default;     // 36px
+
+$font-weight-normal: 400 !default;
+$font-weight-medium: 500 !default;
+$font-weight-semibold: 600 !default;
+$font-weight-bold: 700 !default;
+
+// ==================== ESPACIADOS ====================
+$spacing-xs: 0.25rem !default;    // 4px
+$spacing-sm: 0.5rem !default;     // 8px
+$spacing-md: 1rem !default;       // 16px
+$spacing-lg: 1.5rem !default;     // 24px
+$spacing-xl: 2rem !default;       // 32px
+$spacing-2xl: 3rem !default;      // 48px
+$spacing-3xl: 4rem !default;      // 64px
+
+// ==================== BORDER RADIUS ====================
+$border-radius-sm: 4px !default;
+$border-radius: 8px !default;
+$border-radius-md: 8px !default;
+$border-radius-lg: 12px !default;
+$border-radius-xl: 16px !default;
+$border-radius-full: 9999px !default;
+
+// ==================== SOMBRAS ====================
+$shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !default;
+$shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1) !default;
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !default;
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !default;
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1) !default;
+$shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !default;
+
+// ==================== TRANSICIONES ====================
+$transition-fast: all 0.15s ease !default;
+$transition: all 0.3s ease !default;
+$transition-slow: all 0.5s ease !default;
+
+// ==================== Z-INDEX ====================
+$z-dropdown: 1000 !default;
+$z-sticky: 1020 !default;
+$z-fixed: 1030 !default;
+$z-modal-backdrop: 1040 !default;
+$z-modal: 1050 !default;
+$z-popover: 1060 !default;
+$z-tooltip: 1070 !default;
+
+// ==================== BREAKPOINTS ====================
+$breakpoint-xs: 480px !default;
+$breakpoint-sm: 640px !default;
+$breakpoint-md: 768px !default;
+$breakpoint-lg: 1024px !default;
+$breakpoint-xl: 1280px !default;
+$breakpoint-2xl: 1536px !default;
+
+// ==================== GRID ====================
+$container-max-width: 1200px !default;
+$grid-gap: 1.5rem !default;
+$grid-gap-sm: 1rem !default;
+$grid-gap-lg: 2rem !default;
