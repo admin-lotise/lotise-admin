@@ -68,10 +68,24 @@ export class PaymentMethodFormComponent {
   }
 
   private patchForm(method: PaymentMethod): void {
+    // ✅ INFERIR bankAccountType si no existe en el método (retrocompatibilidad)
+    let inferredBankAccountType = method.bankAccountType;
+    
+    if (!inferredBankAccountType && method.paymentType === PaymentType.BANK_TRANSFER) {
+      // Inferir según qué campo tiene datos
+      if (method.accountNumber) {
+        inferredBankAccountType = BankAccountType.ACCOUNT_NUMBER;
+      } else if (method.clabe) {
+        inferredBankAccountType = BankAccountType.CLABE;
+      } else if (method.cardNumber) {
+        inferredBankAccountType = BankAccountType.CARD;
+      }
+    }
+
     this.form.patchValue({
       paymentType: method.paymentType,
       bank: method.bank,
-      bankAccountType: method.bankAccountType, // ✅ NUEVO
+      bankAccountType: inferredBankAccountType, // ✅ CORREGIDO
       accountNumber: method.accountNumber || '',
       clabe: method.clabe || '',
       cardNumber: method.cardNumber || '',
@@ -79,6 +93,11 @@ export class PaymentMethodFormComponent {
       isActive: method.isActive,
       isPrimary: method.isPrimary
     });
+
+    // ✅ IMPORTANTE: Disparar validaciones después de cargar
+    if (inferredBankAccountType) {
+      this.onBankAccountTypeChange();
+    }
   }
 
   private updateValidators(paymentType: PaymentType): void {

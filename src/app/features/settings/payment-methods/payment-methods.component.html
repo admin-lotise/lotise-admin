@@ -92,13 +92,11 @@
       <div class="payment-methods-grid">
         @for (method of paymentMethods(); track method.id) {
           <app-payment-method-card
-            [paymentMethod]="method"
-            [isPrimary]="primaryMethod()?.id === method.id"
-            [isDeleting]="isDeleting() === method.id"
-            (edit)="onEdit(method)"
-            (delete)="onDelete(method)"
-            (setPrimary)="onSetPrimary(method)"
-            (toggleActive)="onToggleActive(method)"
+            [method]="method"
+            (edit)="onEdit($event)"
+            (delete)="onDelete($event)"
+            (setPrimary)="onSetPrimary($event)"
+            (toggleActive)="onToggleActive($event)"
           />
         }
       </div>
