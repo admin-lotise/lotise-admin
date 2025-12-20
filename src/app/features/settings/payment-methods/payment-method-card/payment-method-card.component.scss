@@ -211,6 +211,18 @@
   }
 }
 
+.info-value {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-align: right;
+
+  &.monospace {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.5px;
+    font-size: 0.9em;
+  }
+}
+
 // ==================== FOOTER ====================
 .card-footer {
   display: flex;

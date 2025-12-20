@@ -1,37 +1,61 @@
-import { Component, Input, Output, EventEmitter, signal, computed } from '@angular/core';
+import { Component, input, output, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ClickOutsideDirective } from '../../../../shared/directives/click-outside.directive';
-import { PaymentMethod, PaymentType, Bank, BANK_LOGOS } from '../../../../shared/models/payment-method.model';
+import { ClickOutsideDirective } from '../../../../shared/directives/click-outside.directive'; // ✅ IMPORTAR
+import { PaymentMethod, PaymentType, BankAccountType } from '../../../../shared/models/payment-method.model';
 
 @Component({
   selector: 'app-payment-method-card',
   standalone: true,
-  imports: [CommonModule, ClickOutsideDirective],
+  imports: [CommonModule, ClickOutsideDirective], // ✅ AGREGAR AQUÍ
   templateUrl: './payment-method-card.component.html',
   styleUrl: './payment-method-card.component.scss'
 })
 export class PaymentMethodCardComponent {
-  @Input({ required: true }) paymentMethod!: PaymentMethod;
-  @Input() isPrimary = false;
-  @Input() isDeleting = false;
+  // Inputs
+  method = input.required<PaymentMethod>();
 
-  @Output() edit = new EventEmitter<void>();
-  @Output() delete = new EventEmitter<void>();
-  @Output() setPrimary = new EventEmitter<void>();
-  @Output() toggleActive = new EventEmitter<void>();
+  // Outputs
+  edit = output<PaymentMethod>();
+  delete = output<PaymentMethod>();
+  setPrimary = output<PaymentMethod>();
+  toggleActive = output<PaymentMethod>();
 
-  // Menú de acciones visible
+  // State
   showActions = signal(false);
+  isDeleting = signal(false);
 
-  // Computed para obtener el logo del banco
+  // Computed
   bankLogo = computed(() => {
-    const bank = this.paymentMethod.bank;
-    return bank ? BANK_LOGOS[bank] : 'fas fa-university';
+    const bank = this.method().bank;
+    if (!bank) return 'fas fa-university';
+    
+    const logos: Record<string, string> = {
+      'BBVA': 'fab fa-cc-visa',
+      'SANTANDER': 'fas fa-building-columns',
+      'BANORTE': 'fas fa-landmark',
+      'HSBC': 'fas fa-university',
+      'SCOTIABANK': 'fas fa-piggy-bank',
+      'BANAMEX': 'fas fa-money-check-alt'
+    };
+    
+    return logos[bank] || 'fas fa-university';
   });
 
-  // Computed para el ícono del tipo de pago
+  paymentTypeColor = computed(() => {
+    const colors: Record<PaymentType, string> = {
+      [PaymentType.BANK_TRANSFER]: '#3b82f6',
+      [PaymentType.CLABE]: '#8b5cf6',
+      [PaymentType.DEBIT_CARD]: '#10b981',
+      [PaymentType.CREDIT_CARD]: '#f59e0b',
+      [PaymentType.CASH]: '#6b7280',
+      [PaymentType.PAYPAL]: '#0070ba',
+      [PaymentType.MERCADO_PAGO]: '#00b1ea'
+    };
+    return colors[this.method().paymentType] || '#6b7280';
+  });
+
   paymentTypeIcon = computed(() => {
-    const icons = {
+    const icons: Record<PaymentType, string> = {
       [PaymentType.BANK_TRANSFER]: 'fas fa-exchange-alt',
       [PaymentType.CLABE]: 'fas fa-barcode',
       [PaymentType.DEBIT_CARD]: 'fas fa-credit-card',
@@ -40,72 +64,100 @@ export class PaymentMethodCardComponent {
       [PaymentType.PAYPAL]: 'fab fa-paypal',
       [PaymentType.MERCADO_PAGO]: 'fas fa-shopping-cart'
     };
-    return icons[this.paymentMethod.paymentType] || 'fas fa-dollar-sign';
+    return icons[this.method().paymentType] || 'fas fa-money-check-alt';
   });
 
-  // Computed para el color del tipo de pago
-  paymentTypeColor = computed(() => {
-    const colors = {
-      [PaymentType.BANK_TRANSFER]: '#3b82f6',
-      [PaymentType.CLABE]: '#8b5cf6',
-      [PaymentType.DEBIT_CARD]: '#10b981',
-      [PaymentType.CREDIT_CARD]: '#f59e0b',
-      [PaymentType.CASH]: '#22c55e',
-      [PaymentType.PAYPAL]: '#0070ba',
-      [PaymentType.MERCADO_PAGO]: '#00b1ea'
-    };
-    return colors[this.paymentMethod.paymentType] || '#6b7280';
-  });
-
-  // Computed para texto del tipo de pago
   paymentTypeText = computed(() => {
-    const texts = {
-      [PaymentType.BANK_TRANSFER]: 'Transferencia',
-      [PaymentType.CLABE]: 'CLABE',
-      [PaymentType.DEBIT_CARD]: 'Débito',
-      [PaymentType.CREDIT_CARD]: 'Crédito',
-      [PaymentType.CASH]: 'Efectivo',
+    const method = this.method();
+    
+    // Si es transferencia bancaria, mostrar el tipo de cuenta
+    if (method.paymentType === PaymentType.BANK_TRANSFER && method.bankAccountType) {
+      const types: Record<BankAccountType, string> = {
+        [BankAccountType.ACCOUNT_NUMBER]: 'Transferencia - Cuenta',
+        [BankAccountType.CLABE]: 'Transferencia - CLABE',
+        [BankAccountType.CARD]: 'Transferencia - Tarjeta'
+      };
+      return types[method.bankAccountType] || 'Transferencia Bancaria';
+    }
+
+    const names: Record<PaymentType, string> = {
+      [PaymentType.BANK_TRANSFER]: 'Transferencia Bancaria',
+      [PaymentType.CLABE]: 'CLABE Interbancaria',
+      [PaymentType.DEBIT_CARD]: 'Tarjeta de Débito',
+      [PaymentType.CREDIT_CARD]: 'Tarjeta de Crédito',
+      [PaymentType.CASH]: 'Efectivo / OXXO',
       [PaymentType.PAYPAL]: 'PayPal',
       [PaymentType.MERCADO_PAGO]: 'Mercado Pago'
     };
-    return texts[this.paymentMethod.paymentType] || 'Otro';
+    return names[method.paymentType] || method.paymentType;
   });
 
-  // Computed para mostrar los últimos 4 dígitos
   maskedAccount = computed(() => {
-    const account = this.paymentMethod.accountNumber || this.paymentMethod.clabe || this.paymentMethod.cardNumber || '';
-    if (account.length <= 4) return account;
-    return `•••• ${account.slice(-4)}`;
+    const method = this.method();
+    
+    if (method.accountNumber) {
+      return method.accountNumber.length > 4 
+        ? `****${method.accountNumber.slice(-4)}` 
+        : method.accountNumber;
+    }
+    
+    if (method.clabe) {
+      return method.clabe.length === 18
+        ? `${method.clabe.slice(0, 3)} ${method.clabe.slice(3, 6)} ****${method.clabe.slice(-4)}`
+        : method.clabe;
+    }
+    
+    if (method.cardNumber) {
+      // ✅ CORREGIDO: Tomar solo los últimos 4 dígitos
+      const lastFour = method.cardNumber.length > 4 
+        ? method.cardNumber.slice(-4) 
+        : method.cardNumber;
+      return `**** **** **** ${lastFour}`;
+    }
+
+    return 'N/A';
   });
 
-  // Toggle menú de acciones
+  accountLabel = computed(() => {
+    const method = this.method();
+    
+    if (method.accountNumber) return 'Cuenta';
+    if (method.clabe) return 'CLABE';
+    if (method.cardNumber) return 'Tarjeta';
+    return 'Número';
+  });
+
   toggleActions(): void {
     this.showActions.update(v => !v);
   }
 
-  // Cerrar menú de acciones
   closeActions(): void {
     this.showActions.set(false);
   }
 
-  // Emitir acciones
   onEdit(): void {
-    this.edit.emit();
     this.closeActions();
+    this.edit.emit(this.method());
   }
 
   onDelete(): void {
-    this.delete.emit();
     this.closeActions();
+    this.isDeleting.set(true);
+    this.delete.emit(this.method());
   }
 
   onSetPrimary(): void {
-    this.setPrimary.emit();
     this.closeActions();
+    this.setPrimary.emit(this.method());
   }
 
   onToggleActive(): void {
-    this.toggleActive.emit();
     this.closeActions();
+    this.toggleActive.emit(this.method());
+  }
+
+  getBankName(bank?: string): string {
+    if (!bank) return 'Banco';
+    return bank.replace(/_/g, ' ');
   }
 }

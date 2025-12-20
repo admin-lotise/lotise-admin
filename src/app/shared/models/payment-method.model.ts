@@ -83,6 +83,15 @@ export enum Bank {
 }
 
 /**
+ * Tipos de cuenta bancaria
+ */
+export enum BankAccountType {
+  ACCOUNT_NUMBER = 'ACCOUNT_NUMBER',
+  CLABE = 'CLABE',
+  CARD = 'CARD'
+}
+
+/**
  * Método de pago
  */
 export interface PaymentMethod {
@@ -92,6 +101,7 @@ export interface PaymentMethod {
   // Información básica
   paymentType: PaymentType;
   bank?: Bank;
+  bankAccountType?: BankAccountType; // ✅ NUEVO
   isActive: boolean;
   isPrimary: boolean;
   
@@ -99,7 +109,7 @@ export interface PaymentMethod {
   accountNumber?: string;
   clabe?: string;
   cardNumber?: string;
-  accountHolder?: string;
+  accountHolder: string;
   reference?: string;
   
   // Metadata
@@ -113,13 +123,13 @@ export interface PaymentMethod {
 export interface CreatePaymentMethodDto {
   paymentType: PaymentType;
   bank?: Bank;
-  isActive: boolean;
-  isPrimary: boolean;
+  bankAccountType?: BankAccountType; // ✅ NUEVO
   accountNumber?: string;
   clabe?: string;
   cardNumber?: string;
-  accountHolder?: string;
-  reference?: string;
+  accountHolder: string;
+  isActive?: boolean;
+  isPrimary?: boolean;
 }
 
 /**
@@ -128,13 +138,13 @@ export interface CreatePaymentMethodDto {
 export interface UpdatePaymentMethodDto {
   paymentType?: PaymentType;
   bank?: Bank;
-  isActive?: boolean;
-  isPrimary?: boolean;
+  bankAccountType?: BankAccountType; // ✅ NUEVO
   accountNumber?: string;
   clabe?: string;
   cardNumber?: string;
-  accountHolder?: string;
-  reference?: string;
+  accountHolder: string;
+  isActive?: boolean;
+  isPrimary?: boolean;
 }
 
 /**

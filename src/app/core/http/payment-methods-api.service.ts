@@ -7,7 +7,8 @@ import {
   CreatePaymentMethodDto, 
   UpdatePaymentMethodDto,
   PaymentType,
-  Bank
+  Bank,
+  BankAccountType
 } from '../../shared/models/payment-method.model';
 import { environment } from '../../environments/environment';
 
@@ -96,13 +97,21 @@ export class PaymentMethodsApiService {
       const newMethod: PaymentMethod = {
         id: `${Date.now()}`,
         tenantId,
-        ...dto,
+        paymentType: dto.paymentType,
+        bank: dto.bank,
+        bankAccountType: dto.bankAccountType, // ✅ NUEVO
+        accountNumber: dto.accountNumber,
+        clabe: dto.clabe,
+        cardNumber: dto.cardNumber,
+        accountHolder: dto.accountHolder,
+        isActive: dto.isActive ?? true, // ✅ CORREGIDO - valor por defecto
+        isPrimary: dto.isPrimary ?? false, // ✅ CORREGIDO - valor por defecto
         createdAt: new Date(),
         updatedAt: new Date()
       };
 
       // Si es principal, quitar el flag de otros métodos
-      if (dto.isPrimary) {
+      if (newMethod.isPrimary) {
         this.mockMethods = this.mockMethods.map(m => ({ ...m, isPrimary: false }));
       }
 
@@ -118,7 +127,7 @@ export class PaymentMethodsApiService {
   /**
    * Actualizar método de pago
    */
-  updatePaymentMethod(tenantId: string, methodId: string, dto: CreatePaymentMethodDto): Observable<PaymentMethod> {
+  updatePaymentMethod(tenantId: string, methodId: string, dto: UpdatePaymentMethodDto): Observable<PaymentMethod> {
     if (this.USE_MOCK_DATA) {
       const index = this.mockMethods.findIndex(m => m.id === methodId && m.tenantId === tenantId);
       
@@ -126,18 +135,49 @@ export class PaymentMethodsApiService {
         return throwError(() => new Error('Método no encontrado'));
       }
 
+      const existingMethod = this.mockMethods[index];
+
       // Si es principal, quitar el flag de otros métodos
       if (dto.isPrimary) {
         this.mockMethods = this.mockMethods.map(m => ({ ...m, isPrimary: false }));
       }
 
-      this.mockMethods[index] = {
-        ...this.mockMethods[index],
-        ...dto,
+      // ✅ CORREGIDO: Limpiar campos que no corresponden al nuevo tipo
+      const updatedMethod: PaymentMethod = {
+        ...existingMethod,
+        paymentType: dto.paymentType ?? existingMethod.paymentType,
+        bank: dto.bank ?? existingMethod.bank,
+        bankAccountType: dto.bankAccountType ?? existingMethod.bankAccountType,
+        accountHolder: dto.accountHolder ?? existingMethod.accountHolder,
+        isActive: dto.isActive ?? existingMethod.isActive,
+        isPrimary: dto.isPrimary ?? existingMethod.isPrimary,
         updatedAt: new Date()
       };
 
-      return of(this.mockMethods[index]).pipe(delay(800));
+      // ✅ NUEVO: Actualizar solo el campo correspondiente según bankAccountType
+      // y limpiar los demás
+      if (dto.bankAccountType === BankAccountType.ACCOUNT_NUMBER) {
+        updatedMethod.accountNumber = dto.accountNumber ?? existingMethod.accountNumber;
+        updatedMethod.clabe = undefined; // ✅ Limpiar CLABE
+        updatedMethod.cardNumber = undefined; // ✅ Limpiar tarjeta
+      } else if (dto.bankAccountType === BankAccountType.CLABE) {
+        updatedMethod.accountNumber = undefined; // ✅ Limpiar cuenta
+        updatedMethod.clabe = dto.clabe ?? existingMethod.clabe;
+        updatedMethod.cardNumber = undefined; // ✅ Limpiar tarjeta
+      } else if (dto.bankAccountType === BankAccountType.CARD) {
+        updatedMethod.accountNumber = undefined; // ✅ Limpiar cuenta
+        updatedMethod.clabe = undefined; // ✅ Limpiar CLABE
+        updatedMethod.cardNumber = dto.cardNumber ?? existingMethod.cardNumber;
+      } else {
+        // Si no hay bankAccountType definido, mantener lo que viene en el DTO
+        updatedMethod.accountNumber = dto.accountNumber ?? existingMethod.accountNumber;
+        updatedMethod.clabe = dto.clabe ?? existingMethod.clabe;
+        updatedMethod.cardNumber = dto.cardNumber ?? existingMethod.cardNumber;
+      }
+
+      this.mockMethods[index] = updatedMethod;
+
+      return of(updatedMethod).pipe(delay(800));
     }
 
     return this.http.put<PaymentMethod>(`${this.apiUrl}/tenants/${tenantId}/payment-methods/${methodId}`, dto).pipe(
