@@ -2,27 +2,28 @@
  * Tipos de pago disponibles
  */
 export enum PaymentType {
-  DEPOSITO_OXXO = 'DEPOSITO_OXXO',
-  DEPOSITO_OXXO_EFECTIVO = 'DEPOSITO_OXXO_EFECTIVO',
-  DEPOSITO_EFECTIVO = 'DEPOSITO_EFECTIVO',
-  DEPOSITO_TRANSFERENCIA = 'DEPOSITO_TRANSFERENCIA',
-  TRANSFERENCIA = 'TRANSFERENCIA',
-  TARJETA = 'TARJETA'
+  BANK_TRANSFER = 'BANK_TRANSFER',           // Transferencia bancaria
+  CLABE = 'CLABE',                           // CLABE interbancaria
+  DEBIT_CARD = 'DEBIT_CARD',                 // Tarjeta de débito
+  CREDIT_CARD = 'CREDIT_CARD',               // Tarjeta de crédito
+  CASH = 'CASH',                             // Efectivo / OXXO
+  PAYPAL = 'PAYPAL',                         // PayPal
+  MERCADO_PAGO = 'MERCADO_PAGO'              // Mercado Pago
 }
 
 /**
  * Bancos disponibles en México
  */
 export enum Bank {
-  BANCOPPEL = 'BanCoppel',
+  BBVA = 'BBVA',
+  BANAMEX = 'Banamex',
+  SANTANDER = 'Santander',
   BANORTE = 'Banorte',
   HSBC = 'HSBC',
-  BBVA = 'BBVA',
-  SANTANDER = 'Santander',
-  AFIRME = 'Afirme',
   SCOTIABANK = 'Scotiabank',
-  BANAMEX = 'Banamex',
   INBURSA = 'Inbursa',
+  AFIRME = 'Afirme',
+  BANCOPPEL = 'BanCoppel',
   BANREGIO = 'Banregio',
   AZTECA = 'Banco Azteca',
   OTRO = 'Otro'
@@ -37,15 +38,15 @@ export interface PaymentMethod {
   
   // Información básica
   paymentType: PaymentType;
-  bank: Bank;
+  bank?: Bank;                            // Opcional (no aplica para efectivo, PayPal, etc.)
   isActive: boolean;
-  isPrimary: boolean;                     // Método principal
+  isPrimary: boolean;
   
   // Datos de cuenta (opcionales según tipo)
   accountNumber?: string;                 // Número de cuenta
-  cardNumber?: string;                    // Últimos 4 dígitos
-  clabe?: string;                         // CLABE Interbancaria
-  beneficiary?: string;                   // Nombre del beneficiario
+  clabe?: string;                         // CLABE Interbancaria (18 dígitos)
+  cardNumber?: string;                    // Últimos 4 dígitos de tarjeta
+  accountHolder?: string;                 // Nombre del titular/beneficiario
   reference?: string;                     // Referencia o concepto
   
   // Metadata
@@ -58,13 +59,13 @@ export interface PaymentMethod {
  */
 export interface CreatePaymentMethodDto {
   paymentType: PaymentType;
-  bank: Bank;
+  bank?: Bank;
   isActive: boolean;
   isPrimary: boolean;
   accountNumber?: string;
-  cardNumber?: string;
   clabe?: string;
-  beneficiary?: string;
+  cardNumber?: string;
+  accountHolder?: string;
   reference?: string;
 }
 
@@ -77,11 +78,29 @@ export interface UpdatePaymentMethodDto {
   isActive?: boolean;
   isPrimary?: boolean;
   accountNumber?: string;
-  cardNumber?: string;
   clabe?: string;
-  beneficiary?: string;
+  cardNumber?: string;
+  accountHolder?: string;
   reference?: string;
 }
+
+/**
+ * Logos de bancos (Font Awesome icons)
+ */
+export const BANK_LOGOS: Record<Bank, string> = {
+  [Bank.BBVA]: 'fas fa-university',
+  [Bank.BANAMEX]: 'fas fa-landmark',
+  [Bank.SANTANDER]: 'fas fa-building-columns',
+  [Bank.BANORTE]: 'fas fa-piggy-bank',
+  [Bank.HSBC]: 'fas fa-vault',
+  [Bank.SCOTIABANK]: 'fas fa-money-check-alt',
+  [Bank.INBURSA]: 'fas fa-hand-holding-usd',
+  [Bank.AFIRME]: 'fas fa-coins',
+  [Bank.BANCOPPEL]: 'fas fa-wallet',
+  [Bank.BANREGIO]: 'fas fa-chart-line',
+  [Bank.AZTECA]: 'fas fa-store',
+  [Bank.OTRO]: 'fas fa-university'
+};
 
 /**
  * Información de banco con logo
@@ -89,23 +108,23 @@ export interface UpdatePaymentMethodDto {
 export interface BankInfo {
   code: Bank;
   name: string;
-  logo?: string;  // URL del logo
+  logo: string;
 }
 
 /**
- * Catálogo de bancos con logos
+ * Catálogo de bancos con logos (Font Awesome)
  */
 export const BANKS_CATALOG: BankInfo[] = [
-  { code: Bank.BBVA, name: 'BBVA', logo: 'assets/banks/bbva.svg' },
-  { code: Bank.BANAMEX, name: 'Citibanamex', logo: 'assets/banks/banamex.svg' },
-  { code: Bank.SANTANDER, name: 'Santander', logo: 'assets/banks/santander.svg' },
-  { code: Bank.BANORTE, name: 'Banorte', logo: 'assets/banks/banorte.svg' },
-  { code: Bank.HSBC, name: 'HSBC', logo: 'assets/banks/hsbc.svg' },
-  { code: Bank.SCOTIABANK, name: 'Scotiabank', logo: 'assets/banks/scotiabank.svg' },
-  { code: Bank.INBURSA, name: 'Inbursa', logo: 'assets/banks/inbursa.svg' },
-  { code: Bank.AFIRME, name: 'Afirme', logo: 'assets/banks/afirme.svg' },
-  { code: Bank.BANCOPPEL, name: 'BanCoppel', logo: 'assets/banks/bancoppel.svg' },
-  { code: Bank.BANREGIO, name: 'Banregio', logo: 'assets/banks/banregio.svg' },
-  { code: Bank.AZTECA, name: 'Banco Azteca', logo: 'assets/banks/azteca.svg' },
-  { code: Bank.OTRO, name: 'Otro', logo: 'assets/banks/default.svg' }
+  { code: Bank.BBVA, name: 'BBVA', logo: 'fas fa-university' },
+  { code: Bank.BANAMEX, name: 'Citibanamex', logo: 'fas fa-landmark' },
+  { code: Bank.SANTANDER, name: 'Santander', logo: 'fas fa-building-columns' },
+  { code: Bank.BANORTE, name: 'Banorte', logo: 'fas fa-piggy-bank' },
+  { code: Bank.HSBC, name: 'HSBC', logo: 'fas fa-vault' },
+  { code: Bank.SCOTIABANK, name: 'Scotiabank', logo: 'fas fa-money-check-alt' },
+  { code: Bank.INBURSA, name: 'Inbursa', logo: 'fas fa-hand-holding-usd' },
+  { code: Bank.AFIRME, name: 'Afirme', logo: 'fas fa-coins' },
+  { code: Bank.BANCOPPEL, name: 'BanCoppel', logo: 'fas fa-wallet' },
+  { code: Bank.BANREGIO, name: 'Banregio', logo: 'fas fa-chart-line' },
+  { code: Bank.AZTECA, name: 'Banco Azteca', logo: 'fas fa-store' },
+  { code: Bank.OTRO, name: 'Otro', logo: 'fas fa-university' }
 ];
