@@ -1,7 +1,15 @@
-import { Component, Input, Output, EventEmitter, signal, computed, effect, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, input, output, effect, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { PaymentMethod, PaymentType, Bank, CreatePaymentMethodDto, BANK_LOGOS, BANKS_CATALOG } from '../../../../shared/models/payment-method.model';
+import { CommonModule } from '@angular/common';
+import { 
+  PaymentMethod, 
+  PaymentType, 
+  Bank,
+  BANKS_CATALOG,
+  BankInfo,
+  CreatePaymentMethodDto,
+  UpdatePaymentMethodDto
+} from '../../../../shared/models/payment-method.model';
 
 @Component({
   selector: 'app-payment-method-form',
@@ -10,98 +18,53 @@ import { PaymentMethod, PaymentType, Bank, CreatePaymentMethodDto, BANK_LOGOS, B
   templateUrl: './payment-method-form.component.html',
   styleUrl: './payment-method-form.component.scss'
 })
-export class PaymentMethodFormComponent implements OnInit {
-  @Input() paymentMethod: PaymentMethod | null = null;
-  @Output() save = new EventEmitter<CreatePaymentMethodDto>();
-  @Output() cancel = new EventEmitter<void>();
+export class PaymentMethodFormComponent {
+  private fb = inject(FormBuilder);
 
-  private readonly fb = inject(FormBuilder);
+  // Inputs/Outputs
+  paymentMethod = input<PaymentMethod | null>(null);
+  save = output<CreatePaymentMethodDto | UpdatePaymentMethodDto>();
+  cancel = output<void>();
 
-  // Form
+  // State
   form!: FormGroup;
-
-  // Enums para el template
-  PaymentType = PaymentType;
-  Bank = Bank;
-  BANK_LOGOS = BANK_LOGOS;
-
-  // Arrays para los selects
-  paymentTypes = Object.values(PaymentType);
-  banks = Object.values(Bank);
-
-  // Estado
-  isSaving = signal(false);
   error = signal<string | null>(null);
+  isSaving = signal(false);
+  bankSearchTerm = signal('');
 
-  // Computed para mostrar campos dinámicos
-  selectedPaymentType = signal<PaymentType>(PaymentType.BANK_TRANSFER);
+  // Data
+  paymentTypes = Object.values(PaymentType);
 
-  showAccountNumber = computed(() => 
-    this.selectedPaymentType() === PaymentType.BANK_TRANSFER ||
-    this.selectedPaymentType() === PaymentType.DEBIT_CARD
-  );
-
-  showClabe = computed(() => 
-    this.selectedPaymentType() === PaymentType.CLABE
-  );
-
-  showCardNumber = computed(() => 
-    this.selectedPaymentType() === PaymentType.DEBIT_CARD ||
-    this.selectedPaymentType() === PaymentType.CREDIT_CARD
-  );
-
-  showBankSelect = computed(() => 
-    this.selectedPaymentType() !== PaymentType.CASH &&
-    this.selectedPaymentType() !== PaymentType.PAYPAL &&
-    this.selectedPaymentType() !== PaymentType.MERCADO_PAGO
-  );
-
-  // Effect para actualizar validaciones cuando cambia el tipo de pago
   constructor() {
-    effect(() => {
-      const paymentType = this.selectedPaymentType();
-      if (this.form) {
-        this.updateValidations(paymentType);
-      }
-    });
-  }
-
-  ngOnInit(): void {
     this.initForm();
     
-    // Si estamos editando, llenar el formulario
-    if (this.paymentMethod) {
-      this.populateForm(this.paymentMethod);
-    }
+    effect(() => {
+      const method = this.paymentMethod();
+      if (method) {
+        this.patchForm(method);
+      }
+    });
+
+    effect(() => {
+      const paymentType = this.form?.get('paymentType')?.value;
+      this.updateValidators(paymentType);
+    }, { allowSignalWrites: true });
   }
 
-  /**
-   * Inicializar formulario
-   */
   private initForm(): void {
     this.form = this.fb.group({
-      paymentType: [PaymentType.BANK_TRANSFER, Validators.required],
-      bank: [Bank.BBVA, Validators.required],
+      paymentType: [null, Validators.required],
+      bank: [null],
       accountNumber: [''],
       clabe: [''],
       cardNumber: [''],
-      accountHolder: ['', [Validators.required, Validators.minLength(3)]],
+      accountHolder: ['', Validators.required],
       isActive: [true],
       isPrimary: [false]
     });
-
-    // Escuchar cambios en paymentType
-    this.form.get('paymentType')?.valueChanges.subscribe(type => {
-      this.selectedPaymentType.set(type);
-    });
   }
 
-  /**
-   * Poblar formulario con datos existentes
-   */
-  private populateForm(method: PaymentMethod): void {
-    this.selectedPaymentType.set(method.paymentType);
-    
+  private patchForm(method: PaymentMethod): void {
     this.form.patchValue({
       paymentType: method.paymentType,
       bank: method.bank,
@@ -114,178 +77,90 @@ export class PaymentMethodFormComponent implements OnInit {
     });
   }
 
-  /**
-   * Actualizar validaciones según tipo de pago
-   */
-  private updateValidations(paymentType: PaymentType): void {
+  private updateValidators(paymentType: PaymentType): void {
+    const bankControl = this.form.get('bank');
     const accountNumberControl = this.form.get('accountNumber');
     const clabeControl = this.form.get('clabe');
     const cardNumberControl = this.form.get('cardNumber');
-    const bankControl = this.form.get('bank');
 
-    // Resetear validaciones
+    bankControl?.clearValidators();
     accountNumberControl?.clearValidators();
     clabeControl?.clearValidators();
     cardNumberControl?.clearValidators();
-    bankControl?.clearValidators();
 
-    // Aplicar validaciones según tipo
     switch (paymentType) {
       case PaymentType.BANK_TRANSFER:
-        accountNumberControl?.setValidators([Validators.required, Validators.minLength(10), Validators.maxLength(18)]);
-        bankControl?.setValidators([Validators.required]);
-        break;
-
       case PaymentType.CLABE:
-        clabeControl?.setValidators([Validators.required, Validators.minLength(18), Validators.maxLength(18), Validators.pattern(/^\d{18}$/)]);
         bankControl?.setValidators([Validators.required]);
+        if (paymentType === PaymentType.CLABE) {
+          clabeControl?.setValidators([
+            Validators.required,
+            Validators.pattern(/^\d{18}$/),
+            Validators.minLength(18),
+            Validators.maxLength(18)
+          ]);
+        } else {
+          accountNumberControl?.setValidators([
+            Validators.required,
+            Validators.pattern(/^\d{10,18}$/),
+            Validators.minLength(10),
+            Validators.maxLength(18)
+          ]);
+        }
         break;
 
       case PaymentType.DEBIT_CARD:
-        cardNumberControl?.setValidators([Validators.required, Validators.minLength(16), Validators.maxLength(16), Validators.pattern(/^\d{16}$/)]);
-        bankControl?.setValidators([Validators.required]);
-        break;
-
       case PaymentType.CREDIT_CARD:
-        cardNumberControl?.setValidators([Validators.required, Validators.minLength(16), Validators.maxLength(16), Validators.pattern(/^\d{16}$/)]);
         bankControl?.setValidators([Validators.required]);
-        break;
-
-      case PaymentType.PAYPAL:
-      case PaymentType.MERCADO_PAGO:
-        // No requieren banco
-        break;
-
-      case PaymentType.CASH:
-        // Efectivo no requiere campos adicionales
+        cardNumberControl?.setValidators([
+          Validators.required,
+          Validators.pattern(/^\d{16}$/),
+          Validators.minLength(16),
+          Validators.maxLength(16)
+        ]);
         break;
     }
 
-    // Actualizar validez
+    bankControl?.updateValueAndValidity();
     accountNumberControl?.updateValueAndValidity();
     clabeControl?.updateValueAndValidity();
     cardNumberControl?.updateValueAndValidity();
-    bankControl?.updateValueAndValidity();
   }
 
-  /**
-   * Obtener ícono del tipo de pago
-   */
-  getPaymentTypeIcon(type: PaymentType): string {
-    const icons = {
-      [PaymentType.BANK_TRANSFER]: 'fas fa-exchange-alt',
-      [PaymentType.CLABE]: 'fas fa-barcode',
-      [PaymentType.DEBIT_CARD]: 'fas fa-credit-card',
-      [PaymentType.CREDIT_CARD]: 'fas fa-credit-card',
-      [PaymentType.CASH]: 'fas fa-money-bill-wave',
-      [PaymentType.PAYPAL]: 'fab fa-paypal',
-      [PaymentType.MERCADO_PAGO]: 'fas fa-shopping-cart'
-    };
-    return icons[type] || 'fas fa-dollar-sign';
-  }
-
-  /**
-   * Obtener nombre legible del tipo de pago
-   */
-  getPaymentTypeName(type: PaymentType): string {
-    const names = {
-      [PaymentType.BANK_TRANSFER]: 'Transferencia Bancaria',
-      [PaymentType.CLABE]: 'CLABE Interbancaria',
-      [PaymentType.DEBIT_CARD]: 'Tarjeta de Débito',
-      [PaymentType.CREDIT_CARD]: 'Tarjeta de Crédito',
-      [PaymentType.CASH]: 'Efectivo',
-      [PaymentType.PAYPAL]: 'PayPal',
-      [PaymentType.MERCADO_PAGO]: 'Mercado Pago'
-    };
-    return names[type] || type;
-  }
-
-  /**
-   * Obtener logo del banco
-   */
-  getBankLogo(bank: Bank): string {
-    return BANK_LOGOS[bank] || 'fas fa-university';
-  }
-
-  /**
-   * Validar campo
-   */
-  isFieldInvalid(fieldName: string): boolean {
-    const field = this.form.get(fieldName);
-    return !!(field && field.invalid && (field.dirty || field.touched));
-  }
-
-  /**
-   * Obtener mensaje de error
-   */
-  getErrorMessage(fieldName: string): string {
-    const field = this.form.get(fieldName);
-    if (!field?.errors) return '';
-
-    if (field.errors['required']) return 'Este campo es requerido';
-    if (field.errors['minlength']) return `Mínimo ${field.errors['minlength'].requiredLength} caracteres`;
-    if (field.errors['maxlength']) return `Máximo ${field.errors['maxlength'].requiredLength} caracteres`;
-    if (field.errors['pattern']) {
-      if (fieldName === 'clabe') return 'La CLABE debe tener exactamente 18 dígitos';
-      if (fieldName === 'cardNumber') return 'La tarjeta debe tener 16 dígitos';
-      return 'Formato inválido';
-    }
-
-    return 'Campo inválido';
-  }
-
-  /**
-   * Formatear número de tarjeta mientras se escribe
-   */
-  onCardNumberInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    let value = input.value.replace(/\D/g, ''); // Solo dígitos
-    
-    if (value.length > 16) {
-      value = value.substring(0, 16);
-    }
-
-    input.value = value;
-    this.form.get('cardNumber')?.setValue(value, { emitEvent: false });
-  }
-
-  /**
-   * Formatear CLABE mientras se escribe
-   */
-  onClabeInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    let value = input.value.replace(/\D/g, ''); // Solo dígitos
-    
-    if (value.length > 18) {
-      value = value.substring(0, 18);
-    }
-
-    input.value = value;
-    this.form.get('clabe')?.setValue(value, { emitEvent: false });
-  }
-
-  /**
-   * Obtener bancos por categoría
-   */
   getBanksByCategory() {
-    const categories = {
-      principal: { name: 'principal', label: 'Bancos Principales', banks: [] as any[] },
-      digital: { name: 'digital', label: 'Bancos Digitales', banks: [] as any[] },
-      regional: { name: 'regional', label: 'Bancos Regionales', banks: [] as any[] },
-      gubernamental: { name: 'gubernamental', label: 'Bancos Gubernamentales', banks: [] as any[] },
-      otro: { name: 'otro', label: 'Otros Bancos', banks: [] as any[] }
+    const searchTerm = this.bankSearchTerm().toLowerCase().trim();
+    
+    const categories: Record<string, { name: string; label: string; banks: BankInfo[] }> = {
+      principal: { name: 'principal', label: 'Bancos Principales', banks: [] },
+      digital: { name: 'digital', label: 'Bancos Digitales', banks: [] },
+      regional: { name: 'regional', label: 'Bancos Regionales', banks: [] },
+      gubernamental: { name: 'gubernamental', label: 'Bancos Gubernamentales', banks: [] },
+      otro: { name: 'otro', label: 'Otros Bancos', banks: [] }
     };
 
-    BANKS_CATALOG.forEach(bank => {
-      categories[bank.category].banks.push(bank);
+    BANKS_CATALOG.forEach((bank: BankInfo) => {
+      if (!searchTerm || bank.name.toLowerCase().includes(searchTerm)) {
+        categories[bank.category].banks.push(bank);
+      }
     });
 
     return Object.values(categories).filter(cat => cat.banks.length > 0);
   }
 
-  /**
-   * Obtener ícono de categoría
-   */
+  // ✅ NUEVO - Contar bancos encontrados
+  getFilteredBanksCount(): number {
+    return this.getBanksByCategory().reduce((acc, cat) => acc + cat.banks.length, 0);
+  }
+
+  onBankSearch(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.bankSearchTerm.set(input.value);
+  }
+
+  clearBankSearch(): void {
+    this.bankSearchTerm.set('');
+  }
+
   getCategoryIcon(categoryName: string): string {
     const icons: Record<string, string> = {
       principal: 'fas fa-star',
@@ -297,45 +172,117 @@ export class PaymentMethodFormComponent implements OnInit {
     return icons[categoryName] || 'fas fa-university';
   }
 
-  /**
-   * Enviar formulario
-   */
-  async onSubmit(): Promise<void> {
+  showBankSelect(): boolean {
+    const type = this.form.get('paymentType')?.value;
+    return [
+      PaymentType.BANK_TRANSFER,
+      PaymentType.CLABE,
+      PaymentType.DEBIT_CARD,
+      PaymentType.CREDIT_CARD
+    ].includes(type);
+  }
+
+  showAccountNumber(): boolean {
+    return this.form.get('paymentType')?.value === PaymentType.BANK_TRANSFER;
+  }
+
+  showClabe(): boolean {
+    return this.form.get('paymentType')?.value === PaymentType.CLABE;
+  }
+
+  showCardNumber(): boolean {
+    const type = this.form.get('paymentType')?.value;
+    return type === PaymentType.DEBIT_CARD || type === PaymentType.CREDIT_CARD;
+  }
+
+  getPaymentTypeIcon(type: PaymentType): string {
+    const icons: Record<PaymentType, string> = {
+      [PaymentType.BANK_TRANSFER]: 'fas fa-exchange-alt',
+      [PaymentType.CLABE]: 'fas fa-barcode',
+      [PaymentType.DEBIT_CARD]: 'fas fa-credit-card',
+      [PaymentType.CREDIT_CARD]: 'fas fa-credit-card',
+      [PaymentType.CASH]: 'fas fa-money-bill-wave',
+      [PaymentType.PAYPAL]: 'fab fa-paypal',
+      [PaymentType.MERCADO_PAGO]: 'fas fa-shopping-cart'
+    };
+    return icons[type] || 'fas fa-money-check-alt';
+  }
+
+  getPaymentTypeName(type: PaymentType): string {
+    const names: Record<PaymentType, string> = {
+      [PaymentType.BANK_TRANSFER]: 'Transferencia Bancaria',
+      [PaymentType.CLABE]: 'CLABE Interbancaria',
+      [PaymentType.DEBIT_CARD]: 'Tarjeta de Débito',
+      [PaymentType.CREDIT_CARD]: 'Tarjeta de Crédito',
+      [PaymentType.CASH]: 'Efectivo / OXXO',
+      [PaymentType.PAYPAL]: 'PayPal',
+      [PaymentType.MERCADO_PAGO]: 'Mercado Pago'
+    };
+    return names[type] || type;
+  }
+
+  onClabeInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/\D/g, '').slice(0, 18);
+    this.form.get('clabe')?.setValue(input.value, { emitEvent: false });
+  }
+
+  onCardNumberInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/\D/g, '').slice(0, 16);
+    this.form.get('cardNumber')?.setValue(input.value, { emitEvent: false });
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.form.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched));
+  }
+
+  getErrorMessage(fieldName: string): string {
+    const field = this.form.get(fieldName);
+    if (!field || !field.errors) return '';
+
+    if (field.errors['required']) return 'Este campo es requerido';
+    if (field.errors['pattern']) {
+      if (fieldName === 'clabe') return 'La CLABE debe tener exactamente 18 dígitos';
+      if (fieldName === 'cardNumber') return 'El número de tarjeta debe tener 16 dígitos';
+      if (fieldName === 'accountNumber') return 'El número de cuenta debe tener entre 10 y 18 dígitos';
+    }
+    if (field.errors['minlength'] || field.errors['maxlength']) {
+      if (fieldName === 'clabe') return 'La CLABE debe tener exactamente 18 dígitos';
+      if (fieldName === 'cardNumber') return 'El número de tarjeta debe tener 16 dígitos';
+    }
+
+    return 'Campo inválido';
+  }
+
+  onSubmit(): void {
     if (this.form.invalid) {
-      this.form.markAllAsTouched();
+      Object.keys(this.form.controls).forEach(key => {
+        this.form.get(key)?.markAsTouched();
+      });
+      this.error.set('Por favor completa todos los campos requeridos');
       return;
     }
 
     this.isSaving.set(true);
     this.error.set(null);
 
-    try {
-      const formValue = this.form.value;
-      
-      // Construir DTO según el tipo de pago
-      const dto: CreatePaymentMethodDto = {
-        paymentType: formValue.paymentType,
-        bank: this.showBankSelect() ? formValue.bank : undefined,
-        accountNumber: this.showAccountNumber() ? formValue.accountNumber : undefined,
-        clabe: this.showClabe() ? formValue.clabe : undefined,
-        cardNumber: this.showCardNumber() ? formValue.cardNumber : undefined,
-        accountHolder: formValue.accountHolder,
-        isActive: formValue.isActive,
-        isPrimary: formValue.isPrimary
-      };
+    const formValue = this.form.value;
+    const dto: CreatePaymentMethodDto | UpdatePaymentMethodDto = {
+      paymentType: formValue.paymentType,
+      bank: formValue.bank || undefined,
+      accountNumber: formValue.accountNumber || undefined,
+      clabe: formValue.clabe || undefined,
+      cardNumber: formValue.cardNumber || undefined,
+      accountHolder: formValue.accountHolder,
+      isActive: formValue.isActive,
+      isPrimary: formValue.isPrimary
+    };
 
-      this.save.emit(dto);
-    } catch (err: any) {
-      this.error.set(err?.message || 'Error al guardar método de pago');
-      console.error('Error saving payment method:', err);
-    } finally {
-      this.isSaving.set(false);
-    }
+    this.save.emit(dto);
   }
 
-  /**
-   * Cancelar
-   */
   onCancel(): void {
     this.cancel.emit();
   }
