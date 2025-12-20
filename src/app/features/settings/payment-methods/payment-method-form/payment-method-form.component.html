@@ -127,6 +127,37 @@
     </div>
   }
 
+  <!-- ✅ NUEVO: Bank Account Type Selector (solo para transferencias) -->
+  @if (showBankAccountTypeSelector()) {
+    <div class="form-group">
+      <label class="form-label required">
+        <i class="fas fa-list-ul"></i>
+        Tipo de Datos Bancarios
+      </label>
+      <div class="bank-account-type-grid">
+        @for (type of bankAccountTypes; track type) {
+          <label 
+            class="bank-account-type-option" 
+            [class.selected]="form.get('bankAccountType')?.value === type">
+            <input 
+              type="radio" 
+              formControlName="bankAccountType" 
+              [value]="type"
+              (change)="onBankAccountTypeChange()"
+              class="radio-input">
+            <div class="option-content">
+              <i [class]="getBankAccountTypeIcon(type)"></i>
+              <span>{{ getBankAccountTypeName(type) }}</span>
+            </div>
+          </label>
+        }
+      </div>
+      @if (isFieldInvalid('bankAccountType')) {
+        <span class="error-message">{{ getErrorMessage('bankAccountType') }}</span>
+      }
+    </div>
+  }
+
   <!-- Account Number (conditional) -->
   @if (showAccountNumber()) {
     <div class="form-group">
