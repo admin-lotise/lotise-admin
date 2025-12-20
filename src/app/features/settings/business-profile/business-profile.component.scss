@@ -1,3 +1,6 @@
+@use 'app/shared/styles/settings-shared' as *;
+@use 'sass:color';
+
 .business-profile-container {
   margin: 0 auto;
   animation: fadeIn 0.3s ease-in;

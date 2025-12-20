@@ -1,5 +1,14 @@
-/* You can add global styles to this file, and also import other style files */
-@use 'app/shared/styles/_mobile.scss';
+/* ============================================
+   IMPORTS GLOBALES
+   ============================================ */
+
+// Estilos compartidos (generan CSS globalmente)
+@import './app/shared/styles/mobile';
+@import './app/shared/styles/modal-shared';
+
+/* ============================================
+   IMPORTS EXTERNOS
+   ============================================ */
 
 /* Importar Font Awesome */
 @import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -13,7 +22,10 @@
 /* Importar Material Icons */
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
-// Color Scheme - Professional Dark Blue-Gray Palette
+/* ============================================
+   CSS CUSTOM PROPERTIES
+   ============================================ */
+
 :root {
   // Typography
   --font-sans: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -21,26 +33,26 @@
   --base-font-size: 16px;
 
   // Primary Colors - Dark Blue-Gray Palette
-  --color-primary: #1e3a5f; // Deep blue-gray
-  --color-primary-dark: #152942; // Darker blue-gray
-  --color-primary-light: #2c4f7c; // Lighter blue-gray
-  --primary: #ff497c; // Brand pink
+  --color-primary: #1e3a5f;
+  --color-primary-dark: #152942;
+  --color-primary-light: #2c4f7c;
+  --primary: #ff497c;
   
   // Accent Colors
-  --color-accent: #3b82f6; // Bright blue for highlights
+  --color-accent: #3b82f6;
   --color-accent-hover: #2563eb;
   
   // Neutral Colors
-  --color-bg-main: #f8fafc; // Very light gray-blue (main content)
-  --color-bg-white: #ffffff; // Pure white
-  --color-bg-sidebar: #1e3a5f; // Dark blue-gray (sidebar)
-  --color-bg-footer: #152942; // Darker blue-gray (footer)
+  --color-bg-main: #f8fafc;
+  --color-bg-white: #ffffff;
+  --color-bg-sidebar: #1e3a5f;
+  --color-bg-footer: #152942;
   
   // Text Colors
-  --color-text-primary: #1e293b; // Dark text for light backgrounds
-  --color-text-secondary: #64748b; // Gray text
-  --color-text-light: #f1f5f9; // Light text for dark backgrounds
-  --color-text-white: #ffffff; // White text
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-text-light: #f1f5f9;
+  --color-text-white: #ffffff;
   
   // Border & Divider
   --color-border: #e2e8f0;
@@ -58,9 +70,16 @@
   // Spacing
   --sidebar-width-expanded: 260px;
   --sidebar-width-collapsed: 70px;
+
+  // Overlay
+  --overlay-dark: rgba(0, 0, 0, 0.6);
+  --overlay-light: rgba(0, 0, 0, 0.3);
 }
 
-// Reset & Base Styles
+/* ============================================
+   RESET & BASE STYLES
+   ============================================ */
+
 * {
   margin: 0;
   padding: 0;
@@ -86,7 +105,10 @@ body {
   background-color: var(--color-bg-footer);
 }
 
-// Scrollbar Styling
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -105,13 +127,45 @@ body {
   background: rgba(255, 255, 255, 0.3);
 }
 
-// Firefox scrollbar
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.2) var(--color-primary-dark);
 }
 
-// ✅ NUEVO: Prevenir crecimiento del body en mobile
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.hidden {
+  display: none !important;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ============================================
+   RESPONSIVE MOBILE
+   ============================================ */
+
 @media (max-width: 768px) {
   html, body {
     overflow-x: hidden !important;
@@ -127,10 +181,4 @@ body {
   html {
     height: -webkit-fill-available;
   }
-
-  * {
-    box-sizing: border-box;
-  }
 }
-
-

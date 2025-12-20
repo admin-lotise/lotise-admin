@@ -1,0 +1,208 @@
+@use 'variables' as *;
+
+/**
+ * ============================================
+ * MODAL SHARED STYLES
+ * Estilos globales para todos los modales
+ * ============================================
+ */
+
+// ==================== MODAL OVERLAY ====================
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $z-modal-backdrop;
+  padding: $spacing-md;
+  animation: fadeIn 0.2s ease;
+
+  @media (max-width: $breakpoint-md) {
+    align-items: flex-start;
+    padding: 0;
+  }
+}
+
+// ==================== MODAL CONTENT ====================
+.modal-content {
+  background: var(--color-bg-white);
+  border-radius: $border-radius-lg;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: $shadow-2xl;
+  animation: slideUp 0.3s ease;
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: $breakpoint-md) {
+    margin: 0;
+    max-height: calc(100vh - 80px); // ✅ Restar altura del footer mobile
+    border-radius: 0;
+    max-width: 100%;
+  }
+
+  // Variants
+  &.modal-sm { max-width: 400px; }
+  &.modal-md { max-width: 600px; }
+  &.modal-lg { max-width: 800px; }
+  &.modal-xl { max-width: 1000px; }
+  &.modal-fullscreen {
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+}
+
+// ==================== MODAL HEADER ====================
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-lg $spacing-xl;
+  border-bottom: 2px solid var(--color-bg-main);
+  flex-shrink: 0;
+
+  @media (max-width: $breakpoint-md) {
+    padding: $spacing-md $spacing-lg;
+  }
+
+  .modal-title {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: var(--color-text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+
+    i {
+      font-size: $font-size-xl;
+      color: var(--primary);
+    }
+
+    @media (max-width: $breakpoint-md) {
+      font-size: $font-size-lg;
+    }
+  }
+
+  .modal-close,
+  .close-modal-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: $border-radius-sm;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: $transition-fast;
+    padding: 0;
+    flex-shrink: 0;
+
+    i {
+      font-size: $font-size-xl;
+    }
+
+    &:hover {
+      background: var(--color-bg-main);
+      color: var(--color-text-primary);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--secondary);
+      outline-offset: 2px;
+    }
+  }
+}
+
+// ==================== MODAL BODY ====================
+.modal-body {
+  padding: $spacing-xl;
+  overflow-y: auto;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+  
+  // ✅ MOVER ESTAS PROPIEDADES ARRIBA (antes de los selectores anidados)
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+
+  @media (max-width: $breakpoint-md) {
+    padding: $spacing-lg;
+  }
+
+  // Custom Scrollbar (WebKit)
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: $border-radius-sm;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+// ==================== MODAL FOOTER ====================
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-md;
+  padding: $spacing-lg $spacing-xl;
+  border-top: 2px solid var(--color-bg-main);
+  background: var(--color-bg-main);
+  flex-shrink: 0;
+
+  @media (max-width: $breakpoint-md) {
+    flex-direction: column-reverse;
+    padding: $spacing-md $spacing-lg;
+
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+// ==================== MODAL ANIMATIONS ====================
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ==================== BODY SCROLL LOCK ====================
+body.modal-open {
+  overflow: hidden;
+  
+  @media (max-width: $breakpoint-md) {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+  }
+}

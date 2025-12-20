@@ -1,3 +1,6 @@
+@use 'app/shared/styles/settings-shared' as *;
+@use 'sass:color';
+
 .payment-card {
   background-color: var(--color-bg-white);
   border: 1px solid #e5e7eb;
