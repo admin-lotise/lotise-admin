@@ -117,8 +117,9 @@ export class PaymentMethodsApiService {
 
   /**
    * Actualizar método de pago
+   * ✅ CORREGIDO: Ahora acepta UpdatePaymentMethodDto
    */
-  updatePaymentMethod(tenantId: string, methodId: string, dto: CreatePaymentMethodDto): Observable<PaymentMethod> {
+  updatePaymentMethod(tenantId: string, methodId: string, dto: UpdatePaymentMethodDto): Observable<PaymentMethod> {
     if (this.USE_MOCK_DATA) {
       const index = this.mockMethods.findIndex(m => m.id === methodId && m.tenantId === tenantId);
       
@@ -126,14 +127,24 @@ export class PaymentMethodsApiService {
         return throwError(() => new Error('Método no encontrado'));
       }
 
+      const existingMethod = this.mockMethods[index];
+
       // Si es principal, quitar el flag de otros métodos
       if (dto.isPrimary) {
         this.mockMethods = this.mockMethods.map(m => ({ ...m, isPrimary: false }));
       }
 
+      // ✅ Actualizar solo los campos que vienen en el DTO
       this.mockMethods[index] = {
-        ...this.mockMethods[index],
-        ...dto,
+        ...existingMethod,
+        paymentType: dto.paymentType ?? existingMethod.paymentType,
+        bank: dto.bank ?? existingMethod.bank,
+        accountNumber: dto.accountNumber ?? existingMethod.accountNumber,
+        clabe: dto.clabe ?? existingMethod.clabe,
+        cardNumber: dto.cardNumber ?? existingMethod.cardNumber,
+        accountHolder: dto.accountHolder ?? existingMethod.accountHolder,
+        isActive: dto.isActive ?? existingMethod.isActive,
+        isPrimary: dto.isPrimary ?? existingMethod.isPrimary,
         updatedAt: new Date()
       };
 
