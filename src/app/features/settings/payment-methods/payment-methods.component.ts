@@ -75,7 +75,9 @@ export class PaymentMethodsComponent implements OnInit {
    * Abrir formulario para editar método existente
    */
   onEdit(method: PaymentMethod): void {
-    this.editingMethod.set(method);
+    // ✅ NUEVO: Crear copia profunda para forzar detección de cambios
+    const methodCopy = { ...method };
+    this.editingMethod.set(methodCopy);
     this.showForm.set(true);
   }
 
@@ -182,14 +184,16 @@ export class PaymentMethodsComponent implements OnInit {
    */
   async onToggleActive(method: PaymentMethod): Promise<void> {
     try {
-      const tenantId = 'tenant-demo'; // TODO: Obtener desde AuthStateService
+      const tenantId = 'tenant-demo';
       const newStatus = !method.isActive;
       
-      await firstValueFrom(
+      const updated = await firstValueFrom(
         this.paymentMethodsApi.toggleActive(tenantId, method.id, newStatus)
       );
       
-      this.paymentMethodsState.updatePaymentMethod(method.id, { isActive: newStatus });
+      // ✅ CORREGIDO: Pasar el objeto completo retornado por el API
+      // Esto crea una nueva referencia y dispara el effect del formulario
+      this.paymentMethodsState.updatePaymentMethod(method.id, updated);
     } catch (err: any) {
       this.error.set(err?.message || 'Error al cambiar estado del método');
       console.error('Error toggling active status:', err);

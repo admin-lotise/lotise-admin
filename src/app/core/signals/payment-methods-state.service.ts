@@ -40,15 +40,24 @@ export class PaymentMethodsStateService {
 
   /**
    * Actualizar método de pago
-   * ✅ CORREGIDO: Usar _paymentMethods en vez de paymentMethods
+   * ✅ CORREGIDO: Crear nueva referencia sin propiedades extra
    */
   updatePaymentMethod(id: string, updates: Partial<PaymentMethod> | PaymentMethod): void {
     this._paymentMethods.update((methods: PaymentMethod[]) =>
-      methods.map((method: PaymentMethod) =>
-        method.id === id
-          ? { ...method, ...updates, updatedAt: new Date() }
-          : method
-      )
+      methods.map((method: PaymentMethod) => {
+        if (method.id !== id) {
+          return method;
+        }
+
+        // ✅ Crear nuevo objeto con spread para forzar nueva referencia
+        const updated: PaymentMethod = {
+          ...method,
+          ...updates,
+          updatedAt: new Date()
+        };
+
+        return updated;
+      })
     );
   }
 

@@ -40,20 +40,38 @@ export class PaymentMethodFormComponent {
 
   // ✅ NUEVO: Computed para habilitar botón
   canSubmit = computed(() => {
-    if (!this.form) return false;
+    if (!this.form) {
+      return false;
+    }
     
     const isValid = this.form.valid;
     const notSaving = !this.isSaving();
+    const isEditingMode = this.isEditing();
     
     // Si estamos editando, permitir guardar si es válido
-    // (no requerir dirty porque puede haber cambios desde fuera del form)
-    if (this.isEditing()) {
-      return isValid && notSaving;
+    if (isEditingMode) {
+      const result = isValid && notSaving;
+      return result;
     }
     
     // Si estamos creando, solo validar
-    return isValid && notSaving;
+    const result = isValid && notSaving;
+    return result;
   });
+
+  // ✅ NUEVO: Helper para ver qué campos son inválidos
+  private getInvalidControls(): string[] {
+    const invalid: string[] = [];
+    const controls = this.form.controls;
+    
+    for (const name in controls) {
+      if (controls[name].invalid) {
+        invalid.push(`${name}: ${JSON.stringify(controls[name].errors)}`);
+      }
+    }
+    
+    return invalid;
+  }
 
   constructor() {
     this.initForm();
@@ -61,13 +79,17 @@ export class PaymentMethodFormComponent {
     // Effect para cargar datos al editar
     effect(() => {
       const method = this.paymentMethod();
+      
       if (method) {
         this.isEditing.set(true);
-        this.isSaving.set(false); // ✅ RESETEAR al cargar nuevo método
+        this.isSaving.set(false);
+        this.error.set(null);
         this.patchForm(method);
       } else {
+        console.log('➕ Modo creación');
         this.isEditing.set(false);
-        this.isSaving.set(false); // ✅ RESETEAR al crear nuevo
+        this.isSaving.set(false);
+        this.error.set(null);
         this.form.reset({
           paymentType: null,
           bank: null,
@@ -80,7 +102,7 @@ export class PaymentMethodFormComponent {
           isPrimary: false
         });
       }
-    });
+    }, { allowSignalWrites: true });
 
     // Usar valueChanges en vez de effect
     this.form.get('paymentType')?.valueChanges.subscribe(paymentType => {
@@ -105,7 +127,8 @@ export class PaymentMethodFormComponent {
   }
 
   private patchForm(method: PaymentMethod): void {
-    // Inferir bankAccountType si no existe
+    console.log('🔧 Iniciando patchForm con:', method);
+    
     let inferredBankAccountType = method.bankAccountType;
     
     if (!inferredBankAccountType && method.paymentType === PaymentType.BANK_TRANSFER) {
@@ -118,8 +141,7 @@ export class PaymentMethodFormComponent {
       }
     }
 
-    // ✅ Usar patchValue sin { emitEvent: false } para que detecte cambios
-    this.form.patchValue({
+    const patchValue = {
       paymentType: method.paymentType,
       bank: method.bank,
       bankAccountType: inferredBankAccountType,
@@ -129,9 +151,32 @@ export class PaymentMethodFormComponent {
       accountHolder: method.accountHolder || '',
       isActive: method.isActive,
       isPrimary: method.isPrimary
+    };
+
+    this.form.patchValue(patchValue);
+    
+    // ✅ NUEVO: Deshabilitar campos sensibles al editar (solo mostrar últimos 4 dígitos)
+    if (method.cardNumber) {
+      this.form.get('cardNumber')?.disable();
+    }
+    if (method.clabe) {
+      this.form.get('clabe')?.disable();
+    }
+    if (method.accountNumber) {
+      this.form.get('accountNumber')?.disable();
+    }
+    
+    // También deshabilitar tipo de pago y banco al editar
+    this.form.get('paymentType')?.disable();
+    this.form.get('bank')?.disable();
+    this.form.get('bankAccountType')?.disable();
+
+    console.log('  ✅ Form después de patchValue:', {
+      value: this.form.value,
+      valid: this.form.valid,
+      invalid: this.form.invalid
     });
 
-    // Disparar validaciones
     if (inferredBankAccountType) {
       setTimeout(() => this.onBankAccountTypeChange(), 0);
     }
