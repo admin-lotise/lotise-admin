@@ -1,0 +1,66 @@
+<div class="raffle-detail-container">
+  <div class="detail-header">
+    <button class="btn-back" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      Volver
+    </button>
+
+    @if (raffle()) {
+      <button class="btn btn-primary" (click)="onEdit()">
+        <i class="fas fa-edit"></i>
+        Editar
+      </button>
+    }
+  </div>
+
+  <!-- Loading -->
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando rifa...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error()) {
+    <div class="error-state">
+      <i class="fas fa-exclamation-triangle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-secondary" (click)="loadRaffle()">
+        <i class="fas fa-redo"></i>
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Contenido -->
+  @if (!isLoading() && !error() && raffle(); as raffleData) {
+    <div class="detail-content">
+      <div class="detail-card">
+        <h1>{{ raffleData.title }}</h1>
+        <p><strong>ID:</strong> {{ raffleData.id }}</p>
+        <p><strong>Estado:</strong> {{ raffleData.status }}</p>
+        <p><strong>Descripción:</strong> {{ raffleData.description }}</p>
+        
+        <div class="detail-section">
+          <h3>Información de boletos</h3>
+          <p><strong>Total de boletos:</strong> {{ raffleData.totalTickets }}</p>
+          <p><strong>Boletos vendidos:</strong> {{ raffleData.soldTickets }}</p>
+          <p><strong>Precio por boleto:</strong> {{ raffleData.ticketPrice | currency:'MXN' }}</p>
+        </div>
+
+        <div class="detail-section">
+          <h3>Premios</h3>
+          @for (prize of raffleData.prizes; track prize.id) {
+            <div class="prize-item">
+              <p><strong>{{ prize.position }}.</strong> {{ prize.name }}</p>
+              @if (prize.description) {
+                <p class="prize-description">{{ prize.description }}</p>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>
