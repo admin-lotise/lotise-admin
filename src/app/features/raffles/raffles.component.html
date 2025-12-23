@@ -1,0 +1,211 @@
+<div class="raffles-container">
+  <!-- Header -->
+  <header class="page-header">
+    <div class="header-content">
+      <div class="header-text">
+        <h1>
+          <i class="fas fa-ticket-alt"></i>
+          Rifas
+        </h1>
+        <p>Administra tus rifas y sorteos</p>
+      </div>
+
+      <button class="btn btn-primary" (click)="onCreateRaffle()">
+        <i class="fas fa-plus"></i>
+        Nueva Rifa
+      </button>
+    </div>
+
+    <!-- Estadísticas -->
+    @if (rafflesState.stats(); as stats) {
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon total">
+            <i class="fas fa-list"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">Total de rifas</span>
+            <span class="stat-value">{{ stats.totalRaffles }}</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon active">
+            <i class="fas fa-play-circle"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">Rifas activas</span>
+            <span class="stat-value">{{ stats.activeRaffles }}</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon revenue">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">Ingresos totales</span>
+            <span class="stat-value">{{ stats.totalRevenue | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon tickets">
+            <i class="fas fa-ticket-alt"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">Boletos vendidos</span>
+            <span class="stat-value">{{ stats.totalTicketsSold | number }}</span>
+          </div>
+        </div>
+      </div>
+    }
+  </header>
+
+  <!-- Filtros y búsqueda -->
+  <div class="filters-section">
+    <!-- Barra de búsqueda -->
+    <div class="search-bar">
+      <i class="fas fa-search"></i>
+      <input 
+        type="text"
+        placeholder="Buscar rifas por título, descripción o premio..."
+        [value]="searchQuery()"
+        (input)="onSearch($event)">
+      
+      @if (searchQuery()) {
+        <button class="clear-search" (click)="searchQuery.set('')">
+          <i class="fas fa-times"></i>
+        </button>
+      }
+    </div>
+
+    <!-- Filtros por estado -->
+    <div class="status-filters">
+      <span class="filter-label">Filtrar por estado:</span>
+      
+      <div class="filter-chips">
+        <button 
+          class="filter-chip"
+          [class.active]="isStatusFilterActive(RaffleStatus.ACTIVE)"
+          (click)="toggleStatusFilter(RaffleStatus.ACTIVE)">
+          <i class="fas fa-play-circle"></i>
+          Activas
+        </button>
+
+        <button 
+          class="filter-chip"
+          [class.active]="isStatusFilterActive(RaffleStatus.SCHEDULED)"
+          (click)="toggleStatusFilter(RaffleStatus.SCHEDULED)">
+          <i class="fas fa-clock"></i>
+          Programadas
+        </button>
+
+        <button 
+          class="filter-chip"
+          [class.active]="isStatusFilterActive(RaffleStatus.DRAFT)"
+          (click)="toggleStatusFilter(RaffleStatus.DRAFT)">
+          <i class="fas fa-file-alt"></i>
+          Borradores
+        </button>
+
+        <button 
+          class="filter-chip"
+          [class.active]="isStatusFilterActive(RaffleStatus.COMPLETED)"
+          (click)="toggleStatusFilter(RaffleStatus.COMPLETED)">
+          <i class="fas fa-check-circle"></i>
+          Completadas
+        </button>
+
+        @if (hasFilters()) {
+          <button class="filter-chip clear" (click)="clearFilters()">
+            <i class="fas fa-times"></i>
+            Limpiar filtros
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando rifas...</p>
+    </div>
+  }
+
+  <!-- Error state -->
+  @if (error()) {
+    <div class="error-state">
+      <i class="fas fa-exclamation-triangle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-secondary" (click)="loadRaffles()">
+        <i class="fas fa-redo"></i>
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Empty state -->
+  @if (!isLoading() && !error() && filteredRaffles().length === 0) {
+    <div class="empty-state">
+      @if (hasFilters()) {
+        <!-- No hay resultados para la búsqueda -->
+        <i class="fas fa-search"></i>
+        <h3>No se encontraron rifas</h3>
+        <p>No hay rifas que coincidan con tu búsqueda</p>
+        <button class="btn btn-secondary" (click)="clearFilters()">
+          <i class="fas fa-times"></i>
+          Limpiar filtros
+        </button>
+      } @else if (hasRaffles()) {
+        <!-- Tiene rifas pero no coinciden con filtros -->
+        <i class="fas fa-filter"></i>
+        <h3>No hay rifas con estos filtros</h3>
+        <p>Intenta con otros criterios de búsqueda</p>
+        <button class="btn btn-secondary" (click)="clearFilters()">
+          <i class="fas fa-times"></i>
+          Limpiar filtros
+        </button>
+      } @else {
+        <!-- No hay rifas en absoluto -->
+        <i class="fas fa-ticket-alt"></i>
+        <h3>No hay rifas creadas</h3>
+        <p>Comienza creando tu primera rifa</p>
+        <button class="btn btn-primary" (click)="onCreateRaffle()">
+          <i class="fas fa-plus"></i>
+          Crear Primera Rifa
+        </button>
+      }
+    </div>
+  }
+
+  <!-- Lista de rifas -->
+  @if (!isLoading() && !error() && filteredRaffles().length > 0) {
+    <div class="raffles-grid">
+      @for (raffle of filteredRaffles(); track raffle.id) {
+        <app-raffle-card
+          [raffle]="raffle"
+          (view)="onViewRaffle($event)"
+          (edit)="onEditRaffle($event)"
+          (delete)="onDeleteRaffle($event)"
+          (changeStatus)="onChangeStatus($event)"
+        />
+      }
+    </div>
+  }
+
+  <!-- Modal de confirmación de eliminación -->
+  @if (showDeleteConfirm() && raffleToDelete()) {
+    <app-confirm-dialog
+      title="Eliminar Rifa"
+      [message]="'¿Estás seguro de eliminar la rifa ' + raffleToDelete()!.title + '? Esta acción no se puede deshacer.'"
+      confirmText="Eliminar"
+      cancelText="Cancelar"
+      type="danger"
+      icon="fas fa-trash-alt"
+      (confirm)="confirmDelete()"
+      (cancel)="cancelDelete()" />
+  }
+</div>

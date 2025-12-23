@@ -1,0 +1,34 @@
+<div class="dialog-overlay" (click)="onOverlayClick($event)">
+  <div class="dialog-content">
+    <!-- Header -->
+    <div class="dialog-header">
+      <div class="dialog-icon" [style.background-color]="getIconColor()">
+        <i [class]="icon()"></i>
+      </div>
+      <h3 class="dialog-title">{{ title() }}</h3>
+    </div>
+    
+    <!-- Body -->
+    <div class="dialog-body">
+      <p>{{ message() }}</p>
+    </div>
+    
+    <!-- Footer con acciones -->
+    <div class="dialog-footer">
+      <button 
+        class="btn btn-secondary" 
+        (click)="onCancel()"
+        type="button">
+        {{ cancelText() }}
+      </button>
+      
+      <button 
+        class="btn"
+        [class]="getConfirmButtonClass()"
+        (click)="onConfirm()"
+        type="button">
+        {{ confirmText() }}
+      </button>
+    </div>
+  </div>
+</div>

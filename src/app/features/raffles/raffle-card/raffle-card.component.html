@@ -1,0 +1,141 @@
+<article class="raffle-card">
+  <!-- Header con imagen y estado -->
+  <div class="card-header" (click)="onView()">
+    <div class="card-image">
+      @if (raffle().imageUrl) {
+        <img [src]="raffle().imageUrl" [alt]="raffle().title">
+      } @else {
+        <div class="placeholder-image">
+          <i class="fas fa-gift"></i>
+        </div>
+      }
+      
+      <!-- Badge de estado -->
+      <span class="status-badge" [attr.data-status]="getStatusColor(raffle().status)">
+        <i [class]="getStatusIcon(raffle().status)"></i>
+        {{ getStatusText(raffle().status) }}
+      </span>
+
+      <!-- Badge de advertencia -->
+      @if (isNearSoldOut && raffle().status === RaffleStatus.ACTIVE) {
+        <span class="warning-badge">
+          <i class="fas fa-fire"></i>
+          ¡Casi agotado!
+        </span>
+      }
+
+      @if (isDrawingSoon && (raffle().status === RaffleStatus.ACTIVE || raffle().status === RaffleStatus.SOLD_OUT)) {
+        <span class="warning-badge draw-soon">
+          <i class="fas fa-exclamation-triangle"></i>
+          Sorteo pronto
+        </span>
+      }
+    </div>
+  </div>
+
+  <!-- Contenido -->
+  <div class="card-content">
+    <!-- Título -->
+    <h3 class="card-title" (click)="onView()">{{ raffle().title }}</h3>
+
+    <!-- Descripción -->
+    <p class="card-description">{{ raffle().description }}</p>
+
+    <!-- Premios -->
+    @if (raffle().prizes.length > 0) {
+      <div class="prizes">
+        <i class="fas fa-trophy"></i>
+        <span>
+          {{ raffle().prizes[0].name }}
+          @if (raffle().prizes.length > 1) {
+            <small>+{{ raffle().prizes.length - 1 }} más</small>
+          }
+        </span>
+      </div>
+    }
+
+    <!-- Progreso de ventas -->
+    <div class="sales-progress">
+      <div class="progress-header">
+        <span class="tickets-sold">
+          <i class="fas fa-ticket-alt"></i>
+          {{ raffle().soldTickets }} / {{ raffle().totalTickets }} vendidos
+        </span>
+        <span class="percentage">{{ salesPercentage | number:'1.0-0' }}%</span>
+      </div>
+      <div class="progress-bar">
+        <div 
+          class="progress-fill" 
+          [style.width.%]="salesPercentage"
+          [class.near-complete]="isNearSoldOut">
+        </div>
+      </div>
+    </div>
+
+    <!-- Información de fechas -->
+    <div class="dates-info">
+      <div class="date-item">
+        <i class="fas fa-calendar-alt"></i>
+        <div>
+          <small>Sorteo</small>
+          <strong>{{ formatDate(raffle().drawDate) }}</strong>
+        </div>
+      </div>
+      @if (daysUntilDraw > 0) {
+        <div class="date-item">
+          <i class="fas fa-hourglass-half"></i>
+          <div>
+            <small>Faltan</small>
+            <strong>{{ daysUntilDraw }} días</strong>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Precio -->
+    <div class="pricing">
+      <div class="base-price">
+        <small>Precio por boleto</small>
+        <strong>{{ formatCurrency(raffle().ticketPrice) }}</strong>
+      </div>
+      @if (raffle().packages && (raffle().packages?.length ?? 0) > 0) {
+        <div class="packages-available">
+          <i class="fas fa-boxes"></i>
+          <span>{{ raffle().packages?.length }} paquetes disponibles</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Footer con acciones -->
+  <div class="card-footer">
+    <div class="card-actions">
+      <!-- Botón Editar -->
+      <button 
+        class="btn-action btn-edit"
+        [routerLink]="['/raffles', raffle().id, 'edit']"
+        title="Editar rifa">
+        <i class="material-icons">edit</i>
+        <span>Editar</span>
+      </button>
+
+      <!-- ✅ NUEVO: Botón Gestionar Boletos -->
+      <button 
+        class="btn-action btn-tickets"
+        [routerLink]="['/raffles', raffle().id, 'tickets']"
+        title="Gestionar boletos">
+        <i class="material-icons">confirmation_number</i>
+        <span>Boletos</span>
+      </button>
+
+      <!-- Botón Ver Detalle -->
+      <button 
+        class="btn-action btn-view"
+        [routerLink]="['/raffles', raffle().id]"
+        title="Ver detalle">
+        <i class="material-icons">visibility</i>
+        <span>Ver</span>
+      </button>
+    </div>
+  </div>
+</article>

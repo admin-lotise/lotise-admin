@@ -1,21 +1,24 @@
 import { Routes } from '@angular/router';
+import { AuthGuard } from './core/auth/auth.guard';
 import { LoginLayoutComponent } from './shared/components/layouts/login-layout/login-layout.component';
 import { MainLayoutComponent } from './shared/components/layouts/main-layout/main-layout.component';
-import { DashboardComponent } from './features/dashboard/dashboard.component';
-import { AuthGuard } from './core/auth/auth.guard';
 import { UpdatePasswordLayoutComponent } from './shared/components/layouts/update-password-layout/update-password-layout.component';
-import { BusinessProfileComponent } from './features/settings/business-profile/business-profile.component';
-import { RaffleSettingsComponent } from './features/settings/raffle-settings/raffle-settings.component';
-import { PaymentMethodsComponent } from './features/settings/payment-methods/payment-methods.component';
 
 export const routes: Routes = [
-  // 🔓 Ruta pública: Login
+  // Login (sin guardia)
   {
     path: 'login',
     component: LoginLayoutComponent
   },
-  
-  // 🔐 Rutas protegidas: Dentro de MainLayoutComponent
+
+  // Update Password
+  {
+    path: 'update-password',
+    component: UpdatePasswordLayoutComponent,
+    canActivate: [AuthGuard]
+  },
+
+  // Layout principal con rutas hijas
   {
     path: '',
     component: MainLayoutComponent,
@@ -23,22 +26,36 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        component: DashboardComponent
+        loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
       },
-      // ✅ SETTINGS: Business Profile
+      {
+        path: 'raffles',
+        loadComponent: () => import('./features/raffles/raffles.component').then(m => m.RafflesComponent)
+      },
+      {
+        path: 'raffles/new',
+        loadComponent: () => import('./features/raffles/raffle-form/raffle-form.component').then(m => m.RaffleFormComponent)
+      },
+      {
+        path: 'raffles/:id/edit',
+        loadComponent: () => import('./features/raffles/raffle-form/raffle-form.component').then(m => m.RaffleFormComponent)
+      },
+      // ✅ AGREGAR ESTA RUTA
+      {
+        path: 'raffles/:id/tickets',
+        loadComponent: () => import('./features/raffles/ticket-manager/ticket-manager.component').then(m => m.TicketManagerComponent)
+      },
       {
         path: 'settings/business-profile',
-        component: BusinessProfileComponent
+        loadComponent: () => import('./features/settings/business-profile/business-profile.component').then(m => m.BusinessProfileComponent)
       },
-      // ✅ SETTINGS: Raffle Settings
       {
         path: 'settings/raffle-settings',
-        component: RaffleSettingsComponent
+        loadComponent: () => import('./features/settings/raffle-settings/raffle-settings.component').then(m => m.RaffleSettingsComponent)
       },
-      // ✅ SETTINGS: Payment Methods
       {
         path: 'settings/payment-methods',
-        component: PaymentMethodsComponent
+        loadComponent: () => import('./features/settings/payment-methods/payment-methods.component').then(m => m.PaymentMethodsComponent)
       },
       {
         path: '',
@@ -47,14 +64,8 @@ export const routes: Routes = [
       }
     ]
   },
-  
-  // 🔓 Update Password (Sin AuthGuard porque es parte del flujo inicial)
-  {
-    path: 'update-password',
-    component: UpdatePasswordLayoutComponent
-  },
-  
-  // ⚠️ Fallback: Cualquier ruta no encontrada
+
+  // Wildcard redirect
   {
     path: '**',
     redirectTo: 'dashboard'

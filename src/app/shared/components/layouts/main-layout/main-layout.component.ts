@@ -53,6 +53,7 @@ export class MainLayoutComponent {
       label: 'Usuarios Admin', 
       route: '/admin-users' 
     },
+    // ===== SEPARADOR: CONFIGURACIÓN =====
     { 
       icon: 'business', 
       label: 'Mi Negocio', 
@@ -63,7 +64,6 @@ export class MainLayoutComponent {
       label: 'Config. Rifas', 
       route: '/settings/raffle-settings' 
     },
-    // ✅ NUEVO: Payment Methods
     { 
       icon: 'account_balance', 
       label: 'Métodos de Pago', 
@@ -76,7 +76,7 @@ export class MainLayoutComponent {
     }
   ];
 
-  // ✅ Mobile Bottom Nav - Accesos Rápidos
+  // ✅ Mobile Bottom Nav - Solo 4 accesos principales
   readonly mobileBottomNavItems = [
     { 
       icon: 'home', 
@@ -84,19 +84,31 @@ export class MainLayoutComponent {
       route: '/dashboard' 
     },
     { 
-      icon: 'add_circle', 
-      label: 'Crear', 
-      route: '/raffles/create' 
-    },
-    { 
       icon: 'confirmation_number', 
       label: 'Rifas', 
       route: '/raffles' 
+    },
+    { 
+      icon: 'add_circle', 
+      label: 'Crear', 
+      route: '/raffles/new'
     }
   ];
 
   // ✅ Mobile Sidebar - Menú Secundario (Bottom Sheet)
   readonly mobileSecondaryItems = [
+    { 
+      icon: 'confirmation_number', 
+      label: 'Todas las Rifas', 
+      description: 'Ver y gestionar rifas',
+      route: '/raffles' 
+    },
+    { 
+      icon: 'add_circle_outline', 
+      label: 'Crear Nueva Rifa', 
+      description: 'Agregar una rifa nueva',
+      route: '/raffles/new' 
+    },
     { 
       icon: 'group', 
       label: 'Contactos', 
@@ -121,6 +133,7 @@ export class MainLayoutComponent {
       description: 'Gestiona administradores',
       route: '/admin-users' 
     },
+    // ===== SEPARADOR: CONFIGURACIÓN =====
     { 
       icon: 'business', 
       label: 'Mi Negocio', 
@@ -133,7 +146,6 @@ export class MainLayoutComponent {
       description: 'Personaliza tus rifas',
       route: '/settings/raffle-settings' 
     },
-    // ✅ NUEVO: Payment Methods en Mobile
     { 
       icon: 'account_balance', 
       label: 'Métodos de Pago', 
@@ -168,6 +180,16 @@ export class MainLayoutComponent {
 
   closeMobileMenu() {
     this.isMobileMenuOpen.set(false);
+  }
+
+  // ✅ Manejar click en items del mobile bottom nav
+  handleMobileNavClick(item: any) {
+    if (item.action === 'toggleMenu') {
+      this.toggleMobileMenu();
+    } else if (item.route) {
+      this.router.navigate([item.route]);
+      this.closeMobileMenu();
+    }
   }
 
   logout() {
