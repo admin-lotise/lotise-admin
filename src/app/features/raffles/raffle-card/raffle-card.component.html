@@ -109,51 +109,33 @@
 
   <!-- Footer con acciones -->
   <div class="card-footer">
-    <button class="btn btn-view" (click)="onView()">
-      <i class="fas fa-eye"></i>
-      Ver Detalle
-    </button>
-
-    <div class="actions-menu">
-      <button class="btn-actions" (click)="toggleActions()">
-        <i class="fas fa-ellipsis-v"></i>
+    <div class="card-actions">
+      <!-- Botón Editar -->
+      <button 
+        class="btn-action btn-edit"
+        [routerLink]="['/raffles', raffle().id, 'edit']"
+        title="Editar rifa">
+        <i class="material-icons">edit</i>
+        <span>Editar</span>
       </button>
 
-      @if (showActions) {
-        <div class="actions-dropdown" (clickOutside)="closeActions()">
-          <button class="action-item" (click)="onEdit()">
-            <i class="fas fa-edit"></i>
-            Editar
-          </button>
+      <!-- ✅ NUEVO: Botón Gestionar Boletos -->
+      <button 
+        class="btn-action btn-tickets"
+        [routerLink]="['/raffles', raffle().id, 'tickets']"
+        title="Gestionar boletos">
+        <i class="material-icons">confirmation_number</i>
+        <span>Boletos</span>
+      </button>
 
-          <!-- Acciones según estado -->
-          @if (raffle().status === RaffleStatus.DRAFT || raffle().status === RaffleStatus.PAUSED) {
-            <button class="action-item" (click)="onChangeStatus(RaffleStatus.ACTIVE)">
-              <i class="fas fa-play"></i>
-              Activar
-            </button>
-          }
-
-          @if (raffle().status === RaffleStatus.ACTIVE) {
-            <button class="action-item" (click)="onChangeStatus(RaffleStatus.PAUSED)">
-              <i class="fas fa-pause"></i>
-              Pausar
-            </button>
-          }
-
-          @if (raffle().status === RaffleStatus.ACTIVE || raffle().status === RaffleStatus.PAUSED) {
-            <button class="action-item danger" (click)="onChangeStatus(RaffleStatus.CANCELLED)">
-              <i class="fas fa-ban"></i>
-              Cancelar
-            </button>
-          }
-
-          <button class="action-item danger" (click)="onDelete()">
-            <i class="fas fa-trash"></i>
-            Eliminar
-          </button>
-        </div>
-      }
+      <!-- Botón Ver Detalle -->
+      <button 
+        class="btn-action btn-view"
+        [routerLink]="['/raffles', raffle().id]"
+        title="Ver detalle">
+        <i class="material-icons">visibility</i>
+        <span>Ver</span>
+      </button>
     </div>
   </div>
 </article>

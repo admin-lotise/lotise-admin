@@ -1,12 +1,13 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
 import { Raffle, RaffleStatus } from '../../../shared/models/raffle.model';
 import { ClickOutsideDirective } from '../../../shared/directives/click-outside.directive';
 
 @Component({
   selector: 'app-raffle-card',
   standalone: true,
-  imports: [CommonModule, ClickOutsideDirective],
+  imports: [CommonModule, ClickOutsideDirective, RouterLink],
   templateUrl: './raffle-card.component.html',
   styleUrl: './raffle-card.component.scss'
 })
@@ -25,6 +26,8 @@ export class RaffleCardComponent {
 
   // Exponer enum para el template
   RaffleStatus = RaffleStatus;
+
+  private readonly router = inject(Router);
 
   /**
    * Calcular porcentaje de venta
@@ -174,5 +177,12 @@ export class RaffleCardComponent {
    */
   closeActions(): void {
     this.showActions = false;
+  }
+
+  /**
+   * Navegar al gestor de boletos
+   */
+  goToTicketManager(raffleId: string): void {
+    this.router.navigate(['/raffles', raffleId, 'tickets']);
   }
 }
