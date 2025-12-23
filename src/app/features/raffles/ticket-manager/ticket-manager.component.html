@@ -1,0 +1,349 @@
+<div class="ticket-manager-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>
+        <i class="material-icons">confirmation_number</i>
+        Gestión de Boletos
+      </h1>
+      @if (raffle()) {
+        <p class="subtitle">{{ raffle()!.title }}</p>
+      }
+    </div>
+
+    <button class="btn btn-primary" (click)="openAssignModal()">
+      <i class="material-icons">add</i>
+      Asignar Boletos
+    </button>
+  </div>
+
+  <!-- Stats Cards -->
+  @if (raffle()) {
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon total">
+          <i class="material-icons">confirmation_number</i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats().total }}</div>
+          <div class="stat-label">Total</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon available">
+          <i class="material-icons">check_circle</i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats().available }}</div>
+          <div class="stat-label">Disponibles</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon reserved">
+          <i class="material-icons">schedule</i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats().reserved }}</div>
+          <div class="stat-label">Reservados</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon sold">
+          <i class="material-icons">attach_money</i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats().sold }}</div>
+          <div class="stat-label">Vendidos</div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Filters and Search -->
+  <div class="filters-section">
+    <div class="search-box">
+      <i class="material-icons">search</i>
+      <input 
+        type="text"
+        placeholder="Buscar por número, nombre, email o teléfono..."
+        (input)="onSearch($event)">
+    </div>
+
+    <div class="status-filters">
+      <button 
+        class="filter-btn"
+        [class.active]="selectedStatus() === 'ALL'"
+        (click)="filterByStatus('ALL')">
+        Todos
+      </button>
+      <button 
+        class="filter-btn"
+        [class.active]="selectedStatus() === TicketStatus.AVAILABLE"
+        (click)="filterByStatus(TicketStatus.AVAILABLE)">
+        Disponibles
+      </button>
+      <button 
+        class="filter-btn"
+        [class.active]="selectedStatus() === TicketStatus.RESERVED"
+        (click)="filterByStatus(TicketStatus.RESERVED)">
+        Reservados
+      </button>
+      <button 
+        class="filter-btn"
+        [class.active]="selectedStatus() === TicketStatus.SOLD"
+        (click)="filterByStatus(TicketStatus.SOLD)">
+        Vendidos
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando boletos...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-banner">
+      <i class="material-icons">error</i>
+      <span>{{ error() }}</span>
+    </div>
+  }
+
+  <!-- Tickets Table -->
+  @if (!isLoading() && !error()) {
+    <div class="table-container">
+      <table class="tickets-table">
+        <thead>
+          <tr>
+            <th>Número</th>
+            <th>Estado</th>
+            <th>Comprador</th>
+            <th>Contacto</th>
+            <th>Fecha de Compra</th>
+            <th>Pago</th>
+            <th>Monto</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ticket of filteredTickets(); track ticket.id) {
+            <tr [class.highlight]="ticket.status === TicketStatus.RESERVED">
+              <!-- Número -->
+              <td class="ticket-number">
+                <span class="number-badge">{{ ticket.ticketNumber }}</span>
+              </td>
+
+              <!-- Estado -->
+              <td>
+                <span class="status-badge" [ngClass]="getStatusClass(ticket.status)">
+                  {{ getStatusLabel(ticket.status) }}
+                </span>
+              </td>
+
+              <!-- Comprador -->
+              <td>
+                @if (ticket.buyerName) {
+                  <div class="buyer-info">
+                    <i class="material-icons">person</i>
+                    <span>{{ ticket.buyerName }}</span>
+                  </div>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+
+              <!-- Contacto -->
+              <td>
+                @if (ticket.buyerEmail || ticket.buyerPhone) {
+                  <div class="contact-info">
+                    @if (ticket.buyerEmail) {
+                      <div class="contact-item">
+                        <i class="material-icons">email</i>
+                        <span>{{ ticket.buyerEmail }}</span>
+                      </div>
+                    }
+                    @if (ticket.buyerPhone) {
+                      <div class="contact-item">
+                        <i class="material-icons">phone</i>
+                        <span>{{ ticket.buyerPhone }}</span>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+
+              <!-- Fecha -->
+              <td>
+                @if (ticket.purchaseDate) {
+                  <span>{{ ticket.purchaseDate | date:'dd/MM/yyyy HH:mm' }}</span>
+                } @else if (ticket.reservationExpiry) {
+                  <div class="expiry-info">
+                    <i class="material-icons">timer</i>
+                    <span>Expira: {{ ticket.reservationExpiry | date:'HH:mm' }}</span>
+                  </div>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+
+              <!-- Pago -->
+              <td>
+                @if (ticket.paymentStatus) {
+                  <span 
+                    class="payment-badge"
+                    [class.paid]="ticket.paymentStatus === 'PAID'"
+                    [class.pending]="ticket.paymentStatus === 'PENDING'">
+                    {{ ticket.paymentStatus === 'PAID' ? 'Pagado' : 'Pendiente' }}
+                  </span>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+
+              <!-- Monto -->
+              <td>
+                @if (ticket.amount) {
+                  <span class="amount">${{ ticket.amount | number:'1.2-2' }}</span>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+
+              <!-- Acciones -->
+              <td>
+                <div class="actions-cell">
+                  @if (ticket.status === TicketStatus.SOLD && ticket.paymentStatus === 'PENDING') {
+                    <button 
+                      class="btn-icon btn-success"
+                      (click)="markAsPaid(ticket)"
+                      title="Marcar como pagado">
+                      <i class="material-icons">check</i>
+                    </button>
+                  }
+
+                  @if (ticket.status === TicketStatus.SOLD || ticket.status === TicketStatus.RESERVED) {
+                    <button 
+                      class="btn-icon btn-danger"
+                      (click)="releaseTicket(ticket)"
+                      title="Liberar boleto">
+                      <i class="material-icons">cancel</i>
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="empty-state">
+                <i class="material-icons">inbox</i>
+                <p>No se encontraron boletos</p>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- Modal de Asignación -->
+  @if (showAssignModal()) {
+    <div class="modal-overlay" (click)="closeAssignModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>
+            <i class="material-icons">assignment</i>
+            Asignar Boletos
+          </h2>
+          <button class="btn-close" (click)="closeAssignModal()">
+            <i class="material-icons">close</i>
+          </button>
+        </div>
+
+        <form [formGroup]="assignForm" (ngSubmit)="assignTickets()" class="modal-body">
+          <div class="form-group">
+            <label for="ticketNumbers" class="required">Números de boletos</label>
+            <input 
+              type="text"
+              id="ticketNumbers"
+              formControlName="ticketNumbers"
+              placeholder="Ej: 1, 5, 10-15, 20">
+            <p class="help-text">
+              Separados por comas. Puedes usar rangos (ej: 10-15)
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label for="buyerName" class="required">Nombre del comprador</label>
+            <input 
+              type="text"
+              id="buyerName"
+              formControlName="buyerName"
+              placeholder="Juan Pérez">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="buyerEmail" class="required">Email</label>
+              <input 
+                type="email"
+                id="buyerEmail"
+                formControlName="buyerEmail"
+                placeholder="juan@example.com">
+            </div>
+
+            <div class="form-group">
+              <label for="buyerPhone" class="required">Teléfono</label>
+              <input 
+                type="tel"
+                id="buyerPhone"
+                formControlName="buyerPhone"
+                placeholder="555-1234">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="paymentStatus" class="required">Estado de pago</label>
+              <select id="paymentStatus" formControlName="paymentStatus">
+                <option value="PENDING">Pendiente</option>
+                <option value="PAID">Pagado</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="amount" class="required">Monto</label>
+              <div class="input-with-prefix">
+                <span class="prefix">$</span>
+                <input 
+                  type="number"
+                  id="amount"
+                  formControlName="amount"
+                  step="0.01"
+                  min="0">
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" (click)="closeAssignModal()">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="!assignForm.valid">
+              <i class="material-icons">save</i>
+              Asignar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>
