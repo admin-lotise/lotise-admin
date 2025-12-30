@@ -1,5 +1,4 @@
 .raffles-container {
-  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -347,10 +346,28 @@
 
 .raffles-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
+  // ✅ Grid inteligente: mínimo 320px, máximo 3 columnas
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 2.5rem;
+  padding: 0.5rem;
+  
+  // ✅ IMPORTANTE: Limitar a máximo 3 columnas
+  @media (min-width: 1400px) {
+    grid-template-columns: repeat(3, 1fr); // ✅ Máximo 3 columnas en pantallas grandes
+  }
 
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+  @media (min-width: 1024px) and (max-width: 1399px) {
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); // ✅ 2-3 columnas según espacio
+    gap: 2rem;
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); // ✅ 2 columnas en tablet
+    gap: 1.75rem;
+  }
+
+  @media (max-width: 767px) {
+    grid-template-columns: 1fr; // ✅ 1 columna en mobile
+    gap: 2rem;
   }
 }
