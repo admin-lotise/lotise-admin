@@ -672,6 +672,7 @@
 
 .input-with-prefix {
   position: relative;
+  width: 100%;
 
   .prefix {
     position: absolute;
@@ -680,11 +681,26 @@
     transform: translateY(-50%);
     font-weight: 600;
     color: #6b7280;
-    font-size: 1rem;
+    font-size: 0.9375rem;
+    pointer-events: none;
+    z-index: 2;
+    user-select: none;
   }
 
   input {
-    padding-left: 2.5rem;
+    padding-left: 2rem !important; // ✅ Forzar el padding con !important
+    width: 100%;
+  }
+
+  // ✅ Remover spinners de number inputs
+  input[type="number"] {
+    -moz-appearance: textfield;
+    
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
   }
 }
 
