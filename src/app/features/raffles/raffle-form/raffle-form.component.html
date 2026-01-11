@@ -3,7 +3,7 @@
   <div class="form-header">
     <button class="btn-back" type="button" (click)="goBack()">
       <i class="material-icons">arrow_back</i>
-      <span>Volver</span>
+      <span>Volver a rifas</span>
     </button>
 
     <div class="header-content">
@@ -21,31 +21,6 @@
   <!-- Progress Bar -->
   <div class="progress-bar">
     <div class="progress-fill" [style.width.%]="progressPercentage()"></div>
-  </div>
-
-  <!-- Steps Navigation -->
-  <div class="steps-nav">
-    @for (step of [1, 2, 3, 4, 5, 6, 7]; track step) {
-      <button 
-        type="button"
-        class="step-btn"
-        [class.active]="currentStep() === step"
-        [class.completed]="currentStep() > step"
-        (click)="goToStep(step)">
-        <span class="step-number">{{ step }}</span>
-        <span class="step-label">
-          @switch (step) {
-            @case (1) { Información }
-            @case (2) { Premios }
-            @case (3) { Boletos }
-            @case (4) { Sorteo }
-            @case (5) { Oportunidades }
-            @case (6) { Textos }
-            @case (7) { FAQs }
-          }
-        </span>
-      </button>
-    }
   </div>
 
   <!-- Loading State -->
@@ -71,278 +46,914 @@
   @if (!isLoading()) {
     <form [formGroup]="raffleForm" (ngSubmit)="onSubmit()" class="raffle-form">
       
-      <!-- PASO 1: Información Básica -->
-      @if (currentStep() === 1) {
-        <div class="form-step" formGroupName="basicInfo">
-          <h2 class="step-title">
-            <i class="material-icons">info</i>
-            Información Básica
-          </h2>
+      <!-- ✅ DESKTOP: Tabs Navigation -->
+      <div class="steps-tabs">
+        <button 
+          type="button"
+          class="tab-item"
+          [class.active]="currentStep() === 1"
+          [class.completed]="currentStep() > 1"
+          (click)="goToStep(1)">
+          <span class="tab-number">1</span>
+          <span class="tab-label">Información</span>
+        </button>
 
-          <!-- Título -->
-          <div class="form-group">
-            <label for="title" class="required">Título de la rifa</label>
-            <input 
-              type="text" 
-              id="title"
-              formControlName="title"
-              placeholder="Ej: iPhone 15 Pro Max 256GB"
-              maxlength="100">
-            @if (basicInfoGroup.get('title')?.touched && basicInfoGroup.get('title')?.errors) {
-              <div class="error-message">
-                @if (basicInfoGroup.get('title')?.errors?.['required']) {
-                  El título es requerido
-                }
-                @if (basicInfoGroup.get('title')?.errors?.['minlength']) {
-                  Mínimo 5 caracteres
-                }
+        <button 
+          type="button"
+          class="tab-item"
+          [class.active]="currentStep() === 2"
+          [class.completed]="currentStep() > 2"
+          (click)="goToStep(2)">
+          <span class="tab-number">2</span>
+          <span class="tab-label">Premios</span>
+        </button>
+
+        <button 
+          type="button"
+          class="tab-item"
+          [class.active]="currentStep() === 3"
+          [class.completed]="currentStep() > 3"
+          (click)="goToStep(3)">
+          <span class="tab-number">3</span>
+          <span class="tab-label">Boletos</span>
+        </button>
+
+        <button 
+          type="button"
+          class="tab-item"
+          [class.active]="currentStep() === 4"
+          [class.completed]="currentStep() > 4"
+          (click)="goToStep(4)">
+          <span class="tab-number">4</span>
+          <span class="tab-label">Sorteo</span>
+        </button>
+
+        <button 
+          type="button"
+          class="tab-item"
+          [class.active]="currentStep() === 5"
+          [class.completed]="currentStep() > 5"
+          (click)="goToStep(5)">
+          <span class="tab-number">5</span>
+          <span class="tab-label">Oportunidades</span>
+        </button>
+
+        <button 
+          type="button"
+          class="tab-item"
+          [class.active]="currentStep() === 6"
+          [class.completed]="currentStep() > 6"
+          (click)="goToStep(6)">
+          <span class="tab-number">6</span>
+          <span class="tab-label">Textos</span>
+        </button>
+
+        <button 
+          type="button"
+          class="tab-item"
+          [class.active]="currentStep() === 7"
+          [class.completed]="currentStep() > 7"
+          (click)="goToStep(7)">
+          <span class="tab-number">7</span>
+          <span class="tab-label">FAQs</span>
+        </button>
+      </div>
+
+      <!-- ✅ MOBILE: Accordion Navigation -->
+      <div class="steps-accordion">
+        
+        <!-- PASO 1 -->
+        <div class="accordion-item" [class.active]="currentStep() === 1" [class.completed]="currentStep() > 1">
+          <button type="button" class="accordion-header" (click)="goToStep(1)">
+            <div class="step-info">
+              <span class="step-number">1</span>
+              <div class="step-text">
+                <span class="step-label">Información Básica</span>
+                <span class="step-description">Título, descripción e imágenes</span>
               </div>
-            }
-            <div class="char-counter">
-              {{ basicInfoGroup.get('title')?.value?.length || 0 }} / 100
             </div>
-          </div>
+            <i class="material-icons">{{ currentStep() === 1 ? 'expand_less' : 'expand_more' }}</i>
+          </button>
 
-          <!-- Descripción -->
-          <div class="form-group">
-            <label for="description" class="required">Descripción</label>
-            <textarea 
-              id="description"
-              formControlName="description"
-              rows="4"
-              placeholder="Describe el premio principal y lo que hace especial a esta rifa..."
-              maxlength="500"></textarea>
-            @if (basicInfoGroup.get('description')?.touched && basicInfoGroup.get('description')?.errors) {
-              <div class="error-message">
-                @if (basicInfoGroup.get('description')?.errors?.['required']) {
-                  La descripción es requerida
+          @if (currentStep() === 1) {
+            <div class="accordion-content" formGroupName="basicInfo">
+              <!-- Título -->
+              <div class="form-group">
+                <label for="title" class="required">Título de la rifa</label>
+                <input 
+                  type="text" 
+                  id="title"
+                  formControlName="title"
+                  placeholder="Ej: iPhone 15 Pro Max 256GB"
+                  maxlength="100">
+                @if (basicInfoGroup.get('title')?.touched && basicInfoGroup.get('title')?.errors) {
+                  <div class="error-message">
+                    @if (basicInfoGroup.get('title')?.errors?.['required']) {
+                      El título es requerido
+                    }
+                    @if (basicInfoGroup.get('title')?.errors?.['minlength']) {
+                      Mínimo 5 caracteres
+                    }
+                  </div>
                 }
-                @if (basicInfoGroup.get('description')?.errors?.['minlength']) {
-                  Mínimo 20 caracteres
-                }
-              </div>
-            }
-            <div class="char-counter">
-              {{ basicInfoGroup.get('description')?.value?.length || 0 }} / 500
-            </div>
-          </div>
-
-          <!-- Categoría -->
-          <div class="form-group">
-            <label for="categoryId">Categoría (opcional)</label>
-            <input 
-              type="text" 
-              id="categoryId"
-              formControlName="categoryId"
-              placeholder="Ej: Tecnología, Automóviles, etc.">
-          </div>
-
-          <!-- Imágenes -->
-          <div class="form-group">
-            <label>Imágenes del producto</label>
-            <div class="images-list">
-              @for (control of imagesArray.controls; track $index) {
-                <div class="image-item">
-                  <input 
-                    type="url"
-                    [formControl]="$any(control)"
-                    placeholder="https://ejemplo.com/imagen.jpg"
-                    (change)="onImageUrlChange($index, $event)">
-                  <button 
-                    type="button" 
-                    class="btn-icon btn-danger"
-                    (click)="removeImage($index)">
-                    <i class="material-icons">delete</i>
-                  </button>
+                <div class="char-counter">
+                  {{ basicInfoGroup.get('title')?.value?.length || 0 }} / 100
                 </div>
-              }
+              </div>
+
+              <!-- Descripción -->
+              <div class="form-group">
+                <label for="description" class="required">Descripción</label>
+                <textarea 
+                  id="description"
+                  formControlName="description"
+                  rows="4"
+                  placeholder="Describe el premio principal y lo que hace especial a esta rifa..."
+                  maxlength="500"></textarea>
+                @if (basicInfoGroup.get('description')?.touched && basicInfoGroup.get('description')?.errors) {
+                  <div class="error-message">
+                    @if (basicInfoGroup.get('description')?.errors?.['required']) {
+                      La descripción es requerida
+                    }
+                    @if (basicInfoGroup.get('description')?.errors?.['minlength']) {
+                      Mínimo 20 caracteres
+                    }
+                  </div>
+                }
+                <div class="char-counter">
+                  {{ basicInfoGroup.get('description')?.value?.length || 0 }} / 500
+                </div>
+              </div>
+
+              <!-- Categoría -->
+              <div class="form-group">
+                <label for="categoryId">Categoría (opcional)</label>
+                <input 
+                  type="text" 
+                  id="categoryId"
+                  formControlName="categoryId"
+                  placeholder="Ej: Tecnología, Automóviles, etc.">
+              </div>
+
+              <!-- Imágenes -->
+              <div class="form-group">
+                <label>Imágenes del producto</label>
+                <div class="images-list">
+                  @for (control of imagesArray.controls; track $index) {
+                    <div class="image-item">
+                      <input 
+                        type="url"
+                        [formControl]="$any(control)"
+                        placeholder="https://ejemplo.com/imagen.jpg"
+                        (change)="onImageUrlChange($index, $event)">
+                      <button 
+                        type="button" 
+                        class="btn-icon btn-danger"
+                        (click)="removeImage($index)">
+                        <i class="material-icons">delete</i>
+                      </button>
+                    </div>
+                  }
+                </div>
+                <button 
+                  type="button" 
+                  class="btn btn-secondary btn-sm"
+                  (click)="addImage()">
+                  <i class="material-icons">add</i>
+                  Agregar imagen
+                </button>
+              </div>
+
+              <!-- Next Button -->
+              <div class="step-actions">
+                <button 
+                  type="button" 
+                  class="btn btn-primary"
+                  [disabled]="!canGoNext()"
+                  (click)="nextStep()">
+                  Siguiente paso
+                  <i class="material-icons">arrow_forward</i>
+                </button>
+              </div>
             </div>
-            <button 
-              type="button" 
-              class="btn btn-secondary btn-sm"
-              (click)="addImage()">
-              <i class="material-icons">add</i>
-              Agregar imagen
-            </button>
-          </div>
+          }
         </div>
-      }
 
-      <!-- PASO 2: Premios -->
-      @if (currentStep() === 2) {
-        <div class="form-step">
-          <h2 class="step-title">
-            <i class="material-icons">emoji_events</i>
-            Premios
-          </h2>
+        <!-- PASO 2: Premios -->
+        <div class="accordion-item" [class.active]="currentStep() === 2" [class.completed]="currentStep() > 2">
+          <button type="button" class="accordion-header" (click)="goToStep(2)">
+            <div class="step-info">
+              <span class="step-number">2</span>
+              <div class="step-text">
+                <span class="step-label">Premios</span>
+                <span class="step-description">Define los premios de tu rifa</span>
+              </div>
+            </div>
+            <i class="material-icons">{{ currentStep() === 2 ? 'expand_less' : 'expand_more' }}</i>
+          </button>
 
-          <div class="prizes-list">
-            @for (prizeGroup of prizesArray.controls; track $index) {
-              <div class="prize-card" [formGroup]="$any(prizeGroup)">
-                <div class="prize-header">
-                  <h3>Premio #{{ $index + 1 }}</h3>
-                  @if (prizesArray.length > 1) {
-                    <button 
-                      type="button" 
-                      class="btn-icon btn-danger"
-                      (click)="removePrize($index)">
-                      <i class="material-icons">delete</i>
-                    </button>
+          @if (currentStep() === 2) {
+            <div class="accordion-content">
+              <div class="prizes-list">
+                @for (prizeGroup of prizesArray.controls; track $index) {
+                  <div class="prize-card" [formGroup]="$any(prizeGroup)">
+                    <div class="prize-header">
+                      <h3>Premio #{{ $index + 1 }}</h3>
+                      @if (prizesArray.length > 1) {
+                        <button 
+                          type="button" 
+                          class="btn-icon btn-danger"
+                          (click)="removePrize($index)">
+                          <i class="material-icons">delete</i>
+                        </button>
+                      }
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="required">Nombre del premio</label>
+                        <input 
+                          type="text"
+                          formControlName="name"
+                          placeholder="Ej: iPhone 15 Pro Max 256GB"
+                          maxlength="100">
+                      </div>
+
+                      <div class="form-group">
+                        <label class="required">Valor estimado</label>
+                        <div class="input-with-prefix">
+                          <span class="prefix">$</span>
+                          <input 
+                            type="number"
+                            formControlName="estimatedValue"
+                            placeholder="0.00"
+                            min="1"
+                            step="0.01">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label>Descripción (opcional)</label>
+                      <textarea 
+                        formControlName="description"
+                        rows="2"
+                        placeholder="Detalles adicionales del premio..."
+                        maxlength="200"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                      <label>Imagen del premio (opcional)</label>
+                      <input 
+                        type="url"
+                        formControlName="imageUrl"
+                        placeholder="https://ejemplo.com/premio.jpg">
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <button 
+                type="button" 
+                class="btn btn-secondary"
+                (click)="addPrize()">
+                <i class="material-icons">add</i>
+                Agregar premio
+              </button>
+
+              <!-- Navigation -->
+              <div class="step-actions">
+                <button 
+                  type="button" 
+                  class="btn btn-outline"
+                  (click)="previousStep()">
+                  <i class="material-icons">arrow_back</i>
+                  Anterior
+                </button>
+                <button 
+                  type="button" 
+                  class="btn btn-primary"
+                  [disabled]="!canGoNext()"
+                  (click)="nextStep()">
+                  Siguiente paso
+                  <i class="material-icons">arrow_forward</i>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- PASO 3: Configuración de Boletos -->
+        <div class="accordion-item" [class.active]="currentStep() === 3" [class.completed]="currentStep() > 3">
+          <button type="button" class="accordion-header" (click)="goToStep(3)">
+            <div class="step-info">
+              <span class="step-number">3</span>
+              <div class="step-text">
+                <span class="step-label">Configuración de Boletos</span>
+                <span class="step-description">Precio y cantidad de boletos</span>
+              </div>
+            </div>
+            <i class="material-icons">{{ currentStep() === 3 ? 'expand_less' : 'expand_more' }}</i>
+          </button>
+
+          @if (currentStep() === 3) {
+            <div class="accordion-content" formGroupName="tickets">
+              <!-- Total de boletos y precio por boleto -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="totalTickets" class="required">Total de boletos</label>
+                  <input 
+                    type="number"
+                    id="totalTickets"
+                    formControlName="totalTickets"
+                    min="10"
+                    max="100000"
+                    placeholder="100">
+                  @if (ticketsGroup.get('totalTickets')?.touched && ticketsGroup.get('totalTickets')?.errors) {
+                    <div class="error-message">
+                      Mínimo 10 boletos
+                    </div>
                   }
                 </div>
 
-                <div class="form-row">
-                  <div class="form-group">
-                    <label class="required">Nombre del premio</label>
+                <div class="form-group">
+                  <label for="baseTicketPrice" class="required">Precio por boleto</label>
+                  <div class="input-with-prefix">
+                    <span class="prefix">$</span>
                     <input 
-                      type="text"
-                      formControlName="name"
-                      placeholder="Ej: iPhone 15 Pro Max 256GB"
-                      maxlength="100">
+                      type="number"
+                      id="baseTicketPrice"
+                      formControlName="baseTicketPrice"
+                      min="1"
+                      step="0.01"
+                      placeholder="0.00">
                   </div>
-
-                  <div class="form-group">
-                    <label class="required">Valor estimado</label>
-                    <div class="input-with-prefix">
-                      <span class="prefix">$</span>
-                      <input 
-                        type="number"
-                        formControlName="estimatedValue"
-                        placeholder="0.00"
-                        min="1"
-                        step="0.01">
-                    </div>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label>Descripción (opcional)</label>
-                  <textarea 
-                    formControlName="description"
-                    rows="2"
-                    placeholder="Detalles adicionales del premio..."
-                    maxlength="200"></textarea>
-                </div>
-
-                <div class="form-group">
-                  <label>Imagen del premio (opcional)</label>
-                  <input 
-                    type="url"
-                    formControlName="imageUrl"
-                    placeholder="https://ejemplo.com/premio.jpg">
                 </div>
               </div>
-            }
-          </div>
 
-          <button 
-            type="button" 
-            class="btn btn-secondary"
-            (click)="addPrize()">
-            <i class="material-icons">add</i>
-            Agregar premio
-          </button>
-        </div>
-      }
-
-      <!-- PASO 3: Configuración de Boletos -->
-      @if (currentStep() === 3) {
-        <div class="form-step" formGroupName="tickets">
-          <h2 class="step-title">
-            <i class="material-icons">confirmation_number</i>
-            Configuración de Boletos
-          </h2>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="totalTickets" class="required">Total de boletos</label>
-              <input 
-                type="number"
-                id="totalTickets"
-                formControlName="totalTickets"
-                min="10"
-                max="100000"
-                placeholder="100">
-              @if (ticketsGroup.get('totalTickets')?.touched && ticketsGroup.get('totalTickets')?.errors) {
-                <div class="error-message">
-                  Mínimo 10 boletos
-                </div>
-              }
-            </div>
-
-            <div class="form-group">
-              <label for="baseTicketPrice" class="required">Precio por boleto</label>
-              <div class="input-with-prefix">
-                <span class="prefix">$</span>
+              <div class="form-group">
+                <label for="maxTicketsPerPerson">Límite de boletos por persona (opcional)</label>
                 <input 
                   type="number"
-                  id="baseTicketPrice"
-                  formControlName="baseTicketPrice"
+                  id="maxTicketsPerPerson"
+                  formControlName="maxTicketsPerPerson"
                   min="1"
-                  step="0.01"
-                  placeholder="0.00">
+                  placeholder="Sin límite">
+              </div>
+
+              <!-- Combos/Paquetes -->
+              <div class="combos-section">
+                <h3>Paquetes de boletos</h3>
+                <p class="help-text">Ofrece descuentos por comprar múltiples boletos</p>
+
+                <div class="combos-list">
+                  @for (comboGroup of comboPricesArray.controls; track $index) {
+                    <div class="combo-card" [formGroup]="$any(comboGroup)">
+                      <div class="combo-header">
+                        <span class="combo-label">Paquete #{{ $index + 1 }}</span>
+                        <button 
+                          type="button" 
+                          class="btn-icon btn-danger"
+                          (click)="removeCombo($index)">
+                          <i class="material-icons">delete</i>
+                        </button>
+                      </div>
+
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label class="required">Cantidad</label>
+                          <input 
+                            type="number"
+                            formControlName="quantity"
+                            min="2"
+                            placeholder="3">
+                        </div>
+
+                        <div class="form-group">
+                          <label class="required">Precio total</label>
+                          <div class="input-with-prefix">
+                            <span class="prefix">$</span>
+                            <input 
+                              type="number"
+                              formControlName="totalPrice"
+                              min="1"
+                              step="0.01"
+                              placeholder="0.00">
+                          </div>
+                        </div>
+                      </div>
+
+                      @if ($any(comboGroup).value.quantity && $any(comboGroup).value.totalPrice) {
+                        <div class="combo-discount">
+                          <i class="material-icons">local_offer</i>
+                          <span>{{ calculateDiscount($any(comboGroup).value) }}% de descuento</span>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+
+                <button 
+                  type="button" 
+                  class="btn btn-secondary"
+                  (click)="addCombo()">
+                  <i class="material-icons">add</i>
+                  Agregar paquete
+                </button>
+              </div>
+
+              <!-- Navigation -->
+              <div class="step-actions">
+                <button 
+                  type="button" 
+                  class="btn btn-outline"
+                  (click)="previousStep()">
+                  <i class="material-icons">arrow_back</i>
+                  Anterior
+                </button>
+                <button 
+                  type="button" 
+                  class="btn btn-primary"
+                  [disabled]="!canGoNext()"
+                  (click)="nextStep()">
+                  Siguiente paso
+                  <i class="material-icons">arrow_forward</i>
+                </button>
               </div>
             </div>
-          </div>
+          }
+        </div>
 
-          <div class="form-group">
-            <label for="maxTicketsPerPerson">Límite de boletos por persona (opcional)</label>
-            <input 
-              type="number"
-              id="maxTicketsPerPerson"
-              formControlName="maxTicketsPerPerson"
-              min="1"
-              placeholder="Sin límite">
-          </div>
+        <!-- PASO 4: Sorteo y Fechas -->
+        <div class="accordion-item" [class.active]="currentStep() === 4" [class.completed]="currentStep() > 4">
+          <button type="button" class="accordion-header" (click)="goToStep(4)">
+            <div class="step-info">
+              <span class="step-number">4</span>
+              <div class="step-text">
+                <span class="step-label">Sorteo y Fechas</span>
+                <span class="step-description">Configuración del sorteo</span>
+              </div>
+            </div>
+            <i class="material-icons">{{ currentStep() === 4 ? 'expand_less' : 'expand_more' }}</i>
+          </button>
 
-          <!-- Combos/Paquetes -->
-          <div class="combos-section">
-            <h3>Paquetes de boletos</h3>
-            <p class="help-text">Ofrece descuentos por comprar múltiples boletos</p>
+          @if (currentStep() === 4) {
+            <div class="accordion-content" formGroupName="dates">
+              <!-- Tipo de lotería -->
+              <div class="form-group">
+                <label for="lottery" class="required">Tipo de lotería</label>
+                <select id="lottery" formControlName="lottery">
+                  @for (option of lotteryOptions; track option.value) {
+                    <option [value]="option.value">{{ option.label }}</option>
+                  }
+                </select>
+              </div>
 
-            <div class="combos-list">
-              @for (comboGroup of comboPricesArray.controls; track $index) {
-                <div class="combo-card" [formGroup]="$any(comboGroup)">
-                  <div class="combo-header">
-                    <span class="combo-label">Paquete #{{ $index + 1 }}</span>
+              <!-- Fecha del sorteo y cobertura hasta -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="drawDate" class="required">Fecha del sorteo</label>
+                  <input 
+                    type="date"
+                    id="drawDate"
+                    formControlName="drawDate">
+                  @if (datesGroup.get('drawDate')?.touched && datesGroup.get('drawDate')?.errors) {
+                    <div class="error-message">
+                      La fecha del sorteo es requerida
+                    </div>
+                  }
+                </div>
+
+                <div class="form-group">
+                  <label for="coveredUntil">Cobertura hasta (opcional)</label>
+                  <input 
+                    type="date"
+                    id="coveredUntil"
+                    formControlName="coveredUntil">
+                </div>
+              </div>
+
+              <!-- Tipo de rifa -->
+              <div class="form-group">
+                <label for="raffleType">Tipo de rifa</label>
+                <select id="raffleType" formControlName="raffleType">
+                  <option [value]="RaffleType.DIGITAL">Digital (automático)</option>
+                  <option [value]="RaffleType.TRADITIONAL">Tradicional (tómbola física)</option>
+                  <option [value]="RaffleType.HYBRID">Híbrido</option>
+                </select>
+              </div>
+
+              <!-- Navigation -->
+              <div class="step-actions">
+                <button 
+                  type="button" 
+                  class="btn btn-outline"
+                  (click)="previousStep()">
+                  <i class="material-icons">arrow_back</i>
+                  Anterior
+                </button>
+                <button 
+                  type="button" 
+                  class="btn btn-primary"
+                  [disabled]="!canGoNext()"
+                  (click)="nextStep()">
+                  Siguiente paso
+                  <i class="material-icons">arrow_forward</i>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- PASO 5: Oportunidades -->
+        <div class="accordion-item" [class.active]="currentStep() === 5" [class.completed]="currentStep() > 5">
+          <button type="button" class="accordion-header" (click)="goToStep(5)">
+            <div class="step-info">
+              <span class="step-number">5</span>
+              <div class="step-text">
+                <span class="step-label">Oportunidades</span>
+                <span class="step-description">Oportunidades adicionales</span>
+              </div>
+            </div>
+            <i class="material-icons">{{ currentStep() === 5 ? 'expand_less' : 'expand_more' }}</i>
+          </button>
+
+          @if (currentStep() === 5) {
+            <div class="accordion-content" formGroupName="opportunities">
+              <!-- Habilitar oportunidades adicionales -->
+              <div class="form-group">
+                <label class="checkbox-label">
+                  <input 
+                    type="checkbox"
+                    formControlName="enabled">
+                  <span>Habilitar oportunidades adicionales</span>
+                </label>
+                <p class="help-text">
+                  Permite que los participantes ganen oportunidades extras para incrementar sus chances de ganar
+                </p>
+              </div>
+
+              @if (opportunitiesGroup.get('enabled')?.value) {
+                <div class="form-group">
+                  <label for="opportunitiesCount" class="required">Cantidad de oportunidades</label>
+                  <input 
+                    type="number"
+                    id="opportunitiesCount"
+                    formControlName="count"
+                    min="0"
+                    max="10"
+                    placeholder="4">
+                  <p class="help-text">
+                    Número de oportunidades adicionales que puede ganar cada participante
+                  </p>
+                </div>
+              }
+
+              <!-- Navigation -->
+              <div class="step-actions">
+                <button 
+                  type="button" 
+                  class="btn btn-outline"
+                  (click)="previousStep()">
+                  <i class="material-icons">arrow_back</i>
+                  Anterior
+                </button>
+                <button 
+                  type="button" 
+                  class="btn btn-primary"
+                  [disabled]="!canGoNext()"
+                  (click)="nextStep()">
+                  Siguiente paso
+                  <i class="material-icons">arrow_forward</i>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- PASO 6: Textos Adicionales -->
+        <div class="accordion-item" [class.active]="currentStep() === 6" [class.completed]="currentStep() > 6">
+          <button type="button" class="accordion-header" (click)="goToStep(6)">
+            <div class="step-info">
+              <span class="step-number">6</span>
+              <div class="step-text">
+                <span class="step-label">Textos Adicionales</span>
+                <span class="step-description">Información y reglas</span>
+              </div>
+            </div>
+            <i class="material-icons">{{ currentStep() === 6 ? 'expand_less' : 'expand_more' }}</i>
+          </button>
+
+          @if (currentStep() === 6) {
+            <div class="accordion-content" formGroupName="additionalTexts">
+              <!-- Información adicional -->
+              <div class="form-group">
+                <label for="additionalInfo">Información adicional</label>
+                <textarea 
+                  id="additionalInfo"
+                  formControlName="additionalInfo"
+                  rows="3"
+                  placeholder="Cualquier información extra que quieras compartir..."></textarea>
+              </div>
+
+              <!-- Reglas de participación -->
+              <div class="form-group">
+                <label for="participationRules">Reglas de participación</label>
+                <textarea 
+                  id="participationRules"
+                  formControlName="participationRules"
+                  rows="3"
+                  placeholder="Ej: Mayores de 18 años, residentes de México..."></textarea>
+              </div>
+
+              <!-- Términos de entrega del premio -->
+              <div class="form-group">
+                <label for="deliveryTerms">Términos de entrega del premio</label>
+                <textarea 
+                  id="deliveryTerms"
+                  formControlName="deliveryTerms"
+                  rows="3"
+                  placeholder="Cómo y cuándo se entregará el premio al ganador..."></textarea>
+              </div>
+
+              <!-- Avisos legales -->
+              <div class="form-group">
+                <label for="disclaimer">Avisos legales</label>
+                <textarea 
+                  id="disclaimer"
+                  formControlName="disclaimer"
+                  rows="3"
+                  placeholder="Términos y condiciones adicionales..."></textarea>
+              </div>
+
+              <!-- Navigation -->
+              <div class="step-actions">
+                <button 
+                  type="button" 
+                  class="btn btn-outline"
+                  (click)="previousStep()">
+                  <i class="material-icons">arrow_back</i>
+                  Anterior
+                </button>
+                <button 
+                  type="button" 
+                  class="btn btn-primary"
+                  [disabled]="!canGoNext()"
+                  (click)="nextStep()">
+                  Siguiente paso
+                  <i class="material-icons">arrow_forward</i>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- PASO 7: FAQs -->
+        <div class="accordion-item" [class.active]="currentStep() === 7" [class.completed]="currentStep() > 7">
+          <button type="button" class="accordion-header" (click)="goToStep(7)">
+            <div class="step-info">
+              <span class="step-number">7</span>
+              <div class="step-text">
+                <span class="step-label">Preguntas Frecuentes</span>
+                <span class="step-description">FAQs para tus clientes</span>
+              </div>
+            </div>
+            <i class="material-icons">{{ currentStep() === 7 ? 'expand_less' : 'expand_more' }}</i>
+          </button>
+
+          @if (currentStep() === 7) {
+            <div class="accordion-content">
+              <!-- Lista de FAQs -->
+              <div class="faqs-list">
+                @for (faqGroup of faqsArray.controls; track $index) {
+                  <div class="faq-card" [formGroup]="$any(faqGroup)">
+                    <div class="faq-header">
+                      <span class="faq-label">FAQ #{{ $index + 1 }}</span>
+                      <button 
+                        type="button" 
+                        class="btn-icon btn-danger"
+                        (click)="removeFaq($index)">
+                        <i class="material-icons">delete</i>
+                      </button>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="required">Pregunta</label>
+                      <input 
+                        type="text"
+                        formControlName="question"
+                        placeholder="¿Cómo participar?"
+                        maxlength="200">
+                    </div>
+
+                    <div class="form-group">
+                      <label class="required">Respuesta</label>
+                      <textarea 
+                        formControlName="answer"
+                        rows="2"
+                        placeholder="Compra tus boletos y espera el sorteo..."
+                        maxlength="500"></textarea>
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <button 
+                type="button" 
+                class="btn btn-secondary"
+                (click)="addFaq()">
+                <i class="material-icons">add</i>
+                Agregar pregunta
+              </button>
+
+              <!-- Final Actions -->
+              <div class="step-actions">
+                <button 
+                  type="button" 
+                  class="btn btn-outline"
+                  (click)="previousStep()">
+                  <i class="material-icons">arrow_back</i>
+                  Anterior
+                </button>
+                <button 
+                  type="submit" 
+                  class="btn btn-success"
+                  [disabled]="!canSubmit()">
+                  @if (isSaving()) {
+                    <span class="spinner-sm"></span>
+                    Guardando...
+                  } @else {
+                    <i class="material-icons">save</i>
+                    {{ isEditing() ? 'Actualizar' : 'Crear' }} Rifa
+                  }
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- ✅ TAB CONTENT (Desktop only) -->
+      <div class="tab-content">
+        
+        <!-- ==================== PASO 1: Información Básica ==================== -->
+        @if (currentStep() === 1) {
+          <div class="tab-panel" formGroupName="basicInfo">
+            <div class="form-group">
+              <label for="title-desktop" class="required">Título de la rifa</label>
+              <input 
+                type="text" 
+                id="title-desktop"
+                formControlName="title"
+                placeholder="Ej: iPhone 15 Pro Max 256GB"
+                maxlength="100">
+              @if (basicInfoGroup.get('title')?.touched && basicInfoGroup.get('title')?.errors) {
+                <div class="error-message">
+                  @if (basicInfoGroup.get('title')?.errors?.['required']) {
+                    El título es requerido
+                  }
+                  @if (basicInfoGroup.get('title')?.errors?.['minlength']) {
+                    Mínimo 5 caracteres
+                  }
+                </div>
+              }
+              <div class="char-counter">
+                {{ basicInfoGroup.get('title')?.value?.length || 0 }} / 100
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="description-desktop" class="required">Descripción</label>
+              <textarea 
+                id="description-desktop"
+                formControlName="description"
+                rows="4"
+                placeholder="Describe el premio principal y lo que hace especial a esta rifa..."
+                maxlength="500"></textarea>
+              @if (basicInfoGroup.get('description')?.touched && basicInfoGroup.get('description')?.errors) {
+                <div class="error-message">
+                  @if (basicInfoGroup.get('description')?.errors?.['required']) {
+                    La descripción es requerida
+                  }
+                  @if (basicInfoGroup.get('description')?.errors?.['minlength']) {
+                    Mínimo 20 caracteres
+                  }
+                </div>
+              }
+              <div class="char-counter">
+                {{ basicInfoGroup.get('description')?.value?.length || 0 }} / 500
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="categoryId-desktop">Categoría (opcional)</label>
+              <input 
+                type="text" 
+                id="categoryId-desktop"
+                formControlName="categoryId"
+                placeholder="Ej: Tecnología, Automóviles, etc.">
+            </div>
+
+            <div class="form-group">
+              <label>Imágenes del producto</label>
+              <div class="images-list">
+                @for (control of imagesArray.controls; track $index) {
+                  <div class="image-item">
+                    <input 
+                      type="url"
+                      [formControl]="$any(control)"
+                      placeholder="https://ejemplo.com/imagen.jpg"
+                      (change)="onImageUrlChange($index, $event)">
                     <button 
                       type="button" 
                       class="btn-icon btn-danger"
-                      (click)="removeCombo($index)">
+                      (click)="removeImage($index)">
                       <i class="material-icons">delete</i>
                     </button>
+                  </div>
+                }
+              </div>
+              <button 
+                type="button" 
+                class="btn btn-secondary btn-sm"
+                (click)="addImage()">
+                <i class="material-icons">add</i>
+                Agregar imagen
+              </button>
+            </div>
+
+            <div class="step-actions">
+              <div></div>
+              <button 
+                type="button" 
+                class="btn btn-primary"
+                [disabled]="!canGoNext()"
+                (click)="nextStep()">
+                Siguiente paso
+                <i class="material-icons">arrow_forward</i>
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- ==================== PASO 2: Premios ==================== -->
+        @if (currentStep() === 2) {
+          <div class="tab-panel">
+            <div class="prizes-list">
+              @for (prizeGroup of prizesArray.controls; track $index) {
+                <div class="prize-card" [formGroup]="$any(prizeGroup)">
+                  <div class="prize-header">
+                    <h3>Premio #{{ $index + 1 }}</h3>
+                    @if (prizesArray.length > 1) {
+                      <button 
+                        type="button" 
+                        class="btn-icon btn-danger"
+                        (click)="removePrize($index)">
+                        <i class="material-icons">delete</i>
+                      </button>
+                    }
                   </div>
 
                   <div class="form-row">
                     <div class="form-group">
-                      <label class="required">Cantidad</label>
+                      <label class="required">Nombre del premio</label>
                       <input 
-                        type="number"
-                        formControlName="quantity"
-                        min="2"
-                        placeholder="3">
+                        type="text"
+                        formControlName="name"
+                        placeholder="Ej: iPhone 15 Pro Max 256GB"
+                        maxlength="100">
                     </div>
 
                     <div class="form-group">
-                      <label class="required">Precio total</label>
+                      <label class="required">Valor estimado</label>
                       <div class="input-with-prefix">
                         <span class="prefix">$</span>
                         <input 
                           type="number"
-                          formControlName="totalPrice"
+                          formControlName="estimatedValue"
+                          placeholder="0.00"
                           min="1"
-                          step="0.01"
-                          placeholder="0.00">
+                          step="0.01">
                       </div>
                     </div>
                   </div>
 
-                  @if ($any(comboGroup).value.quantity && $any(comboGroup).value.totalPrice) {
-                    <div class="combo-discount">
-                      <i class="material-icons">local_offer</i>
-                      <span>{{ calculateDiscount($any(comboGroup).value) }}% de descuento</span>
-                    </div>
-                  }
+                  <div class="form-group">
+                    <label>Descripción (opcional)</label>
+                    <textarea 
+                      formControlName="description"
+                      rows="2"
+                      placeholder="Detalles adicionales del premio..."
+                      maxlength="200"></textarea>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Imagen del premio (opcional)</label>
+                    <input 
+                      type="url"
+                      formControlName="imageUrl"
+                      placeholder="https://ejemplo.com/premio.jpg">
+                  </div>
                 </div>
               }
             </div>
@@ -350,247 +961,454 @@
             <button 
               type="button" 
               class="btn btn-secondary"
-              (click)="addCombo()">
+              (click)="addPrize()">
               <i class="material-icons">add</i>
-              Agregar paquete
+              Agregar premio
             </button>
-          </div>
-        </div>
-      }
 
-      <!-- PASO 4: Sorteo y Fechas -->
-      @if (currentStep() === 4) {
-        <div class="form-step" formGroupName="dates">
-          <h2 class="step-title">
-            <i class="material-icons">event</i>
-            Sorteo y Fechas
-          </h2>
-
-          <div class="form-group">
-            <label for="lottery" class="required">Tipo de lotería</label>
-            <select id="lottery" formControlName="lottery">
-              @for (option of lotteryOptions; track option.value) {
-                <option [value]="option.value">{{ option.label }}</option>
-              }
-            </select>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="drawDate" class="required">Fecha del sorteo</label>
-              <input 
-                type="date"
-                id="drawDate"
-                formControlName="drawDate">
-              @if (datesGroup.get('drawDate')?.touched && datesGroup.get('drawDate')?.errors) {
-                <div class="error-message">
-                  La fecha del sorteo es requerida
-                </div>
-              }
-            </div>
-
-            <div class="form-group">
-              <label for="coveredUntil">Cobertura hasta (opcional)</label>
-              <input 
-                type="date"
-                id="coveredUntil"
-                formControlName="coveredUntil">
+            <div class="step-actions">
+              <button 
+                type="button" 
+                class="btn btn-outline"
+                (click)="previousStep()">
+                <i class="material-icons">arrow_back</i>
+                Anterior
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-primary"
+                [disabled]="!canGoNext()"
+                (click)="nextStep()">
+                Siguiente paso
+                <i class="material-icons">arrow_forward</i>
+              </button>
             </div>
           </div>
+        }
 
-          <div class="form-group">
-            <label for="raffleType">Tipo de rifa</label>
-            <select id="raffleType" formControlName="raffleType">
-              <option [value]="RaffleType.DIGITAL">Digital (automático)</option>
-              <option [value]="RaffleType.TRADITIONAL">Tradicional (tómbola física)</option>
-              <option [value]="RaffleType.HYBRID">Híbrido</option>
-            </select>
-          </div>
-        </div>
-      }
+        <!-- ==================== PASO 3: Configuración de Boletos ==================== -->
+        @if (currentStep() === 3) {
+          <div class="tab-panel" formGroupName="tickets">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="totalTickets-desktop" class="required">Total de boletos</label>
+                <input 
+                  type="number" 
+                  id="totalTickets-desktop"
+                  formControlName="totalTickets"
+                  placeholder="100"
+                  min="10"
+                  max="100000">
+                @if (ticketsGroup.get('totalTickets')?.touched && ticketsGroup.get('totalTickets')?.errors) {
+                  <div class="error-message">
+                    @if (ticketsGroup.get('totalTickets')?.errors?.['required']) {
+                      El total de boletos es requerido
+                    }
+                    @if (ticketsGroup.get('totalTickets')?.errors?.['min']) {
+                      Mínimo 10 boletos
+                    }
+                  </div>
+                }
+                <p class="help-text">Número total de boletos disponibles para la rifa</p>
+              </div>
 
-      <!-- PASO 5: Oportunidades -->
-      @if (currentStep() === 5) {
-        <div class="form-step" formGroupName="opportunities">
-          <h2 class="step-title">
-            <i class="material-icons">stars</i>
-            Oportunidades Adicionales
-          </h2>
-
-          <div class="form-group">
-            <label class="checkbox-label">
-              <input 
-                type="checkbox"
-                formControlName="enabled">
-              <span>Habilitar oportunidades adicionales</span>
-            </label>
-            <p class="help-text">
-              Permite que los participantes ganen oportunidades extras para incrementar sus chances de ganar
-            </p>
-          </div>
-
-          @if (opportunitiesGroup.get('enabled')?.value) {
-            <div class="form-group">
-              <label for="opportunitiesCount" class="required">Cantidad de oportunidades</label>
-              <input 
-                type="number"
-                id="opportunitiesCount"
-                formControlName="count"
-                min="0"
-                max="10"
-                placeholder="4">
-              <p class="help-text">
-                Número de oportunidades adicionales que puede ganar cada participante
-              </p>
-            </div>
-          }
-        </div>
-      }
-
-      <!-- PASO 6: Textos Adicionales -->
-      @if (currentStep() === 6) {
-        <div class="form-step" formGroupName="additionalTexts">
-          <h2 class="step-title">
-            <i class="material-icons">description</i>
-            Textos Adicionales
-          </h2>
-
-          <div class="form-group">
-            <label for="additionalInfo">Información adicional</label>
-            <textarea 
-              id="additionalInfo"
-              formControlName="additionalInfo"
-              rows="3"
-              placeholder="Cualquier información extra que quieras compartir..."></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="participationRules">Reglas de participación</label>
-            <textarea 
-              id="participationRules"
-              formControlName="participationRules"
-              rows="3"
-              placeholder="Ej: Mayores de 18 años, residentes de México..."></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="deliveryTerms">Términos de entrega del premio</label>
-            <textarea 
-              id="deliveryTerms"
-              formControlName="deliveryTerms"
-              rows="3"
-              placeholder="Cómo y cuándo se entregará el premio al ganador..."></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="disclaimer">Avisos legales</label>
-            <textarea 
-              id="disclaimer"
-              formControlName="disclaimer"
-              rows="3"
-              placeholder="Términos y condiciones adicionales..."></textarea>
-          </div>
-        </div>
-      }
-
-      <!-- PASO 7: FAQs -->
-      @if (currentStep() === 7) {
-        <div class="form-step">
-          <h2 class="step-title">
-            <i class="material-icons">help</i>
-            Preguntas Frecuentes
-          </h2>
-
-          <div class="faqs-list">
-            @for (faqGroup of faqsArray.controls; track $index) {
-              <div class="faq-card" [formGroup]="$any(faqGroup)">
-                <div class="faq-header">
-                  <span class="faq-label">FAQ #{{ $index + 1 }}</span>
-                  <button 
-                    type="button" 
-                    class="btn-icon btn-danger"
-                    (click)="removeFaq($index)">
-                    <i class="material-icons">delete</i>
-                  </button>
-                </div>
-
-                <div class="form-group">
-                  <label class="required">Pregunta</label>
+              <div class="form-group">
+                <label for="baseTicketPrice-desktop" class="required">Precio base por boleto</label>
+                <div class="input-with-prefix">
+                  <span class="prefix">$</span>
                   <input 
-                    type="text"
-                    formControlName="question"
-                    placeholder="¿Cómo participar?"
-                    maxlength="200">
+                    type="number" 
+                    id="baseTicketPrice-desktop"
+                    formControlName="baseTicketPrice"
+                    placeholder="10.00"
+                    min="1"
+                    step="0.01">
                 </div>
+                @if (ticketsGroup.get('baseTicketPrice')?.touched && ticketsGroup.get('baseTicketPrice')?.errors) {
+                  <div class="error-message">
+                    El precio es requerido (mínimo $1)
+                  </div>
+                }
+              </div>
+            </div>
 
-                <div class="form-group">
-                  <label class="required">Respuesta</label>
-                  <textarea 
-                    formControlName="answer"
-                    rows="2"
-                    placeholder="Compra tus boletos y espera el sorteo..."
-                    maxlength="500"></textarea>
-                </div>
+            <div class="form-group">
+              <label for="maxTicketsPerPerson-desktop">Límite de boletos por persona (opcional)</label>
+              <input 
+                type="number" 
+                id="maxTicketsPerPerson-desktop"
+                formControlName="maxTicketsPerPerson"
+                placeholder="Sin límite"
+                min="1">
+              <p class="help-text">Deja vacío para no establecer límite</p>
+            </div>
+
+            <!-- Combos de boletos -->
+            <div class="combos-section">
+              <h3>Paquetes de boletos</h3>
+              <p class="help-text">Ofrece descuentos por la compra de múltiples boletos</p>
+
+              <div class="combos-list">
+                @for (comboGroup of comboPricesArray.controls; track $index) {
+                  <div class="combo-card" [formGroup]="$any(comboGroup)">
+                    <div class="combo-header">
+                      <span class="combo-label">Paquete #{{ $index + 1 }}</span>
+                      <button 
+                        type="button" 
+                        class="btn-icon btn-danger"
+                        (click)="removeCombo($index)">
+                        <i class="material-icons">delete</i>
+                      </button>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="required">Cantidad de boletos</label>
+                        <input 
+                          type="number"
+                          formControlName="quantity"
+                          placeholder="3"
+                          min="2">
+                      </div>
+
+                      <div class="form-group">
+                        <label class="required">Precio del paquete</label>
+                        <div class="input-with-prefix">
+                          <span class="prefix">$</span>
+                          <input 
+                            type="number"
+                            formControlName="totalPrice"
+                            placeholder="25.00"
+                            min="1"
+                            step="0.01">
+                        </div>
+                      </div>
+                    </div>
+
+                    @if (comboGroup.get('quantity')?.value && comboGroup.get('totalPrice')?.value) {
+                      <div class="combo-discount">
+                        <i class="material-icons">local_offer</i>
+                        <span>{{ calculateDiscount(comboGroup.value) }}% de descuento</span>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+
+              <button 
+                type="button" 
+                class="btn btn-secondary btn-sm"
+                (click)="addCombo()">
+                <i class="material-icons">add</i>
+                Agregar paquete
+              </button>
+            </div>
+
+            <div class="step-actions">
+              <button 
+                type="button" 
+                class="btn btn-outline"
+                (click)="previousStep()">
+                <i class="material-icons">arrow_back</i>
+                Anterior
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-primary"
+                [disabled]="!canGoNext()"
+                (click)="nextStep()">
+                Siguiente paso
+                <i class="material-icons">arrow_forward</i>
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- ==================== PASO 4: Sorteo y Fechas ==================== -->
+        @if (currentStep() === 4) {
+          <div class="tab-panel" formGroupName="dates">
+            <div class="form-group">
+              <label for="lottery-desktop" class="required">Lotería para el sorteo</label>
+              <select id="lottery-desktop" formControlName="lottery">
+                @for (option of lotteryOptions; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+              <p class="help-text">Selecciona la lotería que se usará para determinar el ganador</p>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="drawDate-desktop" class="required">Fecha del sorteo</label>
+                <input 
+                  type="date" 
+                  id="drawDate-desktop"
+                  formControlName="drawDate"
+                  [min]="getCurrentDate()">
+                @if (datesGroup.get('drawDate')?.touched && datesGroup.get('drawDate')?.errors) {
+                  <div class="error-message">
+                    La fecha del sorteo es requerida
+                  </div>
+                }
+                <p class="help-text">Fecha en que se realizará el sorteo</p>
+              </div>
+
+              <div class="form-group">
+                <label for="coveredUntil-desktop">Apartado hasta (opcional)</label>
+                <input 
+                  type="date" 
+                  id="coveredUntil-desktop"
+                  formControlName="coveredUntil"
+                  [min]="getCurrentDate()">
+                <p class="help-text">Fecha límite para apartar boletos sin pagar</p>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="raffleType-desktop" class="required">Tipo de rifa</label>
+              <select id="raffleType-desktop" formControlName="raffleType">
+                <option [value]="RaffleType.DIGITAL">Digital (100% en línea)</option>
+                <option [value]="RaffleType.HYBRID">Híbrida (En línea y presencial)</option>
+                <option [value]="RaffleType.TRADITIONAL">Tradicional (Física)</option>
+              </select>
+            </div>
+
+            <div class="step-actions">
+              <button 
+                type="button" 
+                class="btn btn-outline"
+                (click)="previousStep()">
+                <i class="material-icons">arrow_back</i>
+                Anterior
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-primary"
+                [disabled]="!canGoNext()"
+                (click)="nextStep()">
+                Siguiente paso
+                <i class="material-icons">arrow_forward</i>
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- ==================== PASO 5: Oportunidades Extra ==================== -->
+        @if (currentStep() === 5) {
+          <div class="tab-panel" formGroupName="opportunities">
+            <div class="form-group">
+              <label class="checkbox-label">
+                <input 
+                  type="checkbox"
+                  formControlName="enabled">
+                <span>Activar oportunidades extra</span>
+              </label>
+              <p class="help-text">Permite a los usuarios ganar boletos adicionales gratis</p>
+            </div>
+
+            @if (opportunitiesGroup.get('enabled')?.value) {
+              <div class="form-group">
+                <label for="opportunitiesCount-desktop" class="required">Número de oportunidades</label>
+                <input 
+                  type="number" 
+                  id="opportunitiesCount-desktop"
+                  formControlName="count"
+                  placeholder="0"
+                  min="0"
+                  max="10">
+                <p class="help-text">Cantidad de boletos extra que pueden ganar (máximo 10)</p>
               </div>
             }
+
+            <div class="step-actions">
+              <button 
+                type="button" 
+                class="btn btn-outline"
+                (click)="previousStep()">
+                <i class="material-icons">arrow_back</i>
+                Anterior
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-primary"
+                [disabled]="!canGoNext()"
+                (click)="nextStep()">
+                Siguiente paso
+                <i class="material-icons">arrow_forward</i>
+              </button>
+            </div>
           </div>
+        }
 
-          <button 
-            type="button" 
-            class="btn btn-secondary"
-            (click)="addFaq()">
-            <i class="material-icons">add</i>
-            Agregar pregunta
-          </button>
-        </div>
-      }
+        <!-- ==================== PASO 6: Textos Adicionales ==================== -->
+        @if (currentStep() === 6) {
+          <div class="tab-panel" formGroupName="additionalTexts">
+            <p class="help-text" style="margin-bottom: 1.5rem;">
+              Todos los campos en esta sección son opcionales. Completa solo los que necesites.
+            </p>
 
-      <!-- Form Actions -->
-      <div class="form-actions">
-        <div class="actions-left">
-          @if (currentStep() > 1) {
+            <div class="form-group">
+              <label for="additionalInfo-desktop">Información adicional</label>
+              <textarea 
+                id="additionalInfo-desktop"
+                formControlName="additionalInfo"
+                rows="3"
+                placeholder="Detalles extra sobre la rifa, el premio, etc."
+                maxlength="500"></textarea>
+              <div class="char-counter">
+                {{ additionalTextsGroup.get('additionalInfo')?.value?.length || 0 }} / 500
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="participationRules-desktop">Reglas de participación</label>
+              <textarea 
+                id="participationRules-desktop"
+                formControlName="participationRules"
+                rows="4"
+                placeholder="Condiciones y requisitos para participar..."
+                maxlength="1000"></textarea>
+              <div class="char-counter">
+                {{ additionalTextsGroup.get('participationRules')?.value?.length || 0 }} / 1000
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="deliveryTerms-desktop">Términos de entrega</label>
+              <textarea 
+                id="deliveryTerms-desktop"
+                formControlName="deliveryTerms"
+                rows="3"
+                placeholder="Cómo y cuándo se entregará el premio..."
+                maxlength="500"></textarea>
+              <div class="char-counter">
+                {{ additionalTextsGroup.get('deliveryTerms')?.value?.length || 0 }} / 500
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="disclaimer-desktop">Aviso legal / Disclaimer</label>
+              <textarea 
+                id="disclaimer-desktop"
+                formControlName="disclaimer"
+                rows="3"
+                placeholder="Términos legales, limitaciones de responsabilidad, etc."
+                maxlength="500"></textarea>
+              <div class="char-counter">
+                {{ additionalTextsGroup.get('disclaimer')?.value?.length || 0 }} / 500
+              </div>
+            </div>
+
+            <div class="step-actions">
+              <button 
+                type="button" 
+                class="btn btn-outline"
+                (click)="previousStep()">
+                <i class="material-icons">arrow_back</i>
+                Anterior
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-primary"
+                [disabled]="!canGoNext()"
+                (click)="nextStep()">
+                Siguiente paso
+                <i class="material-icons">arrow_forward</i>
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- ==================== PASO 7: Preguntas Frecuentes (FAQs) ==================== -->
+        @if (currentStep() === 7) {
+          <div class="tab-panel">
+            <p class="help-text" style="margin-bottom: 1.5rem;">
+              Agrega preguntas frecuentes para ayudar a los participantes. Este paso es opcional.
+            </p>
+
+            <div class="faqs-list">
+              @for (faqGroup of faqsArray.controls; track $index) {
+                <div class="faq-card" [formGroup]="$any(faqGroup)">
+                  <div class="faq-header">
+                    <span class="faq-label">Pregunta #{{ $index + 1 }}</span>
+                    <button 
+                      type="button" 
+                      class="btn-icon btn-danger"
+                      (click)="removeFaq($index)">
+                      <i class="material-icons">delete</i>
+                    </button>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="required">Pregunta</label>
+                    <input 
+                      type="text"
+                      formControlName="question"
+                      placeholder="¿Cómo puedo participar?"
+                      maxlength="200">
+                    <div class="char-counter">
+                      {{ faqGroup.get('question')?.value?.length || 0 }} / 200
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="required">Respuesta</label>
+                    <textarea 
+                      formControlName="answer"
+                      rows="3"
+                      placeholder="Puedes participar comprando uno o más boletos..."
+                      maxlength="500"></textarea>
+                    <div class="char-counter">
+                      {{ faqGroup.get('answer')?.value?.length || 0 }} / 500
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+
             <button 
               type="button" 
               class="btn btn-secondary"
-              (click)="previousStep()">
-              <i class="material-icons">chevron_left</i>
-              Anterior
+              (click)="addFaq()">
+              <i class="material-icons">add</i>
+              Agregar pregunta
             </button>
-          }
-        </div>
 
-        <div class="actions-right">
-          <button 
-            type="button" 
-            class="btn btn-outline"
-            (click)="cancel()">
-            Cancelar
-          </button>
+            <div class="step-actions">
+              <button 
+                type="button" 
+                class="btn btn-outline"
+                (click)="previousStep()">
+                <i class="material-icons">arrow_back</i>
+                Anterior
+              </button>
+              <button 
+                type="submit" 
+                class="btn btn-success"
+                [disabled]="!canSubmit()">
+                @if (isSaving()) {
+                  <span class="spinner-sm"></span>
+                  <span>Guardando...</span>
+                } @else {
+                  <i class="material-icons">check</i>
+                  <span>{{ isEditing() ? 'Actualizar' : 'Crear' }} Rifa</span>
+                }
+              </button>
+            </div>
+          </div>
+        }
+        
+      </div>
 
-          @if (currentStep() < totalSteps) {
-            <button 
-              type="button" 
-              class="btn btn-primary"
-              [disabled]="!canGoNext()"
-              (click)="nextStep()">
-              Siguiente
-              <i class="material-icons">chevron_right</i>
-            </button>
-          } @else {
-            <button 
-              type="submit" 
-              class="btn btn-success"
-              [disabled]="!canSubmit()">
-              @if (isSaving()) {
-                <span class="spinner-sm"></span>
-                Guardando...
-              } @else {
-                <i class="material-icons">save</i>
-                {{ isEditing() ? 'Actualizar' : 'Crear' }} Rifa
-              }
-            </button>
-          }
-        </div>
+      <!-- Cancel Button -->
+      <div class="form-footer">
+        <button 
+          type="button" 
+          class="btn btn-outline"
+          (click)="cancel()">
+          <i class="material-icons">close</i>
+          Cancelar y salir
+        </button>
       </div>
     </form>
   }
