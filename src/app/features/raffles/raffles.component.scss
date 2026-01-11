@@ -1,45 +1,63 @@
 .raffles-container {
   margin: 0 auto;
+  animation: fadeIn 0.3s ease-in;
+  scroll-behavior: smooth;
 }
 
 // ==================== HEADER ====================
 
 .page-header {
-  margin-bottom: 2rem;
-}
-
-.header-content {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 2rem;
+  padding-bottom: 0;
+  border-bottom: none;
   gap: 1.5rem;
 
   @media (max-width: 768px) {
     flex-direction: column;
-    align-items: stretch;
+    gap: 1rem;
   }
-}
 
-.header-text {
-  h1 {
-    font-size: 2rem;
+  .header-content {
+    flex: 1;
+  }
+
+  .page-title {
+    font-size: 1.35rem;
     font-weight: 700;
-    color: #1f2937;
-    margin: 0 0 0.5rem 0;
+    color: var(--primary, #ff497c);
+    margin: 0 0 1.5rem 0;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.5rem;
+    padding: 0 0 0.25rem 0;
+    border-bottom: 2px solid var(--primary, #ff497c);
+    width: fit-content;
+    letter-spacing: 0.5px;
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
 
     i {
-      color: #3b82f6;
+      display: none; // ✅ Ocultar icono
+    }
+
+    @media (max-width: 768px) {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      padding: 0 0 0.15rem 0;
+      border-bottom-width: 1.5px;
     }
   }
 
-  p {
-    font-size: 0.9375rem;
+  .page-subtitle {
+    font-size: 0.95rem;
     color: #6b7280;
     margin: 0;
+
+    @media (max-width: 768px) {
+      font-size: 0.875rem;
+    }
   }
 }
 
@@ -49,30 +67,61 @@
   font-weight: 600;
   font-size: 0.9375rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   border: none;
   display: inline-flex;
   align-items: center;
   gap: 0.625rem;
   white-space: nowrap;
 
+  @media (max-width: 768px) {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.875rem;
+  }
+
   &.btn-primary {
     background: #3b82f6;
     color: white;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
 
     &:hover {
       background: #2563eb;
-      transform: translateY(-1px);
+      transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    &:focus-visible {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+
+    i {
+      font-size: 1rem;
+      transition: transform 0.2s ease;
+    }
+
+    &:hover i {
+      transform: scale(1.1);
     }
   }
 
   &.btn-secondary {
     background: #f3f4f6;
     color: #374151;
+    border: 1px solid #e5e7eb;
 
     &:hover {
       background: #e5e7eb;
+      border-color: #d1d5db;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #6b7280;
+      outline-offset: 2px;
     }
   }
 }
@@ -83,6 +132,16 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.5rem;
+  margin-bottom: 2rem; // ✅ Separación del siguiente elemento
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .stat-card {
@@ -95,9 +154,13 @@
   gap: 1rem;
   transition: all 0.3s ease;
 
+  @media (max-width: 768px) {
+    padding: 1.25rem;
+  }
+
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
   }
 }
 
@@ -109,6 +172,13 @@
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
+  flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    width: 48px;
+    height: 48px;
+    font-size: 1.25rem;
+  }
 
   &.total {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -135,18 +205,27 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  min-width: 0; // ✅ Permite truncar texto largo
 }
 
 .stat-label {
   font-size: 0.8125rem;
   color: #6b7280;
   font-weight: 500;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 }
 
 .stat-value {
   font-size: 1.5rem;
   font-weight: 700;
   color: #1f2937;
+
+  @media (max-width: 768px) {
+    font-size: 1.25rem;
+  }
 }
 
 // ==================== FILTERS ====================
@@ -160,6 +239,11 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    gap: 1.25rem;
+  }
 }
 
 .search-bar {
@@ -369,5 +453,18 @@
   @media (max-width: 767px) {
     grid-template-columns: 1fr; // ✅ 1 columna en mobile
     gap: 2rem;
+  }
+}
+
+// ==================== ANIMATIONS ====================
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

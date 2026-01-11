@@ -1,7 +1,7 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
 import { RafflesApiService } from '../../../core/http/raffles-api.service';
@@ -20,20 +20,22 @@ import {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './raffle-form.component.html',
-  styleUrl: './raffle-form.component.scss'
+  styleUrls: ['./raffle-form.component.scss']
 })
 export class RaffleFormComponent implements OnInit {
-  // Signals
-  raffleId = signal<string | null>(null);
-  isEditing = signal(false);
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private rafflesApi = inject(RafflesApiService);
+  private rafflesState = inject(RafflesStateService);
+
+  raffleForm!: FormGroup;
+  currentStep = signal(1);
   isLoading = signal(false);
   isSaving = signal(false);
   error = signal<string | null>(null);
-  currentStep = signal(1);
-  totalSteps = 7;
-
-  // Formulario
-  raffleForm!: FormGroup;
+  raffleId = signal<string | null>(null);
+  isEditing = signal(false);
 
   // Enums para el template
   RaffleType = RaffleType;
@@ -48,7 +50,7 @@ export class RaffleFormComponent implements OnInit {
     { value: LotteryType.CUSTOM, label: 'Personalizado' }
   ];
 
-  // Computed
+  // ✅ Computed properties
   formTitle = computed(() => 
     this.isEditing() ? 'Editar Rifa' : 'Nueva Rifa'
   );
@@ -57,10 +59,10 @@ export class RaffleFormComponent implements OnInit {
     const step = this.currentStep();
     switch (step) {
       case 1: return this.basicInfoGroup.valid;
-      case 2: return this.prizesArray.length > 0 && this.prizesArray.valid;
+      case 2: return this.prizesArray.valid && this.prizesArray.length > 0;
       case 3: return this.ticketsGroup.valid;
       case 4: return this.datesGroup.valid;
-      case 5: return true; // Oportunidades es opcional
+      case 5: return this.opportunitiesGroup.valid;
       case 6: return true; // Textos adicionales es opcional
       case 7: return true; // FAQs es opcional
       default: return false;
@@ -72,16 +74,10 @@ export class RaffleFormComponent implements OnInit {
   });
 
   progressPercentage = computed(() => {
-    return (this.currentStep() / this.totalSteps) * 100;
+    return (this.currentStep() / 7) * 100;
   });
 
-  constructor(
-    private fb: FormBuilder,
-    private route: ActivatedRoute,
-    private router: Router,
-    private rafflesApi: RafflesApiService,
-    private rafflesState: RafflesStateService
-  ) {
+  constructor() {
     this.initForm();
   }
 
@@ -350,21 +346,19 @@ export class RaffleFormComponent implements OnInit {
   // ==================== NAVEGACIÓN DE PASOS ====================
 
   goToStep(step: number): void {
-    if (step >= 1 && step <= this.totalSteps) {
+    if (step >= 1 && step <= 7) {
       this.currentStep.set(step);
     }
   }
 
   nextStep(): void {
-    if (this.canGoNext() && this.currentStep() < this.totalSteps) {
-      this.currentStep.update(s => s + 1);
+    if (this.canGoNext()) {
+      this.currentStep.update(step => step + 1);
     }
   }
 
   previousStep(): void {
-    if (this.currentStep() > 1) {
-      this.currentStep.update(s => s - 1);
-    }
+    this.currentStep.update(step => Math.max(1, step - 1));
   }
 
   // ==================== GUARDAR ====================
@@ -492,15 +486,22 @@ export class RaffleFormComponent implements OnInit {
     });
   }
 
+  // ==================== HELPERS ====================
+
+  getCurrentDate(): string {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  }
+
   // ==================== NAVEGACIÓN ====================
 
   goBack(): void {
-    if (confirm('¿Estás seguro de salir? Los cambios no guardados se perderán.')) {
-      this.router.navigate(['/raffles']);
-    }
+    this.router.navigate(['/raffles']);
   }
 
   cancel(): void {
-    this.goBack();
+    if (confirm('¿Estás seguro de que deseas cancelar? Se perderán todos los cambios.')) {
+      this.goBack();
+    }
   }
 }
