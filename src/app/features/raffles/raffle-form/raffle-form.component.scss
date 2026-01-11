@@ -1,7 +1,5 @@
 .raffle-form-container {
-  max-width: 900px;
   margin: 0 auto;
-  padding: 2rem 1rem;
 
   @media (max-width: 768px) {
     padding: 1rem 0.5rem;
@@ -712,10 +710,6 @@
 
 // ==================== RESPONSIVE ====================
 @media (max-width: 768px) {
-  .raffle-form-container {
-    padding: 1rem 0;
-  }
-
   .form-header {
     padding: 0 1rem;
   }
