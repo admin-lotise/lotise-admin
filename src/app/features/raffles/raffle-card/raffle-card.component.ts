@@ -2,12 +2,11 @@ import { Component, input, output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { Raffle, RaffleStatus } from '../../../shared/models/raffle.model';
-import { ClickOutsideDirective } from '../../../shared/directives/click-outside.directive';
 
 @Component({
   selector: 'app-raffle-card',
   standalone: true,
-  imports: [CommonModule, ClickOutsideDirective, RouterLink],
+  imports: [CommonModule, RouterLink],
   templateUrl: './raffle-card.component.html',
   styleUrl: './raffle-card.component.scss'
 })
