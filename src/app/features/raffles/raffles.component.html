@@ -1,66 +1,65 @@
 <div class="raffles-container">
   <!-- Header -->
-  <header class="page-header">
+  <div class="page-header">
     <div class="header-content">
-      <div class="header-text">
-        <h1>
-          <i class="fas fa-ticket-alt"></i>
-          Rifas
-        </h1>
-        <p>Administra tus rifas y sorteos</p>
-      </div>
-
-      <button class="btn btn-primary" (click)="onCreateRaffle()">
-        <i class="fas fa-plus"></i>
-        Nueva Rifa
-      </button>
+      <h1 class="page-title">
+        Rifas
+      </h1>
+      <p class="page-subtitle">
+        Administra tus rifas y sorteos
+      </p>
     </div>
 
-    <!-- Estadísticas -->
-    @if (rafflesState.stats(); as stats) {
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon total">
-            <i class="fas fa-list"></i>
-          </div>
-          <div class="stat-content">
-            <span class="stat-label">Total de rifas</span>
-            <span class="stat-value">{{ stats.totalRaffles }}</span>
-          </div>
-        </div>
+    <button class="btn btn-primary" (click)="onCreateRaffle()">
+      <i class="fas fa-plus"></i>
+      Nueva Rifa
+    </button>
+  </div>
 
-        <div class="stat-card">
-          <div class="stat-icon active">
-            <i class="fas fa-play-circle"></i>
-          </div>
-          <div class="stat-content">
-            <span class="stat-label">Rifas activas</span>
-            <span class="stat-value">{{ stats.activeRaffles }}</span>
-          </div>
+  <!-- Estadísticas -->
+  @if (rafflesState.stats(); as stats) {
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon total">
+          <i class="fas fa-list"></i>
         </div>
-
-        <div class="stat-card">
-          <div class="stat-icon revenue">
-            <i class="fas fa-dollar-sign"></i>
-          </div>
-          <div class="stat-content">
-            <span class="stat-label">Ingresos totales</span>
-            <span class="stat-value">{{ stats.totalRevenue | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon tickets">
-            <i class="fas fa-ticket-alt"></i>
-          </div>
-          <div class="stat-content">
-            <span class="stat-label">Boletos vendidos</span>
-            <span class="stat-value">{{ stats.totalTicketsSold | number }}</span>
-          </div>
+        <div class="stat-content">
+          <span class="stat-label">Total de rifas</span>
+          <span class="stat-value">{{ stats.totalRaffles }}</span>
         </div>
       </div>
-    }
-  </header>
+
+      <div class="stat-card">
+        <div class="stat-icon active">
+          <i class="fas fa-play-circle"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Rifas activas</span>
+          <span class="stat-value">{{ stats.activeRaffles }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon revenue">
+          <i class="fas fa-dollar-sign"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Ingresos totales</span>
+          <span class="stat-value">{{ stats.totalRevenue | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon tickets">
+          <i class="fas fa-ticket-alt"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Boletos vendidos</span>
+          <span class="stat-value">{{ stats.totalTicketsSold | number }}</span>
+        </div>
+      </div>
+    </div>
+  }
 
   <!-- Filtros y búsqueda -->
   <div class="filters-section">
