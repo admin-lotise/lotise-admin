@@ -2,12 +2,11 @@
   <!-- Header -->
   <div class="page-header">
     <div class="header-content">
-      <h1>
-        <i class="material-icons">confirmation_number</i>
+      <h1 class="page-title">
         Gestión de Boletos
       </h1>
       @if (raffle()) {
-        <p class="subtitle">{{ raffle()!.title }}</p>
+        <p class="page-subtitle">{{ raffle()!.title }}</p>
       }
     </div>
 
