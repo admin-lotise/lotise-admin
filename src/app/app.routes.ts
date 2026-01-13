@@ -37,10 +37,13 @@ export const routes: Routes = [
         loadComponent: () => import('./features/raffles/raffle-form/raffle-form.component').then(m => m.RaffleFormComponent)
       },
       {
+        path: 'raffles/:id',
+        loadComponent: () => import('./features/raffles/raffle-detail/raffle-detail.component').then(m => m.RaffleDetailComponent)
+      },
+      {
         path: 'raffles/:id/edit',
         loadComponent: () => import('./features/raffles/raffle-form/raffle-form.component').then(m => m.RaffleFormComponent)
       },
-      // ✅ AGREGAR ESTA RUTA
       {
         path: 'raffles/:id/tickets',
         loadComponent: () => import('./features/raffles/ticket-manager/ticket-manager.component').then(m => m.TicketManagerComponent)
