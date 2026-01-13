@@ -1,0 +1,341 @@
+<div class="tickets-tab">
+
+  <!-- ==================== STATS PANEL ==================== -->
+  @if (stats(); as ticketStats) {
+    <div class="stats-panel">
+      <div class="stats-grid">
+        <div class="stat-card total">
+          <div class="stat-icon">
+            <i class="fas fa-ticket-alt"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ ticketStats.total }}</span>
+            <span class="stat-label">Total Boletos</span>
+          </div>
+        </div>
+
+        <div class="stat-card available">
+          <div class="stat-icon">
+            <i class="fas fa-circle"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ ticketStats.available }}</span>
+            <span class="stat-label">Disponibles</span>
+          </div>
+        </div>
+
+        <div class="stat-card reserved">
+          <div class="stat-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ ticketStats.reserved }}</span>
+            <span class="stat-label">Reservados</span>
+          </div>
+        </div>
+
+        <div class="stat-card paid">
+          <div class="stat-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ ticketStats.paid }}</span>
+            <span class="stat-label">Pagados</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="progress-section">
+        <div class="progress-header">
+          <span class="progress-label">Boletos vendidos</span>
+          <span class="progress-percentage">{{ ticketStats.percentage }}%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="ticketStats.percentage"></div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ==================== TOOLBAR ==================== -->
+  <div class="toolbar">
+    <div class="filters">
+      <!-- Search -->
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input 
+          type="text" 
+          placeholder="Buscar por número o comprador..."
+          [value]="searchTerm()"
+          (input)="searchTerm.set($any($event.target).value)">
+      </div>
+
+      <!-- Status filter -->
+      <div class="status-filters">
+        <button 
+          class="filter-btn"
+          [class.active]="statusFilter() === 'all'"
+          (click)="statusFilter.set('all')">
+          <i class="fas fa-th"></i>
+          Todos
+        </button>
+        <button 
+          class="filter-btn available"
+          [class.active]="statusFilter() === 'available'"
+          (click)="statusFilter.set('available')">
+          <i class="fas fa-circle"></i>
+          Disponibles
+        </button>
+        <button 
+          class="filter-btn reserved"
+          [class.active]="statusFilter() === 'reserved'"
+          (click)="statusFilter.set('reserved')">
+          <i class="fas fa-clock"></i>
+          Reservados
+        </button>
+        <button 
+          class="filter-btn paid"
+          [class.active]="statusFilter() === 'paid'"
+          (click)="statusFilter.set('paid')">
+          <i class="fas fa-check-circle"></i>
+          Pagados
+        </button>
+      </div>
+    </div>
+
+    <div class="actions">
+      <!-- View mode toggle -->
+      <div class="view-toggle">
+        <button 
+          class="toggle-btn"
+          [class.active]="viewMode() === 'grid'"
+          (click)="viewMode.set('grid')"
+          title="Vista de cuadrícula">
+          <i class="fas fa-th"></i>
+        </button>
+        <button 
+          class="toggle-btn"
+          [class.active]="viewMode() === 'list'"
+          (click)="viewMode.set('list')"
+          title="Vista de lista">
+          <i class="fas fa-list"></i>
+        </button>
+      </div>
+
+      <button class="btn btn-outline" (click)="loadTickets()">
+        <i class="fas fa-sync"></i>
+        Actualizar
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== LOADING ==================== -->
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando boletos...</p>
+    </div>
+  }
+
+  <!-- ==================== ERROR ==================== -->
+  @if (error()) {
+    <div class="error-state">
+      <i class="fas fa-exclamation-triangle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-primary" (click)="loadTickets()">
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- ==================== TICKETS GRID VIEW ==================== -->
+  @if (!isLoading() && !error() && viewMode() === 'grid') {
+    @if (filteredTickets().length > 0) {
+      <div class="tickets-grid">
+        @for (ticket of filteredTickets(); track ticket.number) {
+          <div 
+            class="ticket-card"
+            [ngClass]="getStatusClass(ticket.status)"
+            (click)="viewTicketDetail(ticket)">
+            
+            <div class="ticket-number">{{ ticket.number }}</div>
+            
+            <div class="ticket-status-icon">
+              <i class="fas" [ngClass]="getStatusIcon(ticket.status)"></i>
+            </div>
+
+            @if (ticket.buyerName) {
+              <div class="ticket-buyer">
+                <i class="fas fa-user"></i>
+                <span>{{ ticket.buyerName }}</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <i class="fas fa-ticket-alt"></i>
+        <h3>No se encontraron boletos</h3>
+        <p>Ajusta los filtros para ver más resultados</p>
+      </div>
+    }
+  }
+
+  <!-- ==================== TICKETS LIST VIEW ==================== -->
+  @if (!isLoading() && !error() && viewMode() === 'list') {
+    @if (filteredTickets().length > 0) {
+      <div class="tickets-list">
+        <table class="tickets-table">
+          <thead>
+            <tr>
+              <th>Número</th>
+              <th>Estado</th>
+              <th>Comprador</th>
+              <th>Teléfono</th>
+              <th>Fecha</th>
+              <th>Oportunidades</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (ticket of filteredTickets(); track ticket.number) {
+              <tr (click)="viewTicketDetail(ticket)" class="clickable">
+                <td>
+                  <span class="ticket-number-badge">{{ ticket.number }}</span>
+                </td>
+                <td>
+                  <span class="status-badge" [ngClass]="getStatusClass(ticket.status)">
+                    <i class="fas" [ngClass]="getStatusIcon(ticket.status)"></i>
+                    {{ getStatusLabel(ticket.status) }}
+                  </span>
+                </td>
+                <td>
+                  @if (ticket.buyerName) {
+                    <span class="buyer-name">{{ ticket.buyerName }}</span>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+                <td>
+                  @if (ticket.buyerPhone) {
+                    <span class="phone">{{ ticket.buyerPhone }}</span>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+                <td>
+                  @if (ticket.paidAt) {
+                    <span class="date">{{ ticket.paidAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                  } @else if (ticket.reservedAt) {
+                    <span class="date">{{ ticket.reservedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+                <td>
+                  @if (ticket.opportunities && ticket.opportunities.length > 0) {
+                    <span class="opportunities-count">{{ ticket.opportunities.length }}</span>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <div class="empty-state">
+        <i class="fas fa-ticket-alt"></i>
+        <h3>No se encontraron boletos</h3>
+        <p>Ajusta los filtros para ver más resultados</p>
+      </div>
+    }
+  }
+
+  <!-- ==================== TICKET DETAIL MODAL ==================== -->
+  @if (showDetailModal() && selectedTicket(); as ticket) {
+    <div class="modal-overlay" (click)="closeDetailModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Boleto #{{ ticket.number }}</h3>
+          <button class="btn-close" (click)="closeDetailModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <!-- Ticket status -->
+          <div class="detail-section">
+            <div class="ticket-status-display" [ngClass]="getStatusClass(ticket.status)">
+              <i class="fas" [ngClass]="getStatusIcon(ticket.status)"></i>
+              <span>{{ getStatusLabel(ticket.status) }}</span>
+            </div>
+          </div>
+
+          <!-- Buyer info -->
+          @if (ticket.buyerName || ticket.buyerPhone) {
+            <div class="detail-section">
+              <h4><i class="fas fa-user"></i> Información del Comprador</h4>
+              <div class="info-grid">
+                @if (ticket.buyerName) {
+                  <div class="info-item">
+                    <span class="label">Nombre:</span>
+                    <span class="value">{{ ticket.buyerName }}</span>
+                  </div>
+                }
+                @if (ticket.buyerPhone) {
+                  <div class="info-item">
+                    <span class="label">Teléfono:</span>
+                    <span class="value">{{ ticket.buyerPhone }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Dates -->
+          @if (ticket.paidAt || ticket.reservedAt) {
+            <div class="detail-section">
+              <h4><i class="fas fa-calendar"></i> Fechas</h4>
+              <div class="info-grid">
+                @if (ticket.paidAt) {
+                  <div class="info-item">
+                    <span class="label">Fecha de pago:</span>
+                    <span class="value">{{ ticket.paidAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                  </div>
+                }
+                @if (ticket.reservedAt) {
+                  <div class="info-item">
+                    <span class="label">Fecha de reserva:</span>
+                    <span class="value">{{ ticket.reservedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Opportunities -->
+          @if (ticket.opportunities && ticket.opportunities.length > 0) {
+            <div class="detail-section">
+              <h4><i class="fas fa-star"></i> Oportunidades ({{ ticket.opportunities.length }})</h4>
+              <div class="opportunities-list">
+                @for (opp of ticket.opportunities; track opp) {
+                  <span class="opportunity-badge">{{ opp }}</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-outline" (click)="closeDetailModal()">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>
