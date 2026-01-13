@@ -10,7 +10,6 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     
-    // ✅ CAMBIO: Registrar interceptor funcional
     provideHttpClient(
       withInterceptors([authInterceptor])
     )
