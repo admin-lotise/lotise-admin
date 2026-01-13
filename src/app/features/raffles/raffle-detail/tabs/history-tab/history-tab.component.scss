@@ -1,0 +1,490 @@
+// ==================== VARIABLES ====================
+$primary: #667eea;
+$success: #10b981;
+$warning: #f59e0b;
+$danger: #ef4444;
+$info: #3b82f6;
+$winner: #a855f7;
+
+$text-primary: #1f2937;
+$text-secondary: #6b7280;
+$text-muted: #9ca3af;
+
+$bg-light: #f9fafb;
+$bg-white: #ffffff;
+$border-color: #e5e7eb;
+
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+$shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+$radius-sm: 8px;
+$radius-md: 12px;
+
+// ==================== CONTAINER ====================
+.history-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+// ==================== STATS GRID ====================
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: $bg-white;
+    border: 2px solid $border-color;
+    border-radius: $radius-sm;
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: $radius-sm;
+      flex-shrink: 0;
+
+      i {
+        font-size: 1.5rem;
+        color: white;
+      }
+
+      &.total { background: linear-gradient(135deg, $primary 0%, #764ba2 100%); }
+      &.reservations { background: linear-gradient(135deg, $warning 0%, #d97706 100%); }
+      &.payments { background: linear-gradient(135deg, $success 0%, #059669 100%); }
+      &.updates { background: linear-gradient(135deg, $info 0%, #2563eb 100%); }
+    }
+
+    .stat-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+
+      .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: $text-primary;
+        line-height: 1;
+      }
+
+      .stat-label {
+        font-size: 0.875rem;
+        color: $text-secondary;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// ==================== TOOLBAR ====================
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  .filters {
+    display: flex;
+    gap: 1rem;
+    flex: 1;
+    flex-wrap: wrap;
+  }
+
+  .search-box {
+    position: relative;
+    flex: 1;
+    min-width: 250px;
+
+    i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: $text-muted;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.75rem;
+      border: 2px solid $border-color;
+      border-radius: $radius-sm;
+      font-size: 0.9375rem;
+
+      &:focus {
+        outline: none;
+        border-color: $primary;
+      }
+    }
+  }
+
+  .filter-select {
+    padding: 0.75rem 1rem;
+    border: 2px solid $border-color;
+    border-radius: $radius-sm;
+    font-size: 0.9375rem;
+    background: white;
+    cursor: pointer;
+    min-width: 200px;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+    }
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.75rem;
+  }
+}
+
+// ==================== TIMELINE ====================
+.timeline-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.timeline-group {
+  .date-header {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+
+    .date-badge {
+      display: inline-flex;
+      padding: 0.5rem 1.5rem;
+      background: linear-gradient(135deg, $primary 0%, #764ba2 100%);
+      color: white;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      box-shadow: $shadow-md;
+    }
+  }
+
+  .timeline-events {
+    position: relative;
+    padding-left: 2rem;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 16px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: $border-color;
+    }
+  }
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 2rem;
+
+  &:last-child {
+    padding-bottom: 0;
+
+    .timeline-line {
+      display: none;
+    }
+  }
+
+  .timeline-line {
+    position: absolute;
+    left: -2rem;
+    top: 48px;
+    bottom: 0;
+    width: 2px;
+    background: $border-color;
+  }
+
+  .event-icon {
+    position: absolute;
+    left: -2rem;
+    top: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 4px solid $bg-light;
+    box-shadow: $shadow-sm;
+    z-index: 1;
+
+    i {
+      font-size: 1rem;
+      color: white;
+    }
+
+    &.color-primary { background: $primary; }
+    &.color-success { background: $success; }
+    &.color-warning { background: $warning; }
+    &.color-danger { background: $danger; }
+    &.color-info { background: $info; }
+    &.color-winner { background: $winner; }
+    &.color-default { background: $text-secondary; }
+  }
+
+  .event-content {
+    background: $bg-white;
+    border: 2px solid $border-color;
+    border-radius: $radius-md;
+    padding: 1.25rem;
+    margin-left: 1.5rem;
+    box-shadow: $shadow-sm;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: $primary;
+      box-shadow: $shadow-md;
+    }
+
+    .event-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+
+      .event-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: $text-primary;
+        margin: 0;
+      }
+
+      .event-time {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: $text-secondary;
+        background: $bg-light;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        white-space: nowrap;
+      }
+    }
+
+    .event-description {
+      font-size: 0.9375rem;
+      color: $text-secondary;
+      margin: 0 0 1rem 0;
+      line-height: 1.6;
+    }
+
+    .event-metadata {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 1rem;
+      background: $bg-light;
+      border-radius: $radius-sm;
+      margin-bottom: 0.75rem;
+
+      .metadata-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.875rem;
+        color: $text-primary;
+
+        i {
+          width: 16px;
+          color: $primary;
+          flex-shrink: 0;
+        }
+
+        span {
+          flex: 1;
+        }
+      }
+    }
+
+    .event-footer {
+      display: flex;
+      justify-content: flex-end;
+      padding-top: 0.75rem;
+      border-top: 1px solid $border-color;
+
+      .performed-by {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        color: $text-secondary;
+
+        i {
+          color: $primary;
+        }
+      }
+    }
+  }
+}
+
+// ==================== BUTTONS ====================
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: $radius-sm;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+
+  &.btn-primary {
+    background: linear-gradient(135deg, $primary 0%, #764ba2 100%);
+    color: white;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    }
+  }
+
+  &.btn-outline {
+    background: white;
+    color: $text-secondary;
+    border-color: $border-color;
+
+    &:hover {
+      background: $bg-light;
+      border-color: $primary;
+      color: $primary;
+    }
+  }
+}
+
+// ==================== STATES ====================
+.loading-state,
+.error-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  min-height: 300px;
+}
+
+.loading-state {
+  .spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid $border-color;
+    border-top-color: $primary;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    color: $text-secondary;
+  }
+}
+
+.error-state {
+  i {
+    font-size: 3rem;
+    color: $danger;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    color: $text-secondary;
+    margin-bottom: 1rem;
+  }
+}
+
+.empty-state {
+  i {
+    font-size: 4rem;
+    color: $text-muted;
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin: 0 0 0.5rem 0;
+  }
+
+  p {
+    color: $text-secondary;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ==================== RESPONSIVE ====================
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+
+    .filters {
+      flex-direction: column;
+    }
+
+    .actions {
+      width: 100%;
+
+      .btn {
+        flex: 1;
+      }
+    }
+  }
+
+  .timeline-events {
+    padding-left: 1.5rem;
+
+    &::before {
+      left: 12px;
+    }
+  }
+
+  .timeline-item {
+    .event-icon {
+      left: -1.5rem;
+      width: 32px;
+      height: 32px;
+      border-width: 3px;
+
+      i {
+        font-size: 0.875rem;
+      }
+    }
+
+    .event-content {
+      margin-left: 1rem;
+
+      .event-header {
+        flex-direction: column;
+        gap: 0.5rem;
+
+        .event-time {
+          align-self: flex-start;
+        }
+      }
+    }
+  }
+}
