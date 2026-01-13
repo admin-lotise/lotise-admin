@@ -6,10 +6,23 @@ import { Raffle } from '../../../shared/models/raffle.model';
 import { RafflesApiService } from '../../../core/http/raffles-api.service';
 import { RAFFLE_TABS, RaffleTab, TabItem, RaffleStats } from '../../../shared/models/raffle-detail.model';
 
+// ==================== IMPORTAR LOS TABS ====================
+import { PaymentsTabComponent } from './tabs/payments-tab/payments-tab.component';
+import { ParticipantsTabComponent } from './tabs/participants-tab/participants-tab.component';
+import { TicketsTabComponent } from './tabs/tickets-tab/tickets-tab.component';
+import { HistoryTabComponent } from './tabs/history-tab/history-tab.component';
+
 @Component({
   selector: 'app-raffle-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    // ==================== AGREGAR LOS TABS A LOS IMPORTS ====================
+    PaymentsTabComponent,
+    ParticipantsTabComponent,
+    TicketsTabComponent,
+    HistoryTabComponent
+  ],
   templateUrl: './raffle-detail.component.html',
   styleUrl: './raffle-detail.component.scss'
 })
