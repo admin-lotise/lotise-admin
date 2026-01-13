@@ -1,13 +1,12 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
-import { ParticipantsApiService } from '../http/participants-api.service';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { Participant } from '../../shared/models/ticket.model';
-import { firstValueFrom } from 'rxjs';
+import { RaffleMockDataService } from '../services/raffle-mock-data.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RaffleParticipantsStateService {
-  private api = inject(ParticipantsApiService);
+  private mockData = inject(RaffleMockDataService);
 
   // State
   private participantsMap = signal<Map<string, Participant[]>>(new Map());
@@ -25,17 +24,23 @@ export class RaffleParticipantsStateService {
       this.isLoading.set(true);
       this.error.set(null);
 
-      const participants = await firstValueFrom(
-        this.api.getRaffleParticipants(raffleId)
-      );
-
+      // ==================== USAR MOCK DATA ====================
+      await new Promise(resolve => setTimeout(resolve, 600));
+      const mockParticipants = this.mockData.getMockParticipants(raffleId);
       this.participantsMap.update(map => {
-        const newMap = new Map(map);
-        newMap.set(raffleId, participants);
-        return newMap;
+        map.set(raffleId, mockParticipants);
+        return new Map(map);
       });
+
+      // TODO: Reemplazar con llamada real al API
+      // const response = await firstValueFrom(this.participantsApi.getParticipants(raffleId));
+      // this.participantsMap.update(map => {
+      //   map.set(raffleId, response);
+      //   return new Map(map);
+      // });
+
     } catch (err: any) {
-      this.error.set(err?.message || 'Error loading participants');
+      this.error.set(err?.message || 'Error al cargar los participantes');
       throw err;
     } finally {
       this.isLoading.set(false);

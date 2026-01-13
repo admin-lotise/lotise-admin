@@ -1,13 +1,12 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
-import { PaymentsApiService } from '../http/payments-api.service';
-import { Payment, ValidatePaymentRequest, RejectPaymentRequest } from '../../shared/models/ticket.model';
-import { firstValueFrom } from 'rxjs';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { Payment } from '../../shared/models/ticket.model';
+import { RaffleMockDataService } from '../services/raffle-mock-data.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RafflePaymentsStateService {
-  private api = inject(PaymentsApiService);
+  private mockData = inject(RaffleMockDataService);
 
   // State
   private paymentsMap = signal<Map<string, Payment[]>>(new Map());
@@ -41,39 +40,41 @@ export class RafflePaymentsStateService {
       this.isLoading.set(true);
       this.error.set(null);
 
-      const payments = await firstValueFrom(
-        this.api.getRafflePayments(raffleId)
-      );
-
+      // ==================== USAR MOCK DATA ====================
+      await new Promise(resolve => setTimeout(resolve, 800));
+      const mockPayments = this.mockData.getMockPayments(raffleId);
       this.paymentsMap.update(map => {
-        const newMap = new Map(map);
-        newMap.set(raffleId, payments);
-        return newMap;
+        map.set(raffleId, mockPayments);
+        return new Map(map);
       });
+
+      // TODO: Reemplazar con llamada real al API
+      // const response = await firstValueFrom(this.paymentsApi.getPayments(raffleId));
+      // this.paymentsMap.update(map => {
+      //   map.set(raffleId, response);
+      //   return new Map(map);
+      // });
+
     } catch (err: any) {
-      this.error.set(err?.message || 'Error loading payments');
+      this.error.set(err?.message || 'Error al cargar los pagos');
       throw err;
     } finally {
       this.isLoading.set(false);
     }
   }
 
-  // Validate payment
-  async validatePayment(
-    raffleId: string,
-    request: ValidatePaymentRequest
-  ): Promise<void> {
+  // Validate payment (mock implementation)
+  async validatePayment(raffleId: string, paymentId: string): Promise<void> {
     try {
       this.isLoading.set(true);
 
-      await firstValueFrom(this.api.validatePayment(request));
+      // TODO: Implementar llamada al API real
+      // await firstValueFrom(this.api.validatePayment(paymentId));
+      
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       // Reload payments
       await this.loadPayments(raffleId);
-      
-      // Notify other services (via event or direct call)
-      // ticketsState.refreshAfterPayment(raffleId);
-      // participantsState.refreshAfterPayment(raffleId);
     } catch (err: any) {
       this.error.set(err?.message || 'Error validating payment');
       throw err;
@@ -82,15 +83,15 @@ export class RafflePaymentsStateService {
     }
   }
 
-  // Reject payment
-  async rejectPayment(
-    raffleId: string,
-    request: RejectPaymentRequest
-  ): Promise<void> {
+  // Reject payment (mock implementation)
+  async rejectPayment(raffleId: string, paymentId: string, reason: string): Promise<void> {
     try {
       this.isLoading.set(true);
 
-      await firstValueFrom(this.api.rejectPayment(request));
+      // TODO: Implementar llamada al API real
+      // await firstValueFrom(this.api.rejectPayment(paymentId, reason));
+      
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       // Reload payments
       await this.loadPayments(raffleId);

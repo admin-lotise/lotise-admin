@@ -1,26 +1,31 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
-import { TicketsApiService } from '../http/tickets-api.service';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { Ticket, TicketAux } from '../../shared/models/ticket.model';
-import { firstValueFrom } from 'rxjs';
+import { RaffleMockDataService } from '../services/raffle-mock-data.service';
+
+interface TicketsData {
+  paid: Ticket[];
+  reserved: TicketAux[];
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class RaffleTicketsStateService {
-  private api = inject(TicketsApiService);
+  private mockData = inject(RaffleMockDataService);
 
   // State
-  private ticketsMap = signal<Map<string, Ticket[]>>(new Map());
-  private reservedTicketsMap = signal<Map<string, TicketAux[]>>(new Map());
+  private ticketsMap = signal<Map<string, TicketsData>>(new Map());
   isLoading = signal(false);
   error = signal<string | null>(null);
 
   // Get all tickets (paid + reserved)
   getAllTickets(raffleId: string) {
     return computed(() => {
-      const paid = this.ticketsMap().get(raffleId) || [];
-      const reserved = this.reservedTicketsMap().get(raffleId) || [];
-      return { paid, reserved };
+      const data = this.ticketsMap().get(raffleId);
+      return {
+        paid: data?.paid || [],
+        reserved: data?.reserved || []
+      };
     });
   }
 
@@ -30,24 +35,23 @@ export class RaffleTicketsStateService {
       this.isLoading.set(true);
       this.error.set(null);
 
-      const [paidTickets, reservedTickets] = await Promise.all([
-        firstValueFrom(this.api.getRaffleTickets(raffleId)),
-        firstValueFrom(this.api.getRaffleReservedTickets(raffleId))
-      ]);
-
+      // ==================== USAR MOCK DATA ====================
+      await new Promise(resolve => setTimeout(resolve, 500));
+      const mockTickets = this.mockData.getMockTickets(raffleId);
       this.ticketsMap.update(map => {
-        const newMap = new Map(map);
-        newMap.set(raffleId, paidTickets);
-        return newMap;
+        map.set(raffleId, mockTickets);
+        return new Map(map);
       });
 
-      this.reservedTicketsMap.update(map => {
-        const newMap = new Map(map);
-        newMap.set(raffleId, reservedTickets);
-        return newMap;
-      });
+      // TODO: Reemplazar con llamada real al API
+      // const response = await firstValueFrom(this.ticketsApi.getTickets(raffleId));
+      // this.ticketsMap.update(map => {
+      //   map.set(raffleId, response);
+      //   return new Map(map);
+      // });
+
     } catch (err: any) {
-      this.error.set(err?.message || 'Error loading tickets');
+      this.error.set(err?.message || 'Error al cargar los boletos');
       throw err;
     } finally {
       this.isLoading.set(false);
@@ -67,14 +71,8 @@ export class RaffleTicketsStateService {
         newMap.delete(raffleId);
         return newMap;
       });
-      this.reservedTicketsMap.update(map => {
-        const newMap = new Map(map);
-        newMap.delete(raffleId);
-        return newMap;
-      });
     } else {
       this.ticketsMap.set(new Map());
-      this.reservedTicketsMap.set(new Map());
     }
   }
 }
