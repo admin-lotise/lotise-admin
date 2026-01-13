@@ -94,11 +94,11 @@ export class PaymentsTabComponent implements OnInit {
     if (!payment) return;
 
     try {
-      await this.paymentsState.validatePayment(this.raffleId, {
-        paymentId: payment.paymentId,
-        validatedBy: 'admin-user-id', // TODO: Get from auth
-        notes: this.validationNotes()
-      });
+      // ==================== FIX: Pasar solo paymentId ====================
+      await this.paymentsState.validatePayment(
+        this.raffleId,
+        payment.paymentId
+      );
 
       // Refresh related data
       await Promise.all([
@@ -122,11 +122,12 @@ export class PaymentsTabComponent implements OnInit {
     }
 
     try {
-      await this.paymentsState.rejectPayment(this.raffleId, {
-        paymentId: payment.paymentId,
-        rejectedBy: 'admin-user-id', // TODO: Get from auth
-        reason: this.rejectionReason()
-      });
+      // ==================== FIX: Pasar paymentId y reason por separado ====================
+      await this.paymentsState.rejectPayment(
+        this.raffleId,
+        payment.paymentId,
+        this.rejectionReason()
+      );
 
       this.closeValidationModal();
       alert('Pago rechazado');
