@@ -184,278 +184,142 @@
           @if (activeTab() === 'overview') {
             <div class="tab-panel">
               
-              <!-- ==================== TITLE & STATUS ==================== -->
-              <div class="title-section">
-                <div class="title-info">
-                  <h1 class="raffle-title">{{ raffleData.title }}</h1>
-                  <span class="raffle-status" [ngClass]="getStatusClass(raffleData.status)">
-                    {{ getStatusLabel(raffleData.status) }}
-                  </span>
-                </div>
+              <div class="overview-grid">
                 
-                @if (raffleData.imageUrl || raffleData.images?.[0]) {
-                  <div class="raffle-image">
-                    <img [src]="raffleData.imageUrl || raffleData.images![0]" [alt]="raffleData.title">
+                <!-- Información Básica -->
+                <div class="info-card">
+                  <h3><i class="fas fa-info-circle"></i> Información Básica</h3>
+                  <div class="info-row">
+                    <span class="info-label">Título:</span>
+                    <span class="info-value">{{ raffleData.title }}</span>
                   </div>
-                }
-              </div>
-
-              <!-- ==================== STATS PANEL ==================== -->
-              @if (stats(); as statsData) {
-                <div class="stats-panel">
-                  <div class="stat-card">
-                    <div class="stat-icon bg-primary">
-                      <i class="fas fa-ticket-alt"></i>
-                    </div>
-                    <div class="stat-content">
-                      <span class="stat-value">{{ statsData.soldTickets }}/{{ statsData.totalTickets }}</span>
-                      <span class="stat-label">Boletos Vendidos</span>
-                    </div>
+                  <div class="info-row">
+                    <span class="info-label">ID:</span>
+                    <span class="info-value code">{{ raffleData.id }}</span>
                   </div>
-
-                  <div class="stat-card">
-                    <div class="stat-icon bg-success">
-                      <i class="fas fa-dollar-sign"></i>
-                    </div>
-                    <div class="stat-content">
-                      <span class="stat-value">{{ statsData.revenue | currency:'MXN':'symbol':'1.0-0' }}</span>
-                      <span class="stat-label">Ingresos Totales</span>
-                    </div>
+                  <div class="info-row">
+                    <span class="info-label">Descripción:</span>
+                    <span class="info-value">{{ raffleData.description }}</span>
                   </div>
-
-                  <div class="stat-card">
-                    <div class="stat-icon bg-info">
-                      <i class="fas fa-users"></i>
-                    </div>
-                    <div class="stat-content">
-                      <span class="stat-value">{{ statsData.participants }}</span>
-                      <span class="stat-label">Participantes</span>
-                    </div>
-                  </div>
-
-                  <div class="stat-card">
-                    <div class="stat-icon bg-warning">
-                      <i class="fas fa-calendar-alt"></i>
-                    </div>
-                    <div class="stat-content">
-                      <span class="stat-value">{{ statsData.daysRemaining }}</span>
-                      <span class="stat-label">Días Restantes</span>
-                    </div>
+                  <div class="info-row">
+                    <span class="info-label">Tipo:</span>
+                    <span class="info-value">{{ raffleData.raffleType }}</span>
                   </div>
                 </div>
 
-                <!-- Progress Bar -->
-                <div class="progress-section">
-                  <div class="progress-header">
-                    <span class="progress-label">Progreso de Venta</span>
-                    <span class="progress-percentage">{{ progressPercentage() | number:'1.1-1' }}%</span>
+                <!-- Configuración de Boletos -->
+                <div class="info-card">
+                  <h3><i class="fas fa-ticket-alt"></i> Configuración de Boletos</h3>
+                  <div class="info-row">
+                    <span class="info-label">Total de Boletos:</span>
+                    <span class="info-value highlight">{{ raffleData.totalTickets | number }}</span>
                   </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" [style.width.%]="progressPercentage()"></div>
+                  <div class="info-row">
+                    <span class="info-label">Precio Base:</span>
+                    <span class="info-value highlight">{{ raffleData.baseTicketPrice | currency:'MXN' }}</span>
                   </div>
-                  <div class="progress-info">
-                    <span>{{ statsData.availableTickets }} disponibles</span>
-                    <span>{{ statsData.soldTickets }} vendidos</span>
+                  <div class="info-row">
+                    <span class="info-label">Tipo de Precio:</span>
+                    <span class="info-value">{{ raffleData.ticketPriceType }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Máx. por Persona:</span>
+                    <span class="info-value">{{ raffleData.maxTicketsPerPerson || 'Sin límite' }}</span>
                   </div>
                 </div>
-              }
 
-              <!-- ==================== TABS NAVIGATION ==================== -->
-              <div class="tabs-container">
-                <div class="tabs-header">
-                  @for (tab of tabs(); track tab.id) {
-                    <button 
-                      class="tab-item"
-                      [class.active]="activeTab() === tab.id"
-                      [disabled]="tab.disabled"
-                      (click)="setActiveTab(tab.id)">
-                      <i class="fas" [ngClass]="tab.icon"></i>
-                      <span>{{ tab.label }}</span>
-                    </button>
+                <!-- Fechas Importantes -->
+                <div class="info-card">
+                  <h3><i class="fas fa-calendar-alt"></i> Fechas Importantes</h3>
+                  @if (raffleData.startDate) {
+                    <div class="info-row">
+                      <span class="info-label">Inicio de Ventas:</span>
+                      <span class="info-value">{{ raffleData.startDate | date:'dd/MM/yyyy HH:mm' }}</span>
+                    </div>
                   }
+                  @if (raffleData.endDate) {
+                    <div class="info-row">
+                      <span class="info-label">Fin de Ventas:</span>
+                      <span class="info-value">{{ raffleData.endDate | date:'dd/MM/yyyy HH:mm' }}</span>
+                    </div>
+                  }
+                  <div class="info-row">
+                    <span class="info-label">Fecha del Sorteo:</span>
+                    <span class="info-value highlight">{{ raffleData.drawDate | date:'dd/MM/yyyy HH:mm' }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Creada:</span>
+                    <span class="info-value">{{ raffleData.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                  </div>
                 </div>
 
-                <div class="tabs-content">
-                  
-                  <!-- ==================== TAB: OVERVIEW ==================== -->
-                  @if (activeTab() === 'overview') {
-                    <div class="tab-panel">
-                      
-                      <!-- Información Básica -->
-                      <div class="info-card">
-                        <h3><i class="fas fa-info-circle"></i> Información Básica</h3>
-                        <div class="info-row">
-                          <span class="info-label">Título:</span>
-                          <span class="info-value">{{ raffleData.title }}</span>
+                <!-- Premios -->
+                <div class="info-card prizes-card">
+                  <div class="card-header">
+                    <h3><i class="fas fa-trophy"></i> Premios</h3>
+                    <span class="badge-count">{{ raffleData.prizes.length }}</span>
+                  </div>
+                  <div class="prizes-grid">
+                    @for (prize of raffleData.prizes; track prize.id) {
+                      <div class="prize-card">
+                        <div class="prize-badge">
+                          <span class="position">{{ prize.position }}°</span>
+                          <span class="label">Lugar</span>
                         </div>
-                        <div class="info-row">
-                          <span class="info-label">ID:</span>
-                          <span class="info-value code">{{ raffleData.id }}</span>
-                        </div>
-                        <div class="info-row">
-                          <span class="info-label">Descripción:</span>
-                          <span class="info-value">{{ raffleData.description }}</span>
-                        </div>
-                        <div class="info-row">
-                          <span class="info-label">Tipo:</span>
-                          <span class="info-value">{{ raffleData.raffleType }}</span>
-                        </div>
-                      </div>
-
-                      <!-- Configuración de Boletos -->
-                      <div class="info-card">
-                        <h3><i class="fas fa-ticket-alt"></i> Configuración de Boletos</h3>
-                        <div class="info-row">
-                          <span class="info-label">Total de Boletos:</span>
-                          <span class="info-value highlight">{{ raffleData.totalTickets | number }}</span>
-                        </div>
-                        <div class="info-row">
-                          <span class="info-label">Precio Base:</span>
-                          <span class="info-value highlight">{{ raffleData.baseTicketPrice | currency:'MXN' }}</span>
-                        </div>
-                        <div class="info-row">
-                          <span class="info-label">Tipo de Precio:</span>
-                          <span class="info-value">{{ raffleData.ticketPriceType }}</span>
-                        </div>
-                        <div class="info-row">
-                          <span class="info-label">Máx. por Persona:</span>
-                          <span class="info-value">{{ raffleData.maxTicketsPerPerson || 'Sin límite' }}</span>
-                        </div>
-                      </div>
-
-                      <!-- Fechas Importantes -->
-                      <div class="info-card">
-                        <h3><i class="fas fa-calendar-alt"></i> Fechas Importantes</h3>
-                        @if (raffleData.startDate) {
-                          <div class="info-row">
-                            <span class="info-label">Inicio de Ventas:</span>
-                            <span class="info-value">{{ raffleData.startDate | date:'dd/MM/yyyy HH:mm' }}</span>
+                        <div class="prize-content">
+                          @if (prize.imageUrl) {
+                            <div class="prize-image">
+                              <img [src]="prize.imageUrl" [alt]="prize.name">
+                            </div>
+                          }
+                          <div class="prize-info">
+                            <h4 class="prize-name">{{ prize.name }}</h4>
+                            @if (prize.description) {
+                              <p class="prize-description">{{ prize.description }}</p>
+                            }
                           </div>
-                        }
-                        @if (raffleData.endDate) {
-                          <div class="info-row">
-                            <span class="info-label">Fin de Ventas:</span>
-                            <span class="info-value">{{ raffleData.endDate | date:'dd/MM/yyyy HH:mm' }}</span>
-                          </div>
-                        }
-                        <div class="info-row">
-                          <span class="info-label">Fecha del Sorteo:</span>
-                          <span class="info-value highlight">{{ raffleData.drawDate | date:'dd/MM/yyyy HH:mm' }}</span>
-                        </div>
-                        <div class="info-row">
-                          <span class="info-label">Creada:</span>
-                          <span class="info-value">{{ raffleData.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
                         </div>
                       </div>
+                    }
+                  </div>
+                </div>
 
-                      <!-- Premios -->
-                      <div class="info-card prizes-card">
-                        <h3><i class="fas fa-trophy"></i> Premios ({{ raffleData.prizes.length }})</h3>
-                        <div class="prizes-list">
-                          @for (prize of raffleData.prizes; track prize.id) {
-                            <div class="prize-item">
-                              <div class="prize-position">{{ prize.position }}°</div>
-                              <div class="prize-info">
-                                <h4>{{ prize.name }}</h4>
-                                @if (prize.description) {
-                                  <p>{{ prize.description }}</p>
-                                }
-                                @if (prize.imageUrl) {
-                                  <img [src]="prize.imageUrl" [alt]="prize.name" class="prize-image">
-                                }
+                <!-- Combos (si existen) -->
+                @if (raffleData.comboPrices && raffleData.comboPrices.length > 0) {
+                  <div class="info-card combos-card">
+                    <div class="card-header">
+                      <h3><i class="fas fa-box-open"></i> Paquetes de Boletos</h3>
+                      <span class="badge-count">{{ raffleData.comboPrices.length }}</span>
+                    </div>
+                    <div class="combos-grid">
+                      @for (combo of raffleData.comboPrices; track combo.quantity) {
+                        <div class="combo-card">
+                          <div class="combo-header">
+                            <div class="combo-icon">
+                              <i class="fas fa-ticket-alt"></i>
+                            </div>
+                            <div class="combo-quantity">{{ combo.quantity }} boletos</div>
+                          </div>
+                          <div class="combo-body">
+                            <div class="combo-price">{{ combo.price | currency:'MXN' }}</div>
+                            @if (combo.discount) {
+                              <div class="combo-discount">
+                                <i class="fas fa-tag"></i>
+                                {{ combo.discount }}% OFF
                               </div>
-                            </div>
-                          }
-                        </div>
-                      </div>
-
-                      <!-- Combos (si existen) -->
-                      @if (raffleData.comboPrices && raffleData.comboPrices.length > 0) {
-                        <div class="info-card">
-                          <h3><i class="fas fa-box-open"></i> Paquetes de Boletos</h3>
-                          @for (combo of raffleData.comboPrices; track combo.quantity) {
-                            <div class="combo-item">
-                              <div class="combo-quantity">{{ combo.quantity }} boletos</div>
-                              <div class="combo-price">{{ combo.price | currency:'MXN' }}</div>
-                              @if (combo.discount) {
-                                <div class="combo-discount">{{ combo.discount }}% descuento</div>
-                              }
-                            </div>
-                          }
+                            }
+                          </div>
+                          <div class="combo-footer">
+                            <span class="price-per-ticket">
+                              {{ (combo.price / combo.quantity) | currency:'MXN' }} c/u
+                            </span>
+                          </div>
                         </div>
                       }
-
                     </div>
-                  }
+                  </div>
+                }
 
-                  <!-- ==================== TAB: PARTICIPANTS ==================== -->
-                  @if (activeTab() === 'participants') {
-                    <div class="tab-panel">
-                      <div class="empty-state">
-                        <i class="fas fa-users"></i>
-                        <h3>Participantes</h3>
-                        <p>Próximamente: Lista de participantes con sus boletos</p>
-                      </div>
-                    </div>
-                  }
-
-                  <!-- ==================== TAB: TICKETS ==================== -->
-                  @if (activeTab() === 'tickets') {
-                    <div class="tab-panel">
-                      <div class="empty-state">
-                        <i class="fas fa-ticket-alt"></i>
-                        <h3>Gestión de Boletos</h3>
-                        <p>Próximamente: Vista de todos los boletos y su estado</p>
-                      </div>
-                    </div>
-                  }
-
-                  <!-- ==================== TAB: PAYMENTS ==================== -->
-                  @if (activeTab() === 'payments') {
-                    <div class="tab-panel">
-                      <div class="empty-state">
-                        <i class="fas fa-credit-card"></i>
-                        <h3>Historial de Pagos</h3>
-                        <p>Próximamente: Lista de transacciones y pagos</p>
-                      </div>
-                    </div>
-                  }
-
-                  <!-- ==================== TAB: HISTORY ==================== -->
-                  @if (activeTab() === 'history') {
-                    <div class="tab-panel">
-                      <div class="empty-state">
-                        <i class="fas fa-history"></i>
-                        <h3>Historial de Cambios</h3>
-                        <p>Próximamente: Timeline de eventos y modificaciones</p>
-                      </div>
-                    </div>
-                  }
-
-                </div>
-              </div>
-
-            </div>
-          }
-
-          <!-- ==================== TAB: PARTICIPANTS ==================== -->
-          @if (activeTab() === 'participants') {
-            <div class="tab-panel">
-              <div class="empty-state">
-                <i class="fas fa-users"></i>
-                <h3>Participantes</h3>
-                <p>Próximamente: Lista de participantes con sus boletos</p>
-              </div>
-            </div>
-          }
-
-          <!-- ==================== TAB: TICKETS ==================== -->
-          @if (activeTab() === 'tickets') {
-            <div class="tab-panel">
-              <div class="empty-state">
-                <i class="fas fa-ticket-alt"></i>
-                <h3>Gestión de Boletos</h3>
-                <p>Próximamente: Vista de todos los boletos y su estado</p>
               </div>
             </div>
           }
@@ -463,22 +327,30 @@
           <!-- ==================== TAB: PAYMENTS ==================== -->
           @if (activeTab() === 'payments') {
             <div class="tab-panel">
-              <div class="empty-state">
-                <i class="fas fa-credit-card"></i>
-                <h3>Historial de Pagos</h3>
-                <p>Próximamente: Lista de transacciones y pagos</p>
-              </div>
+              <app-payments-tab [raffleId]="raffleId()!" />
+            </div>
+          }
+
+          <!-- ==================== TAB: PARTICIPANTS ==================== -->
+          @if (activeTab() === 'participants') {
+            <div class="tab-panel">
+              <app-participants-tab [raffleId]="raffleId()!" />
+            </div>
+          }
+
+          <!-- ==================== TAB: TICKETS ==================== -->
+          @if (activeTab() === 'tickets') {
+            <div class="tab-panel">
+              <app-tickets-tab 
+                [raffleId]="raffleId()!" 
+                [totalTickets]="raffleData.totalTickets" />
             </div>
           }
 
           <!-- ==================== TAB: HISTORY ==================== -->
           @if (activeTab() === 'history') {
             <div class="tab-panel">
-              <div class="empty-state">
-                <i class="fas fa-history"></i>
-                <h3>Historial de Cambios</h3>
-                <p>Próximamente: Timeline de eventos y modificaciones</p>
-              </div>
+              <app-history-tab [raffleId]="raffleId()!" />
             </div>
           }
 
