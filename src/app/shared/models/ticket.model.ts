@@ -102,19 +102,22 @@ export interface Participant {
 export interface RaffleEvent {
   eventId: string;
   raffleId: string;
-  tenantId: string;
-  eventType: RaffleEventType;
+  eventType: string;
   timestamp: string;
-  
-  // Event details
-  description: string;
+  description?: string;
+  performedBy?: string; // <-- AGREGAR
   metadata?: {
     ticketNumbers?: string[];
     buyerPhone?: string;
+    buyerName?: string; // <-- AGREGAR
     paymentId?: string;
-    userId?: string; // Admin que realizó la acción
+    paymentMethod?: string; // <-- AGREGAR
+    userId?: string;
     oldStatus?: string;
     newStatus?: string;
+    amount?: number; // <-- AGREGAR
+    winnerName?: string; // <-- AGREGAR
+    winnerPhone?: string; // <-- AGREGAR
   };
 }
 
