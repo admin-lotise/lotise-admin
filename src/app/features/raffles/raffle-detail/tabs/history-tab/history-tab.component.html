@@ -1,0 +1,208 @@
+<div class="history-tab">
+
+  <!-- ==================== STATS PANEL ==================== -->
+  @if (stats(); as eventStats) {
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon total">
+          <i class="fas fa-history"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ eventStats.total }}</span>
+          <span class="stat-label">Total Eventos</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon reservations">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ eventStats.reservations }}</span>
+          <span class="stat-label">Reservas</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon payments">
+          <i class="fas fa-dollar-sign"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ eventStats.payments }}</span>
+          <span class="stat-label">Pagos</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon updates">
+          <i class="fas fa-edit"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ eventStats.updates }}</span>
+          <span class="stat-label">Actualizaciones</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ==================== TOOLBAR ==================== -->
+  <div class="toolbar">
+    <div class="filters">
+      <!-- Search -->
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input 
+          type="text" 
+          placeholder="Buscar eventos..."
+          [value]="searchTerm()"
+          (input)="searchTerm.set($any($event.target).value)">
+      </div>
+
+      <!-- Event type filter -->
+      <select 
+        class="filter-select"
+        [value]="eventTypeFilter()"
+        (change)="eventTypeFilter.set($any($event.target).value)">
+        <option value="all">Todos los eventos</option>
+        <option value="raffle_created">Rifa Creada</option>
+        <option value="raffle_updated">Rifa Actualizada</option>
+        <option value="raffle_published">Rifa Publicada</option>
+        <option value="raffle_closed">Rifa Cerrada</option>
+        <option value="tickets_reserved">Boletos Reservados</option>
+        <option value="payment_created">Pago Creado</option>
+        <option value="payment_validated">Pago Validado</option>
+        <option value="payment_rejected">Pago Rechazado</option>
+        <option value="winner_selected">Ganador Seleccionado</option>
+        <option value="prize_delivered">Premio Entregado</option>
+      </select>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-outline" (click)="loadEvents()">
+        <i class="fas fa-sync"></i>
+        Actualizar
+      </button>
+      <button class="btn btn-outline" (click)="exportHistory()">
+        <i class="fas fa-download"></i>
+        Exportar
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== LOADING ==================== -->
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando historial...</p>
+    </div>
+  }
+
+  <!-- ==================== ERROR ==================== -->
+  @if (error()) {
+    <div class="error-state">
+      <i class="fas fa-exclamation-triangle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-primary" (click)="loadEvents()">
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- ==================== TIMELINE ==================== -->
+  @if (!isLoading() && !error()) {
+    @if (groupedEvents().length > 0) {
+      <div class="timeline-container">
+        @for (group of groupedEvents(); track group.date) {
+          <div class="timeline-group">
+            <!-- Date header -->
+            <div class="date-header">
+              <span class="date-badge">{{ group.date }}</span>
+            </div>
+
+            <!-- Events -->
+            <div class="timeline-events">
+              @for (event of group.events; track event.eventId) {
+                <div class="timeline-item">
+                  <!-- Timeline line -->
+                  <div class="timeline-line"></div>
+
+                  <!-- Event icon -->
+                  <div class="event-icon" [ngClass]="getEventColor(event.eventType)">
+                    <i class="fas" [ngClass]="getEventIcon(event.eventType)"></i>
+                  </div>
+
+                  <!-- Event content -->
+                  <div class="event-content">
+                    <div class="event-header">
+                      <h4 class="event-title">{{ getEventLabel(event.eventType) }}</h4>
+                      <span class="event-time">
+                        {{ event.timestamp | date:'HH:mm' }}
+                      </span>
+                    </div>
+
+                    @if (event.description) {
+                      <p class="event-description">{{ event.description }}</p>
+                    }
+
+                    <!-- Metadata -->
+                    @if (event.metadata) {
+                      <div class="event-metadata">
+                        @if (event.metadata.ticketNumbers) {
+                          <div class="metadata-item">
+                            <i class="fas fa-ticket-alt"></i>
+                            <span>Boletos: {{ event.metadata.ticketNumbers.join(', ') }}</span>
+                          </div>
+                        }
+                        @if (event.metadata.amount) {
+                          <div class="metadata-item">
+                            <i class="fas fa-dollar-sign"></i>
+                            <span>Monto: {{ event.metadata.amount | currency:'MXN' }}</span>
+                          </div>
+                        }
+                        @if (event.metadata.buyerName) {
+                          <div class="metadata-item">
+                            <i class="fas fa-user"></i>
+                            <span>{{ event.metadata.buyerName }}</span>
+                          </div>
+                        }
+                        @if (event.metadata.paymentMethod) {
+                          <div class="metadata-item">
+                            <i class="fas fa-credit-card"></i>
+                            <span>{{ event.metadata.paymentMethod }}</span>
+                          </div>
+                        }
+                        @if (event.metadata.winnerPhone) {
+                          <div class="metadata-item">
+                            <i class="fas fa-trophy"></i>
+                            <span>Ganador: {{ event.metadata.winnerName }} ({{ event.metadata.winnerPhone }})</span>
+                          </div>
+                        }
+                      </div>
+                    }
+
+                    <!-- Performed by -->
+                    @if (event.performedBy) {
+                      <div class="event-footer">
+                        <span class="performed-by">
+                          <i class="fas fa-user-shield"></i>
+                          {{ event.performedBy }}
+                        </span>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <i class="fas fa-history"></i>
+        <h3>No hay eventos</h3>
+        <p>No se encontraron eventos con los filtros seleccionados</p>
+      </div>
+    }
+  }
+
+</div>
