@@ -1,0 +1,271 @@
+<div class="payments-tab">
+
+  <!-- ==================== STATS PANEL ==================== -->
+  @if (stats(); as paymentStats) {
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon pending">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ paymentStats.pending }}</span>
+          <span class="stat-label">Pendientes</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon confirmed">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ paymentStats.confirmed }}</span>
+          <span class="stat-label">Confirmados</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon rejected">
+          <i class="fas fa-times-circle"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ paymentStats.rejected }}</span>
+          <span class="stat-label">Rechazados</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon total">
+          <i class="fas fa-dollar-sign"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ paymentStats.totalAmount | currency:'MXN':'symbol':'1.0-0' }}</span>
+          <span class="stat-label">Total Recaudado</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ==================== FILTERS & ACTIONS ==================== -->
+  <div class="toolbar">
+    <div class="filters">
+      <!-- Search -->
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input 
+          type="text" 
+          placeholder="Buscar por nombre, teléfono o ID..."
+          [value]="searchTerm()"
+          (input)="searchTerm.set($any($event.target).value)">
+      </div>
+
+      <!-- Status filter -->
+      <select 
+        class="filter-select"
+        [value]="selectedStatus()"
+        (change)="selectedStatus.set($any($event.target).value)">
+        <option value="all">Todos los estados</option>
+        <option value="Pending">Pendientes</option>
+        <option value="Confirmed">Confirmados</option>
+        <option value="Rejected">Rechazados</option>
+      </select>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-outline" (click)="loadPayments()">
+        <i class="fas fa-sync"></i>
+        Actualizar
+      </button>
+      <button class="btn btn-outline" (click)="exportPayments()">
+        <i class="fas fa-download"></i>
+        Exportar
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== LOADING ==================== -->
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando pagos...</p>
+    </div>
+  }
+
+  <!-- ==================== ERROR ==================== -->
+  @if (error()) {
+    <div class="error-state">
+      <i class="fas fa-exclamation-triangle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-primary" (click)="loadPayments()">
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- ==================== PAYMENTS TABLE ==================== -->
+  @if (!isLoading() && !error()) {
+    @if (filteredPayments().length > 0) {
+      <div class="table-container">
+        <table class="payments-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Cliente</th>
+              <th>Teléfono</th>
+              <th>Método</th>
+              <th>Boletos</th>
+              <th>Monto</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (payment of filteredPayments(); track payment.paymentId) {
+              <tr>
+                <td>
+                  <span class="payment-id">{{ payment.paymentId.slice(0, 8) }}...</span>
+                </td>
+                <td>
+                  <div class="client-info">
+                    <span class="client-name">{{ payment.buyerFirstName }} {{ payment.buyerLastName }}</span>
+                    @if (payment.buyerEmail) {
+                      <span class="client-email">{{ payment.buyerEmail }}</span>
+                    }
+                  </div>
+                </td>
+                <td>
+                  <span class="phone">{{ payment.buyerPhone }}</span>
+                </td>
+                <td>
+                  <span class="method">{{ getMethodLabel(payment.method) }}</span>
+                </td>
+                <td>
+                  <span class="tickets-count">{{ payment.ticketIds.length }} boletos</span>
+                </td>
+                <td>
+                  <span class="amount">{{ payment.amount | currency:'MXN' }}</span>
+                </td>
+                <td>
+                  <span class="status-badge" [ngClass]="getStatusClass(payment.status)">
+                    {{ getStatusLabel(payment.status) }}
+                  </span>
+                </td>
+                <td>
+                  <span class="date">{{ payment.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                </td>
+                <td>
+                  <div class="table-actions">
+                    @if (payment.metadata?.proofUrl) {
+                      <button 
+                        class="btn-icon" 
+                        (click)="viewProof(payment)"
+                        title="Ver comprobante">
+                        <i class="fas fa-file-image"></i>
+                      </button>
+                    }
+                    
+                    @if (payment.status === 'Pending') {
+                      <button 
+                        class="btn-icon validate" 
+                        (click)="openValidationModal(payment)"
+                        title="Validar pago">
+                        <i class="fas fa-check"></i>
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <div class="empty-state">
+        <i class="fas fa-receipt"></i>
+        <h3>No hay pagos</h3>
+        <p>No se encontraron pagos con los filtros seleccionados</p>
+      </div>
+    }
+  }
+
+  <!-- ==================== VALIDATION MODAL ==================== -->
+  @if (showValidationModal() && selectedPayment(); as payment) {
+    <div class="modal-overlay" (click)="closeValidationModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Validar Pago</h3>
+          <button class="btn-close" (click)="closeValidationModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <!-- Payment info -->
+          <div class="payment-info">
+            <div class="info-row">
+              <span class="label">Cliente:</span>
+              <span class="value">{{ payment.buyerFirstName }} {{ payment.buyerLastName }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Teléfono:</span>
+              <span class="value">{{ payment.buyerPhone }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Monto:</span>
+              <span class="value highlight">{{ payment.amount | currency:'MXN' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Boletos:</span>
+              <span class="value">{{ payment.ticketIds.join(', ') }}</span>
+            </div>
+          </div>
+
+          <!-- Proof image -->
+          @if (payment.metadata?.proofUrl) {
+            <div class="proof-container">
+              <img [src]="payment.metadata?.proofUrl" alt="Comprobante de pago">
+            </div>
+          }
+
+          <!-- Validation notes -->
+          <div class="form-group">
+            <label>Notas de validación (opcional):</label>
+            <textarea 
+              rows="3"
+              placeholder="Agregar notas sobre la validación..."
+              [value]="validationNotes()"
+              (input)="validationNotes.set($any($event.target).value)"></textarea>
+          </div>
+
+          <!-- Rejection reason -->
+          <div class="form-group">
+            <label>Razón de rechazo (si aplica):</label>
+            <textarea 
+              rows="3"
+              placeholder="Explica por qué se rechaza el pago..."
+              [value]="rejectionReason()"
+              (input)="rejectionReason.set($any($event.target).value)"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-outline" (click)="closeValidationModal()">
+            Cancelar
+          </button>
+          <button 
+            class="btn btn-danger" 
+            (click)="rejectPayment()"
+            [disabled]="!rejectionReason()">
+            <i class="fas fa-times"></i>
+            Rechazar
+          </button>
+          <button class="btn btn-success" (click)="validatePayment()">
+            <i class="fas fa-check"></i>
+            Validar Pago
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>
