@@ -1,0 +1,220 @@
+<div class="template-editor">
+  
+  <!-- Header -->
+  <div class="editor-header">
+    <button class="btn-back" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      Volver
+    </button>
+
+    <div class="header-title">
+      <h1>
+        <i class="bi bi-pencil-square"></i>
+        {{ isEditMode() ? 'Editar Plantilla' : 'Nueva Plantilla' }}
+      </h1>
+      <p>Configura el mensaje que se enviará por WhatsApp</p>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn-secondary" (click)="testTemplate()">
+        <i class="bi bi-send"></i>
+        Probar
+      </button>
+      <button 
+        class="btn-primary" 
+        (click)="saveTemplate()"
+        [disabled]="!isValid() || isSaving()"
+      >
+        <i class="bi bi-check-lg"></i>
+        {{ isSaving() ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Editor Content -->
+  <div class="editor-content">
+    
+    <!-- Left Panel - Form -->
+    <div class="editor-panel editor-form">
+      
+      <!-- Template Type -->
+      <div class="form-section">
+        <label class="form-label required">
+          <i class="bi bi-tag"></i>
+          Tipo de Plantilla
+        </label>
+        <select 
+          class="form-select"
+          [ngModel]="selectedType()"
+          (ngModelChange)="selectedType.set($event); onTypeChange()"
+          [disabled]="isEditMode()"
+        >
+          @for (type of templateTypes; track type) {
+            <option [value]="type">
+              {{ getTypeName(type) }}
+            </option>
+          }
+        </select>
+        <p class="form-help">
+          {{ currentTemplateInfo()?.description }}
+        </p>
+      </div>
+
+      <!-- Template Name -->
+      <div class="form-section">
+        <label class="form-label required">
+          <i class="bi bi-card-text"></i>
+          Nombre de la Plantilla
+        </label>
+        <input 
+          type="text"
+          class="form-input"
+          placeholder="Ej: Confirmación de Apartado"
+          [ngModel]="templateName()"
+          (ngModelChange)="templateName.set($event)"
+        >
+      </div>
+
+      <!-- Template Content -->
+      <div class="form-section">
+        <div class="content-header">
+          <label class="form-label required">
+            <i class="bi bi-chat-left-text"></i>
+            Contenido del Mensaje
+          </label>
+          <span class="character-count">
+            {{ characterCount() }} caracteres
+          </span>
+        </div>
+
+        <!-- Formatting Toolbar -->
+        <div class="formatting-toolbar">
+          <button 
+            class="toolbar-btn"
+            title="Negrita (*texto*)"
+            (click)="formatBold('texto')"
+          >
+            <i class="bi bi-type-bold"></i>
+          </button>
+          <button 
+            class="toolbar-btn"
+            title="Cursiva (_texto_)"
+            (click)="formatItalic('texto')"
+          >
+            <i class="bi bi-type-italic"></i>
+          </button>
+          <button 
+            class="toolbar-btn"
+            title="Tachado (~texto~)"
+            (click)="formatStrikethrough('texto')"
+          >
+            <i class="bi bi-type-strikethrough"></i>
+          </button>
+        </div>
+
+        <textarea 
+          class="form-textarea"
+          rows="12"
+          placeholder="Escribe el contenido del mensaje..."
+          [ngModel]="templateContent()"
+          (ngModelChange)="templateContent.set($event)"
+        ></textarea>
+
+        <div class="format-hints">
+          <span><strong>*texto*</strong> = Negrita</span>
+          <span><strong>_texto_</strong> = Cursiva</span>
+          <span><strong>~texto~</strong> = Tachado</span>
+        </div>
+      </div>
+
+      <!-- Variables -->
+      <div class="form-section">
+        <label class="form-label">
+          <i class="bi bi-code-square"></i>
+          Variables Disponibles
+        </label>
+        <p class="form-help">
+          Haz clic en una variable para insertarla en el mensaje
+        </p>
+        
+        <div class="variables-grid">
+          @for (variable of availableVariables(); track variable) {
+            <button 
+              class="variable-chip"
+              (click)="insertVariable(variable)"
+              [title]="'Ejemplo: ' + getVariableExample(variable)"
+            >
+              <i class="bi bi-code"></i>
+              <span>{{'$' + variable}}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Active Toggle -->
+      <div class="form-section">
+        <label class="toggle-label">
+          <input 
+            type="checkbox"
+            [checked]="isActive()"
+            (change)="isActive.set(!isActive())"
+          >
+          <span class="toggle-text">
+            <i class="bi bi-check-circle"></i>
+            Plantilla activa
+          </span>
+        </label>
+        <p class="form-help">
+          Solo las plantillas activas se usarán para enviar mensajes
+        </p>
+      </div>
+    </div>
+
+    <!-- Right Panel - Preview -->
+    <div class="editor-panel editor-preview">
+      <div class="preview-sticky">
+        <div class="preview-header">
+          <i class="bi bi-phone"></i>
+          <span>Vista Previa</span>
+        </div>
+
+        <div class="whatsapp-mockup">
+          <!-- WhatsApp Header -->
+          <div class="wa-header">
+            <div class="wa-avatar">
+              <i class="bi bi-person-circle"></i>
+            </div>
+            <div class="wa-contact">
+              <strong>Tu Negocio</strong>
+              <span>en línea</span>
+            </div>
+          </div>
+
+          <!-- WhatsApp Messages -->
+          <div class="wa-messages">
+            <div class="wa-message">
+              <div class="message-bubble">
+                {{ previewContent() || 'Tu mensaje aparecerá aquí...' }}
+              </div>
+              <div class="message-time">
+                {{ 'now' | date:'HH:mm' }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview Info -->
+        <div class="preview-info">
+          <div class="info-item">
+            <i class="bi bi-info-circle"></i>
+            <span>Las variables se reemplazarán con datos reales al enviar</span>
+          </div>
+          <div class="info-item">
+            <i class="bi bi-whatsapp"></i>
+            <span>Formato compatible con WhatsApp Business API</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
