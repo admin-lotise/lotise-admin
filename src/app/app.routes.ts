@@ -60,6 +60,15 @@ export const routes: Routes = [
         path: 'settings/payment-methods',
         loadComponent: () => import('./features/settings/payment-methods/payment-methods.component').then(m => m.PaymentMethodsComponent)
       },
+      // ==================== NUEVO: WhatsApp Templates ====================
+      {
+        path: 'settings/whatsapp-templates',
+        loadComponent: () => import('./features/settings/whatsapp-templates/whatsapp-templates.component').then(m => m.WhatsappTemplatesComponent)
+      },
+      {
+        path: 'settings/whatsapp-templates/editor/:id',
+        loadComponent: () => import('./features/settings/whatsapp-templates/template-editor/template-editor.component').then(m => m.TemplateEditorComponent)
+      },
       {
         path: '',
         redirectTo: 'dashboard',

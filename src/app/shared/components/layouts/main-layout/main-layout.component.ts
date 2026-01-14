@@ -21,7 +21,7 @@ export class MainLayoutComponent {
     private router: Router
   ) {}
 
-  // ✅ Desktop Sidebar - Solo rutas existentes
+  // ✅ Desktop Sidebar
   readonly menuItems = [
     { 
       icon: 'dashboard', 
@@ -49,6 +49,13 @@ export class MainLayoutComponent {
       label: 'Métodos de Pago', 
       route: '/settings/payment-methods' 
     },
+    // ==================== NUEVO ====================
+    { 
+      icon: 'chat', 
+      label: 'Plantillas WhatsApp', 
+      route: '/settings/whatsapp-templates' 
+    },
+    // ===============================================
     { 
       icon: 'settings', 
       label: 'Configuración', 
@@ -56,7 +63,7 @@ export class MainLayoutComponent {
     }
   ];
 
-  // ✅ Mobile Bottom Nav - Solo accesos principales existentes
+  // ✅ Mobile Bottom Nav
   readonly mobileBottomNavItems = [
     { 
       icon: 'home', 
@@ -75,7 +82,7 @@ export class MainLayoutComponent {
     }
   ];
 
-  // ✅ Mobile Sidebar - Solo opciones existentes
+  // ✅ Mobile Sidebar
   readonly mobileSecondaryItems = [
     { 
       icon: 'confirmation_number', 
@@ -108,6 +115,14 @@ export class MainLayoutComponent {
       description: 'Cuentas bancarias y tarjetas',
       route: '/settings/payment-methods' 
     },
+    // ==================== NUEVO ====================
+    { 
+      icon: 'chat', 
+      label: 'Plantillas WhatsApp', 
+      description: 'Mensajes automáticos',
+      route: '/settings/whatsapp-templates' 
+    },
+    // ===============================================
     { 
       icon: 'settings', 
       label: 'Configuración', 

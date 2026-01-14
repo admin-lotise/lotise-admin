@@ -1,0 +1,192 @@
+<div class="whatsapp-templates">
+  
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        Plantillas de WhatsApp
+      </h1>
+      <p class="page-subtitle">
+        Configura los mensajes automáticos que se enviarán a tus clientes
+      </p>
+    </div>
+    
+    <button class="btn-primary btn-create" (click)="createNewTemplate()">
+      <i class="bi bi-plus-lg"></i>
+      Nueva Plantilla
+    </button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon" style="background: #10b98120">
+        <i class="bi bi-file-text" style="color: #10b981"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ stats().total }}</span>
+        <span class="stat-label">Total Plantillas</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background: #3b82f620">
+        <i class="bi bi-check-circle" style="color: #3b82f6"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ stats().active }}</span>
+        <span class="stat-label">Activas</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background: #6b728020">
+        <i class="bi bi-pause-circle" style="color: #6b7280"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ stats().inactive }}</span>
+        <span class="stat-label">Inactivas</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="templates-filters">
+    <!-- Search -->
+    <div class="search-box">
+      <i class="bi bi-search"></i>
+      <input 
+        type="text" 
+        placeholder="Buscar plantillas..."
+        [ngModel]="searchTerm()"
+        (ngModelChange)="searchTerm.set($event)"
+      >
+    </div>
+
+    <!-- Category Pills -->
+    <div class="category-pills">
+      <button 
+        class="pill"
+        [class.active]="selectedCategory() === 'all'"
+        (click)="selectCategory('all')"
+      >
+        <i class="bi bi-grid"></i>
+        Todas
+        <span class="pill-badge">{{ stats().total }}</span>
+      </button>
+
+      @for (cat of stats().byCategory; track cat.key) {
+        <button 
+          class="pill"
+          [class.active]="selectedCategory() === cat.key"
+          (click)="selectCategory(cat.key)"
+        >
+          <i [class]="cat.icon"></i>
+          {{ cat.label }}
+          <span class="pill-badge">{{ cat.count }}</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Templates Grid -->
+  <div class="templates-grid">
+    @for (template of filteredTemplates(); track template.id) {
+      <div class="template-card" [class.inactive]="!template.isActive">
+        
+        <!-- Card Header -->
+        <div class="card-header">
+          <div class="template-icon" 
+               [style.background]="(template.info?.color || '#6b7280') + '20'">
+            <i [class]="template.info?.icon || 'bi-file-text'" 
+               [style.color]="template.info?.color || '#6b7280'"></i>
+          </div>
+          
+          <div class="template-info">
+            <h3>{{ template.name }}</h3>
+            <span class="template-category">
+              <i [class]="template.info?.icon || 'bi-file-text'"></i>
+              {{ template.info?.description || 'Sin descripción' }}
+            </span>
+          </div>
+
+          <div class="template-status">
+            <label class="toggle-switch">
+              <input 
+                type="checkbox" 
+                [checked]="template.isActive"
+                (change)="toggleTemplate(template)"
+              >
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Card Body -->
+        <div class="card-body">
+          <div class="template-preview">
+            <div class="preview-label">
+              <i class="bi bi-chat-left-text"></i>
+              Vista previa del mensaje
+            </div>
+            <div class="preview-content">
+              {{ template.content.substring(0, 200) }}{{ template.content.length > 200 ? '...' : '' }}
+            </div>
+          </div>
+
+          <div class="template-meta">
+            <div class="meta-item">
+              <i class="bi bi-code-square"></i>
+              {{ getVariablesLength(template) }} variables
+            </div>
+            <div class="meta-item">
+              <i class="bi bi-clock"></i>
+              {{ template.updatedAt | date:'dd/MM/yyyy HH:mm' }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Actions -->
+        <div class="card-actions">
+          <button class="btn-action btn-edit" (click)="editTemplate(template)">
+            <i class="bi bi-pencil"></i>
+            Editar
+          </button>
+          
+          <button class="btn-action btn-test" (click)="testTemplate(template)">
+            <i class="bi bi-send"></i>
+            Probar
+          </button>
+
+          <div class="actions-more">
+            <button class="btn-action btn-more">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <div class="dropdown-menu">
+              <button (click)="duplicateTemplate(template)">
+                <i class="bi bi-files"></i>
+                Duplicar
+              </button>
+              <button (click)="deleteTemplate(template)" class="danger">
+                <i class="bi bi-trash"></i>
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (filteredTemplates().length === 0) {
+      <div class="empty-state">
+        <i class="bi bi-inbox"></i>
+        <h3>No se encontraron plantillas</h3>
+        <p>Intenta con otros filtros o crea una nueva plantilla</p>
+        <button class="btn-primary" (click)="createNewTemplate()">
+          <i class="bi bi-plus-lg"></i>
+          Crear Plantilla
+        </button>
+      </div>
+    }
+  </div>
+</div>
