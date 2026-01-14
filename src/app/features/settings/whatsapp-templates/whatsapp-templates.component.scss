@@ -1,0 +1,776 @@
+// ==================== VARIABLES ====================
+$primary: #ff497c;
+$success: #10b981;
+$warning: #f59e0b;
+$danger: #ef4444;
+$info: #8b5cf6;
+
+$bg-white: #ffffff;
+$bg-gray-50: #f9fafb;
+$bg-gray-100: #f3f4f6;
+
+$text-primary: #111827;
+$text-secondary: #6b7280;
+$text-muted: #9ca3af;
+
+$border-color: #e5e7eb;
+$border-light: #f3f4f6;
+
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+
+// ==================== MAIN CONTAINER ====================
+.whatsapp-templates {
+  margin: 0 auto;
+  animation: fadeIn 0.3s ease-in;
+}
+
+// ==================== HEADER (HOMOLOGADO) ====================
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  padding-bottom: 0;
+  border-bottom: none;
+
+  .header-content {
+    flex: 1;
+  }
+
+  .page-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--primary, #ff497c);
+    margin: 0 0 1.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 0 0.25rem 0;
+    border-bottom: 2px solid var(--primary, #ff497c);
+    width: fit-content;
+    letter-spacing: 0.5px;
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+
+    i {
+      display: none;
+    }
+  }
+
+  .page-subtitle {
+    font-size: 0.95rem;
+    color: var(--color-text-secondary, $text-secondary);
+    margin: 0;
+  }
+
+  .btn-create {
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    white-space: nowrap;
+    background: var(--primary, #ff497c);
+    color: white;
+    border: none;
+    border-radius: $radius-md;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: $shadow-sm;
+
+    i {
+      font-size: 1rem;
+    }
+
+    &:hover {
+      background: darken(#ff497c, 8%);
+      box-shadow: $shadow-md;
+      transform: translateY(-2px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      width: 100%;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 0;
+
+    .page-title {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      padding: 0 0 0.15rem 0;
+      border-bottom-width: 1.5px;
+    }
+
+    .page-subtitle {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// ==================== STATS GRID ====================
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: $bg-white;
+  border: 2px solid $border-light;
+  border-radius: $radius-md;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: $border-color;
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+
+  .stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: $radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    i {
+      font-size: 1.75rem;
+    }
+
+    @media (max-width: 768px) {
+      width: 48px;
+      height: 48px;
+
+      i {
+        font-size: 1.5rem;
+      }
+    }
+  }
+
+  .stat-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: $text-primary;
+      line-height: 1;
+
+      @media (max-width: 768px) {
+        font-size: 1.5rem;
+      }
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      color: $text-secondary;
+      font-weight: 500;
+
+      @media (max-width: 768px) {
+        font-size: 0.8125rem;
+      }
+    }
+  }
+}
+
+// ==================== FILTERS ====================
+.templates-filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+
+  .search-box {
+    position: relative;
+    flex: 0 0 300px;
+
+    @media (max-width: 768px) {
+      flex: 1 1 100%;
+    }
+
+    i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: $text-muted;
+      font-size: 1.125rem;
+      pointer-events: none;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.875rem 1rem 0.875rem 3rem;
+      border: 2px solid $border-color;
+      border-radius: $radius-md;
+      font-size: 0.9375rem;
+      transition: all 0.3s ease;
+      background: $bg-white;
+
+      &:focus {
+        outline: none;
+        border-color: $primary;
+        box-shadow: 0 0 0 3px rgba($primary, 0.1);
+      }
+
+      &::placeholder {
+        color: $text-muted;
+      }
+    }
+  }
+
+  .category-pills {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    flex: 1;
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1rem;
+      background: $bg-white;
+      border: 2px solid $border-color;
+      border-radius: 50px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: $text-secondary;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+
+      i {
+        font-size: 1rem;
+      }
+
+      &:hover {
+        background: $bg-gray-50;
+        border-color: $primary;
+        color: $primary;
+      }
+
+      &.active {
+        background: $primary;
+        border-color: $primary;
+        color: white;
+
+        .pill-badge {
+          background: rgba(255, 255, 255, 0.25);
+          color: white;
+        }
+      }
+
+      .pill-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 24px;
+        height: 24px;
+        padding: 0 0.5rem;
+        background: $bg-gray-100;
+        color: $text-secondary;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+    }
+  }
+}
+
+// ==================== TEMPLATES GRID ====================
+.templates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 1.5rem;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ==================== TEMPLATE CARD ====================
+.template-card {
+  background: $bg-white;
+  border: 2px solid $border-color;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    border-color: $primary;
+    box-shadow: $shadow-lg;
+    transform: translateY(-4px);
+  }
+
+  &.inactive {
+    opacity: 0.6;
+
+    .card-header {
+      background: $bg-gray-50;
+    }
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: $bg-gray-50;
+    border-bottom: 2px solid $border-light;
+
+    .template-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: $radius-md;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      i {
+        font-size: 1.75rem;
+      }
+
+      @media (max-width: 480px) {
+        width: 48px;
+        height: 48px;
+
+        i {
+          font-size: 1.5rem;
+        }
+      }
+    }
+
+    .template-info {
+      flex: 1;
+      min-width: 0;
+
+      h3 {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: $text-primary;
+        margin: 0 0 0.25rem 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        @media (max-width: 480px) {
+          font-size: 1rem;
+        }
+      }
+
+      .template-category {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        font-size: 0.8125rem;
+        color: $text-muted;
+        font-weight: 500;
+
+        i {
+          font-size: 0.875rem;
+        }
+
+        @media (max-width: 480px) {
+          font-size: 0.75rem;
+        }
+      }
+    }
+
+    .template-status {
+      flex-shrink: 0;
+    }
+  }
+
+  .card-body {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .template-preview {
+      flex: 1;
+
+      .preview-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: $text-secondary;
+        margin-bottom: 0.75rem;
+
+        i {
+          color: #25D366;
+          font-size: 1rem;
+        }
+      }
+
+      .preview-content {
+        padding: 1rem;
+        background: $bg-gray-50;
+        border-radius: $radius-md;
+        font-size: 0.875rem;
+        color: $text-secondary;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        max-height: 180px;
+        overflow: hidden;
+
+        @media (max-width: 480px) {
+          font-size: 0.8125rem;
+          padding: 0.875rem;
+        }
+      }
+    }
+
+    .template-meta {
+      display: flex;
+      gap: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid $border-light;
+
+      .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        color: $text-muted;
+
+        i {
+          color: $primary;
+          font-size: 1rem;
+        }
+
+        @media (max-width: 480px) {
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    background: $bg-gray-50;
+    border-top: 2px solid $border-light;
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1rem;
+      border: 2px solid $border-color;
+      border-radius: $radius-sm;
+      background: $bg-white;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: $text-secondary;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      i {
+        font-size: 1rem;
+      }
+
+      &:hover {
+        background: $bg-gray-50;
+        border-color: $primary;
+        color: $primary;
+      }
+
+      &.btn-edit {
+        flex: 1;
+
+        &:hover {
+          background: $primary;
+          color: white;
+        }
+      }
+
+      &.btn-test {
+        flex: 1;
+
+        &:hover {
+          background: #25D366;
+          border-color: #25D366;
+          color: white;
+        }
+      }
+
+      &.btn-more {
+        padding: 0.625rem 0.75rem;
+      }
+
+      @media (max-width: 480px) {
+        font-size: 0.8125rem;
+        padding: 0.5rem 0.875rem;
+
+        i {
+          font-size: 0.875rem;
+        }
+      }
+    }
+
+    .actions-more {
+      position: relative;
+
+      &:hover .dropdown-menu {
+        display: block;
+      }
+
+      .dropdown-menu {
+        display: none;
+        position: absolute;
+        bottom: 100%;
+        right: 0;
+        margin-bottom: 0.5rem;
+        background: $bg-white;
+        border: 2px solid $border-color;
+        border-radius: $radius-md;
+        box-shadow: $shadow-lg;
+        min-width: 160px;
+        z-index: 10;
+
+        button {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          width: 100%;
+          padding: 0.75rem 1rem;
+          border: none;
+          background: transparent;
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: $text-primary;
+          cursor: pointer;
+          transition: background 0.2s ease;
+          text-align: left;
+
+          i {
+            font-size: 1rem;
+            color: $text-muted;
+          }
+
+          &:hover {
+            background: $bg-gray-50;
+
+            i {
+              color: $primary;
+            }
+          }
+
+          &.danger {
+            color: $danger;
+
+            i {
+              color: $danger;
+            }
+
+            &:hover {
+              background: rgba($danger, 0.1);
+            }
+          }
+
+          &:first-child {
+            border-radius: $radius-md $radius-md 0 0;
+          }
+
+          &:last-child {
+            border-radius: 0 0 $radius-md $radius-md;
+          }
+        }
+      }
+    }
+  }
+}
+
+// ==================== TOGGLE SWITCH ====================
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 28px;
+  cursor: pointer;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+
+    &:checked + .toggle-slider {
+      background: $success;
+
+      &:before {
+        transform: translateX(20px);
+      }
+    }
+  }
+
+  .toggle-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: $text-muted;
+    border-radius: 14px;
+    transition: all 0.3s ease;
+
+    &:before {
+      content: '';
+      position: absolute;
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+      box-shadow: $shadow-sm;
+    }
+  }
+}
+
+// ==================== EMPTY STATE ====================
+.empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+
+  i {
+    font-size: 4rem;
+    color: $text-muted;
+    margin-bottom: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin: 0 0 0.5rem 0;
+  }
+
+  p {
+    font-size: 1rem;
+    color: $text-secondary;
+    margin: 0 0 2rem 0;
+  }
+
+  button {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    padding: 3rem 1rem;
+
+    i {
+      font-size: 3rem;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+    }
+
+    p {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// ==================== BUTTON PRIMARY ====================
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.25rem;
+  background: $primary;
+  color: white;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: $shadow-sm;
+
+  i {
+    font-size: 1.125rem;
+  }
+
+  &:hover {
+    background: darken($primary, 8%);
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// ==================== ANIMATIONS ====================
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
