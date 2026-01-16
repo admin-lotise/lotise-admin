@@ -1,0 +1,211 @@
+<div class="privacy-policy-editor">
+  
+  <!-- Header -->
+  <div class="editor-header">
+    <button class="btn-back" (click)="cancel()">
+      <i class="bi bi-arrow-left"></i>
+      Volver
+    </button>
+
+    <div class="header-title">
+      <h1>
+        <i class="bi bi-shield-check"></i>
+        Política de Privacidad
+      </h1>
+      <p>Configura el aviso de privacidad que verán tus clientes</p>
+    </div>
+
+    <div class="header-actions">
+      <button 
+        class="btn-secondary" 
+        (click)="togglePreview()"
+        [class.active]="showPreview()"
+      >
+        <i class="bi" [class.bi-eye]="!showPreview()" [class.bi-eye-slash]="showPreview()"></i>
+        {{ showPreview() ? 'Ocultar' : 'Preview' }}
+      </button>
+      
+      <button 
+        class="btn-primary" 
+        (click)="save()"
+        [disabled]="!hasChanges() || isSaving()"
+      >
+        <i class="bi" [class.bi-check-lg]="!isSaving()" [class.bi-arrow-clockwise]="isSaving()"></i>
+        {{ isSaving() ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Editor Container -->
+  <div class="editor-container">
+    
+    <!-- Left Panel - Editor -->
+    <div class="editor-panel">
+      
+      <!-- Toolbar -->
+      <div class="editor-toolbar">
+        <!-- Headings -->
+        <div class="toolbar-group">
+          <button 
+            class="toolbar-btn" 
+            (click)="insertHeading(1)"
+            title="Título 1"
+          >
+            <span class="material-icons">title</span>
+          </button>
+          <button 
+            class="toolbar-btn" 
+            (click)="insertHeading(2)"
+            title="Título 2"
+          >
+            <span class="material-icons">text_fields</span>
+          </button>
+          <button 
+            class="toolbar-btn" 
+            (click)="insertHeading(3)"
+            title="Título 3"
+          >
+            <span class="material-icons">short_text</span>
+          </button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Text formatting -->
+        <div class="toolbar-group">
+          <button 
+            class="toolbar-btn" 
+            (click)="formatText('bold')"
+            title="Negrita"
+          >
+            <span class="material-icons">format_bold</span>
+          </button>
+          <button 
+            class="toolbar-btn" 
+            (click)="formatText('italic')"
+            title="Cursiva"
+          >
+            <span class="material-icons">format_italic</span>
+          </button>
+          <button 
+            class="toolbar-btn" 
+            (click)="formatText('underline')"
+            title="Subrayado"
+          >
+            <span class="material-icons">format_underlined</span>
+          </button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Lists -->
+        <div class="toolbar-group">
+          <button 
+            class="toolbar-btn" 
+            (click)="insertList(false)"
+            title="Lista con viñetas"
+          >
+            <span class="material-icons">format_list_bulleted</span>
+          </button>
+          <button 
+            class="toolbar-btn" 
+            (click)="insertList(true)"
+            title="Lista numerada"
+          >
+            <span class="material-icons">format_list_numbered</span>
+          </button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Utility -->
+        <div class="toolbar-group">
+          <button 
+            class="toolbar-btn" 
+            (click)="formatText('undo')"
+            title="Deshacer"
+          >
+            <span class="material-icons">undo</span>
+          </button>
+          <button 
+            class="toolbar-btn" 
+            (click)="formatText('redo')"
+            title="Rehacer"
+          >
+            <span class="material-icons">redo</span>
+          </button>
+          <button 
+            class="toolbar-btn danger" 
+            (click)="resetToDefault()"
+            title="Restablecer plantilla"
+          >
+            <span class="material-icons">refresh</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Editor - SIN [innerHTML] binding -->
+      <div 
+        #contentEditor
+        class="content-editor"
+        contenteditable="true"
+        (input)="onContentChange()"
+        (blur)="onContentChange()"
+      ></div>
+
+      <!-- Stats Bar -->
+      <div class="stats-bar">
+        <div class="stat-item">
+          <i class="bi bi-fonts"></i>
+          <span>{{ wordCount() }} palabras</span>
+        </div>
+        <div class="stat-item">
+          <i class="bi bi-text-paragraph"></i>
+          <span>{{ characterCount() }} caracteres</span>
+        </div>
+        @if (hasChanges()) {
+          <div class="stat-item changes">
+            <i class="bi bi-exclamation-circle"></i>
+            <span>Cambios sin guardar</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Right Panel - Preview -->
+    @if (showPreview()) {
+      <div class="preview-panel">
+        <div class="preview-header">
+          <i class="bi bi-eye"></i>
+          <span>Vista Previa</span>
+        </div>
+        
+        <div class="preview-content">
+          <div [innerHTML]="content()" class="legal-document"></div>
+        </div>
+
+        <div class="preview-footer">
+          <i class="bi bi-info-circle"></i>
+          <span>Así verán los clientes este documento en la web pública</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Help Section -->
+  <div class="help-section">
+    <div class="help-card">
+      <i class="bi bi-lightbulb"></i>
+      <div class="help-content">
+        <h3>Consejos para tu Política de Privacidad</h3>
+        <ul>
+          <li>Sé claro sobre qué datos recopilas y por qué</li>
+          <li>Explica cómo proteges la información de tus clientes</li>
+          <li>Incluye cómo los usuarios pueden ejercer sus derechos</li>
+          <li>Actualiza la fecha cuando hagas cambios importantes</li>
+          <li>Asegúrate de cumplir con las leyes locales de protección de datos</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

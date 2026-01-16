@@ -60,7 +60,7 @@ export const routes: Routes = [
         path: 'settings/payment-methods',
         loadComponent: () => import('./features/settings/payment-methods/payment-methods.component').then(m => m.PaymentMethodsComponent)
       },
-      // ==================== NUEVO: WhatsApp Templates ====================
+      // ==================== WhatsApp Templates ====================
       {
         path: 'settings/whatsapp-templates',
         loadComponent: () => import('./features/settings/whatsapp-templates/whatsapp-templates.component').then(m => m.WhatsappTemplatesComponent)
@@ -69,6 +69,28 @@ export const routes: Routes = [
         path: 'settings/whatsapp-templates/editor/:id',
         loadComponent: () => import('./features/settings/whatsapp-templates/template-editor/template-editor.component').then(m => m.TemplateEditorComponent)
       },
+      // ==================== NUEVO: Legal Content ====================
+      {
+        path: 'settings/legal-content',
+        loadComponent: () => import('./features/settings/legal-content/legal-content.component').then(m => m.LegalContentComponent)
+      },
+      {
+        path: 'settings/legal-content/privacy-policy',
+        loadComponent: () => import('./features/settings/legal-content/privacy-policy/privacy-policy.component').then(m => m.PrivacyPolicyComponent)
+      },
+      {
+        path: 'settings/legal-content/privacy-policy/:id',
+        loadComponent: () => import('./features/settings/legal-content/privacy-policy/privacy-policy.component').then(m => m.PrivacyPolicyComponent)
+      },
+      {
+        path: 'settings/legal-content/terms-conditions',
+        loadComponent: () => import('./features/settings/legal-content/terms-conditions/terms-conditions.component').then(m => m.TermsConditionsComponent)
+      },
+      {
+        path: 'settings/legal-content/terms-conditions/:id',
+        loadComponent: () => import('./features/settings/legal-content/terms-conditions/terms-conditions.component').then(m => m.TermsConditionsComponent)
+      },
+      // ===============================================================
       {
         path: '',
         redirectTo: 'dashboard',
