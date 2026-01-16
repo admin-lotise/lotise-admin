@@ -1,0 +1,173 @@
+<div class="legal-content-container">
+  
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        Contenido Legal
+      </h1>
+      <p class="page-subtitle">
+        Configura las políticas y términos que se mostrarán a tus clientes
+      </p>
+    </div>
+  </div>
+
+  <!-- Legal Documents Grid -->
+  <div class="legal-grid">
+    
+    <!-- Privacy Policy Card -->
+    <div class="legal-card">
+      <div class="card-header">
+        <div class="header-icon privacy">
+          <i class="bi bi-shield-check"></i>
+        </div>
+        <div class="header-info">
+          <h2>Política de Privacidad</h2>
+          <p>Información sobre el manejo de datos personales</p>
+        </div>
+      </div>
+
+      @if (hasPrivacyPolicy()) {
+        <div class="card-body">
+          <!-- Meta Info -->
+          <div class="meta-info">
+            <div class="meta-item">
+              <i class="bi bi-calendar"></i>
+              <span>Última actualización: {{ legalContent().privacyPolicyLastUpdate | date:'dd/MM/yyyy' }}</span>
+            </div>
+            @if (legalContent().updatedBy) {
+              <div class="meta-item">
+                <i class="bi bi-person"></i>
+                <span>Por: {{ legalContent().updatedBy }}</span>
+              </div>
+            }
+          </div>
+
+          <!-- Preview -->
+          <div class="content-preview">
+            <div class="preview-label">
+              <i class="bi bi-eye"></i>
+              Vista previa
+            </div>
+            <div class="preview-text">
+              {{ getPrivacyPreview() }}...
+            </div>
+          </div>
+        </div>
+
+        <div class="card-actions">
+          <button class="btn-secondary" (click)="previewPrivacyPolicy()">
+            <i class="bi bi-eye"></i>
+            Ver Completa
+          </button>
+          <button class="btn-primary" (click)="editPrivacyPolicy()">
+            <i class="bi bi-pencil"></i>
+            Editar
+          </button>
+        </div>
+      } @else {
+        <div class="card-body empty">
+          <div class="empty-icon">
+            <i class="bi bi-file-earmark-text"></i>
+          </div>
+          <p>No hay política de privacidad configurada</p>
+          <button class="btn-primary" (click)="editPrivacyPolicy()">
+            <i class="bi bi-plus-lg"></i>
+            Crear Política
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- Terms & Conditions Card -->
+    <div class="legal-card">
+      <div class="card-header">
+        <div class="header-icon terms">
+          <i class="bi bi-file-text"></i>
+        </div>
+        <div class="header-info">
+          <h2>Términos y Condiciones</h2>
+          <p>Reglas y condiciones de uso del servicio</p>
+        </div>
+      </div>
+
+      @if (hasTermsConditions()) {
+        <div class="card-body">
+          <!-- Meta Info -->
+          <div class="meta-info">
+            <div class="meta-item">
+              <i class="bi bi-calendar"></i>
+              <span>Última actualización: {{ legalContent().termsConditionsLastUpdate | date:'dd/MM/yyyy' }}</span>
+            </div>
+            @if (legalContent().updatedBy) {
+              <div class="meta-item">
+                <i class="bi bi-person"></i>
+                <span>Por: {{ legalContent().updatedBy }}</span>
+              </div>
+            }
+          </div>
+
+          <!-- Preview -->
+          <div class="content-preview">
+            <div class="preview-label">
+              <i class="bi bi-eye"></i>
+              Vista previa
+            </div>
+            <div class="preview-text">
+              {{ getTermsPreview() }}...
+            </div>
+          </div>
+        </div>
+
+        <div class="card-actions">
+          <button class="btn-secondary" (click)="previewTermsConditions()">
+            <i class="bi bi-eye"></i>
+            Ver Completos
+          </button>
+          <button class="btn-primary" (click)="editTermsConditions()">
+            <i class="bi bi-pencil"></i>
+            Editar
+          </button>
+        </div>
+      } @else {
+        <div class="card-body empty">
+          <div class="empty-icon">
+            <i class="bi bi-file-earmark-text"></i>
+          </div>
+          <p>No hay términos y condiciones configurados</p>
+          <button class="btn-primary" (click)="editTermsConditions()">
+            <i class="bi bi-plus-lg"></i>
+            Crear Términos
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Info Section -->
+  <div class="info-section">
+    <div class="info-card">
+      <i class="bi bi-info-circle"></i>
+      <div class="info-content">
+        <h3>¿Por qué es importante?</h3>
+        <p>
+          Tener políticas claras de privacidad y términos de uso genera confianza en tus clientes
+          y te protege legalmente. Estos documentos se mostrarán en tu página web pública.
+        </p>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <i class="bi bi-lightbulb"></i>
+      <div class="info-content">
+        <h3>Recomendaciones</h3>
+        <ul>
+          <li>Actualiza los documentos cuando cambien tus procesos</li>
+          <li>Sé claro y transparente sobre el uso de datos</li>
+          <li>Incluye información de contacto actualizada</li>
+          <li>Revisa que cumplan con las leyes locales</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

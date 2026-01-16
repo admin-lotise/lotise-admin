@@ -1,0 +1,212 @@
+<div class="terms-conditions-editor">
+  
+  <!-- Header -->
+  <div class="editor-header">
+    <button class="btn-back" (click)="cancel()">
+      <i class="bi bi-arrow-left"></i>
+      Volver
+    </button>
+
+    <div class="header-title">
+      <h1>
+        <i class="bi bi-file-text"></i>
+        Términos y Condiciones
+      </h1>
+      <p>Define las reglas y condiciones de uso de tu servicio</p>
+    </div>
+
+    <div class="header-actions">
+      <button 
+        class="btn-secondary" 
+        (click)="togglePreview()"
+        [class.active]="showPreview()"
+      >
+        <i class="bi" [class.bi-eye]="!showPreview()" [class.bi-eye-slash]="showPreview()"></i>
+        {{ showPreview() ? 'Ocultar' : 'Preview' }}
+      </button>
+      
+      <button 
+        class="btn-primary" 
+        (click)="save()"
+        [disabled]="!hasChanges() || isSaving()"
+      >
+        <i class="bi" [class.bi-check-lg]="!isSaving()" [class.bi-arrow-clockwise]="isSaving()"></i>
+        {{ isSaving() ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Editor Container -->
+  <div class="editor-container">
+    
+    <!-- Left Panel - Editor -->
+    <div class="editor-panel">
+      
+      <!-- Toolbar -->
+      <div class="editor-toolbar">
+        <!-- Headings -->
+        <div class="toolbar-group">
+          <button 
+            class="toolbar-btn" 
+            (click)="insertHeading(1)"
+            title="Título 1"
+          >
+            <i class="bi bi-type-h1"></i>
+          </button>
+          <button 
+            class="toolbar-btn" 
+            (click)="insertHeading(2)"
+            title="Título 2"
+          >
+            <i class="bi bi-type-h2"></i>
+          </button>
+          <button 
+            class="toolbar-btn" 
+            (click)="insertHeading(3)"
+            title="Título 3"
+          >
+            <i class="bi bi-type-h3"></i>
+          </button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Text formatting -->
+        <div class="toolbar-group">
+          <button 
+            class="toolbar-btn" 
+            (click)="formatText('bold')"
+            title="Negrita"
+          >
+            <i class="bi bi-type-bold"></i>
+          </button>
+          <button 
+            class="toolbar-btn" 
+            (click)="formatText('italic')"
+            title="Cursiva"
+          >
+            <i class="bi bi-type-italic"></i>
+          </button>
+          <button 
+            class="toolbar-btn" 
+            (click)="formatText('underline')"
+            title="Subrayado"
+          >
+            <i class="bi bi-type-underline"></i>
+          </button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Lists -->
+        <div class="toolbar-group">
+          <button 
+            class="toolbar-btn" 
+            (click)="insertList(false)"
+            title="Lista con viñetas"
+          >
+            <i class="bi bi-list-ul"></i>
+          </button>
+          <button 
+            class="toolbar-btn" 
+            (click)="insertList(true)"
+            title="Lista numerada"
+          >
+            <i class="bi bi-list-ol"></i>
+          </button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Utility -->
+        <div class="toolbar-group">
+          <button 
+            class="toolbar-btn" 
+            (click)="formatText('undo')"
+            title="Deshacer"
+          >
+            <i class="bi bi-arrow-counterclockwise"></i>
+          </button>
+          <button 
+            class="toolbar-btn" 
+            (click)="formatText('redo')"
+            title="Rehacer"
+          >
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+          <button 
+            class="toolbar-btn danger" 
+            (click)="resetToDefault()"
+            title="Restablecer plantilla"
+          >
+            <i class="bi bi-arrow-repeat"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Editor - SIN [innerHTML] binding -->
+      <div 
+        #contentEditor
+        class="content-editor"
+        contenteditable="true"
+        (input)="onContentChange()"
+        (blur)="onContentChange()"
+      ></div>
+
+      <!-- Stats Bar -->
+      <div class="stats-bar">
+        <div class="stat-item">
+          <i class="bi bi-fonts"></i>
+          <span>{{ wordCount() }} palabras</span>
+        </div>
+        <div class="stat-item">
+          <i class="bi bi-text-paragraph"></i>
+          <span>{{ characterCount() }} caracteres</span>
+        </div>
+        @if (hasChanges()) {
+          <div class="stat-item changes">
+            <i class="bi bi-exclamation-circle"></i>
+            <span>Cambios sin guardar</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Right Panel - Preview -->
+    @if (showPreview()) {
+      <div class="preview-panel">
+        <div class="preview-header">
+          <i class="bi bi-eye"></i>
+          <span>Vista Previa</span>
+        </div>
+        
+        <div class="preview-content">
+          <div [innerHTML]="content()" class="legal-document"></div>
+        </div>
+
+        <div class="preview-footer">
+          <i class="bi bi-info-circle"></i>
+          <span>Así verán los clientes este documento en la web pública</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Help Section -->
+  <div class="help-section">
+    <div class="help-card">
+      <i class="bi bi-lightbulb"></i>
+      <div class="help-content">
+        <h3>Consejos para tus Términos y Condiciones</h3>
+        <ul>
+          <li>Define claramente el proceso de reserva y pago de boletos</li>
+          <li>Especifica los métodos de pago aceptados</li>
+          <li>Explica el proceso de sorteo y selección de ganadores</li>
+          <li>Establece responsabilidades tanto tuyas como de los usuarios</li>
+          <li>Incluye política de reembolsos y cancelaciones</li>
+          <li>Actualiza la fecha cuando hagas cambios importantes</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
