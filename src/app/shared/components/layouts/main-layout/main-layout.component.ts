@@ -49,11 +49,16 @@ export class MainLayoutComponent {
       label: 'Métodos de Pago', 
       route: '/settings/payment-methods' 
     },
-    // ==================== NUEVO ====================
     { 
       icon: 'chat', 
       label: 'Plantillas WhatsApp', 
       route: '/settings/whatsapp-templates' 
+    },
+    // ==================== NUEVO ====================
+    { 
+      icon: 'gavel', 
+      label: 'Contenido Legal', 
+      route: '/settings/legal-content' 
     },
     // ===============================================
     { 
@@ -115,12 +120,18 @@ export class MainLayoutComponent {
       description: 'Cuentas bancarias y tarjetas',
       route: '/settings/payment-methods' 
     },
-    // ==================== NUEVO ====================
     { 
       icon: 'chat', 
       label: 'Plantillas WhatsApp', 
       description: 'Mensajes automáticos',
       route: '/settings/whatsapp-templates' 
+    },
+    // ==================== NUEVO ====================
+    { 
+      icon: 'gavel', 
+      label: 'Contenido Legal', 
+      description: 'Políticas y términos',
+      route: '/settings/legal-content' 
     },
     // ===============================================
     { 
