@@ -1,0 +1,113 @@
+<div class="winners-page">
+  
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <i class="bi bi-trophy-fill"></i>
+      </div>
+      <div class="header-text">
+        <h1 class="page-title">Últimos Ganadores</h1>
+        <p class="page-subtitle">Muestra los últimos 5 ganadores en tu página web</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Winners Grid -->
+  @if (isLoading()) {
+    <!-- Loading State -->
+    <div class="winners-grid">
+      @for (item of [1,2,3,4,5]; track item) {
+        <div class="winner-card skeleton">
+          <div class="skeleton-image"></div>
+          <div class="skeleton-content">
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line short"></div>
+            <div class="skeleton-line"></div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else if (winners().length === 0) {
+    <!-- Empty State -->
+    <div class="empty-state">
+      <div class="empty-icon">
+        <i class="bi bi-trophy"></i>
+      </div>
+      <h3>Aún no hay ganadores</h3>
+      <p>Los ganadores aparecerán aquí cuando completes tus primeros sorteos</p>
+    </div>
+  } @else {
+    <!-- Winners List -->
+    <div class="winners-grid">
+      @for (winner of winners(); track winner.id) {
+        <div class="winner-card" [class.inactive]="!winner.isActive">
+          
+          <!-- Prize Photo -->
+          <div class="winner-photo">
+            <img 
+              [src]="winner.photoUrl || getDefaultImage()" 
+              [alt]="winner.prize"
+              (error)="$event.target.src = getDefaultImage()"
+            >
+            
+            <!-- Visibility Badge -->
+            <div class="visibility-badge" [class.hidden]="!winner.isActive">
+              <i class="bi" [class.bi-eye]="winner.isActive" [class.bi-eye-slash]="!winner.isActive"></i>
+            </div>
+          </div>
+
+          <!-- Winner Info -->
+          <div class="winner-info">
+            <h3 class="winner-name">{{ winner.name }}</h3>
+            
+            <div class="winner-details">
+              <div class="detail-row">
+                <i class="bi bi-gift"></i>
+                <span>{{ winner.prize }}</span>
+              </div>
+              
+              <div class="detail-row">
+                <i class="bi bi-hash"></i>
+                <span>Boleto #{{ winner.winningNumber }}</span>
+              </div>
+              
+              <div class="detail-row">
+                <i class="bi bi-calendar-check"></i>
+                <span>{{ formatDate(winner.drawDate) }}</span>
+              </div>
+              
+              <div class="detail-row raffle">
+                <i class="bi bi-ticket-perforated"></i>
+                <span>{{ winner.raffleName }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="winner-actions">
+            <button 
+              class="btn-toggle"
+              (click)="toggleWinnerVisibility(winner)"
+              [title]="winner.isActive ? 'Ocultar en web' : 'Mostrar en web'"
+            >
+              <i class="bi" [class.bi-eye-slash]="winner.isActive" [class.bi-eye]="!winner.isActive"></i>
+              {{ winner.isActive ? 'Ocultar' : 'Mostrar' }}
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Info Card -->
+  <div class="info-section">
+    <div class="info-card">
+      <i class="bi bi-info-circle"></i>
+      <div class="info-content">
+        <h3>¿Cómo funciona?</h3>
+        <p>Los últimos 5 ganadores con estado "Mostrar" aparecerán automáticamente en tu página web pública. Esto ayuda a generar confianza mostrando que tus rifas son reales y tienen ganadores.</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,207 +1,126 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
-import { firstValueFrom } from 'rxjs'; // ← IMPORTANTE
+import { Injectable, signal, computed } from '@angular/core';
 import { RaffleSettings, DEFAULT_RAFFLE_SETTINGS, WebPageConfig } from '../../shared/models/raffle-settings.model';
-import { RaffleSettingsApiService } from '../http/raffle-settings-api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RaffleSettingsStateService {
-  private readonly raffleSettingsApi = inject(RaffleSettingsApiService);
-
-  // Signal privado para el estado
-  private readonly _raffleSettings = signal<RaffleSettings>({
-    tenantId: '',
-    ...DEFAULT_RAFFLE_SETTINGS,
-    updatedAt: new Date()
-  } as RaffleSettings);
-
-  // Signal para loading
-  private readonly _isLoadingRaffleSettings = signal<boolean>(false);
+  // ==================== STATE ====================
   
-  // Signal para errores
-  private readonly _raffleSettingsError = signal<string | null>(null);
+  // Settings completos
+  private settingsState = signal<RaffleSettings>({
+    ...DEFAULT_RAFFLE_SETTINGS,
+    tenantId: '', // Solo aquí, después del spread
+  });
 
-  // Signals públicos (readonly)
-  readonly raffleSettings = this._raffleSettings.asReadonly();
-  readonly isLoadingRaffleSettings = this._isLoadingRaffleSettings.asReadonly();
-  readonly raffleSettingsError = this._raffleSettingsError.asReadonly();
+  // Loading states
+  private isLoadingState = signal(false);
+  private isSavingState = signal(false);
+  private errorState = signal<string | null>(null);
 
-  // Computed signals útiles
-  readonly minutesToClose = computed(() => this._raffleSettings().minutesToClose);
-  readonly ticketsPerPage = computed(() => this._raffleSettings().ticketsPerPage);
-  readonly webPageConfig = computed(() => this._raffleSettings().webPageConfig);
+  // ==================== COMPUTED ====================
+  
+  // Getters públicos
+  settings = computed(() => this.settingsState());
+  isLoading = computed(() => this.isLoadingState());
+  isSaving = computed(() => this.isSavingState());
+  error = computed(() => this.errorState());
 
+  // Configuración general
+  generalConfig = computed(() => ({
+    minutesToClose: this.settingsState().minutesToClose,
+    ticketsPerPage: this.settingsState().ticketsPerPage,
+    luckyMachineOptions: this.settingsState().luckyMachineOptions
+  }));
+
+  // Configuración de página web
+  webPageConfig = computed(() => this.settingsState().webPageConfig);
+
+  // ==================== ACTIONS ====================
+  
   /**
-   * Cargar configuración de rifas desde la API
+   * Cargar configuración
    */
-  async loadRaffleSettings(): Promise<void> {
-    this._isLoadingRaffleSettings.set(true);
-    this._raffleSettingsError.set(null);
-
-    try {
-      // TODO: Obtener tenantId desde AuthStateService cuando esté implementado
-      const tenantId = 'tenant-demo'; // ← Temporal
-
-      const settings = await firstValueFrom(
-        this.raffleSettingsApi.getRaffleSettings(tenantId)
-      );
-
-      this._raffleSettings.set(settings);
-    } catch (error: any) {
-      const errorMessage = error?.message || 'Error al cargar la configuración de rifas';
-      this._raffleSettingsError.set(errorMessage);
-      console.error('Error loading raffle settings:', error);
-    } finally {
-      this._isLoadingRaffleSettings.set(false);
-    }
+  loadSettings(settings: RaffleSettings): void {
+    this.settingsState.set(settings);
   }
 
   /**
-   * Actualizar configuración de rifas en la API
+   * Actualizar configuración general
    */
-  async updateRaffleSettings(updates: Partial<RaffleSettings>): Promise<void> {
-    try {
-      const tenantId = this._raffleSettings().tenantId || 'tenant-demo';
-
-      const updatedSettings = await firstValueFrom(
-        this.raffleSettingsApi.updateGeneralSettings(
-          tenantId,
-          updates.minutesToClose!,
-          updates.ticketsPerPage!,
-          updates.luckyMachineOptions!
-        )
-      );
-
-      this._raffleSettings.set(updatedSettings);
-      this._raffleSettingsError.set(null);
-    } catch (error: any) {
-      const errorMessage = error?.message || 'Error al actualizar la configuración';
-      this._raffleSettingsError.set(errorMessage);
-      throw error;
-    }
-  }
-
-  /**
-   * Actualizar configuración de página web en la API
-   */
-  async updateWebPageConfig(webPageConfig: Partial<WebPageConfig>): Promise<void> {
-    try {
-      const tenantId = this._raffleSettings().tenantId || 'tenant-demo';
-
-      const updatedSettings = await firstValueFrom(
-        this.raffleSettingsApi.updateWebPageConfig(tenantId, webPageConfig)
-      );
-
-      this._raffleSettings.set(updatedSettings);
-      this._raffleSettingsError.set(null);
-    } catch (error: any) {
-      const errorMessage = error?.message || 'Error al actualizar la configuración de página web';
-      this._raffleSettingsError.set(errorMessage);
-      throw error;
-    }
-  }
-
-  /**
-   * Establecer la configuración completa
-   */
-  setRaffleSettings(settings: RaffleSettings): void {
-    this._raffleSettings.set(settings);
-  }
-
-  /**
-   * Actualizar configuración parcialmente (solo local, NO llama API)
-   */
-  updateRaffleSettingsLocal(updates: Partial<RaffleSettings>): void {
-    this._raffleSettings.update(current => ({
+  updateGeneralConfig(config: Partial<{
+    minutesToClose: number;
+    ticketsPerPage: number;
+    luckyMachineOptions: string;
+  }>): void {
+    this.settingsState.update(current => ({
       ...current,
-      ...updates,
+      ...config,
       updatedAt: new Date()
     }));
   }
 
   /**
-   * Actualizar configuración general (solo local, NO llama API)
+   * Actualizar configuración de página web
    */
-  updateGeneralSettingsLocal(
-    minutesToClose: number,
-    ticketsPerPage: number,
-    luckyMachineOptions: string
-  ): void {
-    this._raffleSettings.update(current => ({
-      ...current,
-      minutesToClose,
-      ticketsPerPage,
-      luckyMachineOptions,
-      updatedAt: new Date()
-    }));
-  }
-
-  /**
-   * Actualizar configuración de página web (solo local, NO llama API)
-   */
-  updateWebPageConfigLocal(webPageConfig: Partial<WebPageConfig>): void {
-    this._raffleSettings.update(current => ({
+  updateWebPageConfig(config: Partial<WebPageConfig>): void {
+    this.settingsState.update(current => ({
       ...current,
       webPageConfig: {
         ...current.webPageConfig,
-        ...webPageConfig
+        ...config
       },
       updatedAt: new Date()
     }));
   }
 
   /**
-   * Establecer estado de carga
+   * Actualizar configuración completa
    */
-  setLoadingRaffleSettings(loading: boolean): void {
-    this._isLoadingRaffleSettings.set(loading);
-  }
-
-  /**
-   * Establecer error
-   */
-  setRaffleSettingsError(error: string | null): void {
-    this._raffleSettingsError.set(error);
-  }
-
-  /**
-   * Limpiar error
-   */
-  clearRaffleSettingsError(): void {
-    this._raffleSettingsError.set(null);
-  }
-
-  /**
-   * Resetear a valores por defecto
-   */
-  async resetToDefaults(): Promise<void> {
-    try {
-      const tenantId = this._raffleSettings().tenantId || 'tenant-demo';
-      
-      const settings = await firstValueFrom(
-        this.raffleSettingsApi.resetToDefaults(tenantId)
-      );
-      
-      this._raffleSettings.set(settings);
-      this._raffleSettingsError.set(null);
-    } catch (error: any) {
-      const errorMessage = error?.message || 'Error al resetear configuración';
-      this._raffleSettingsError.set(errorMessage);
-      throw error;
-    }
-  }
-
-  /**
-   * Limpiar estado (logout)
-   */
-  clear(): void {
-    this._raffleSettings.set({
-      tenantId: '',
-      ...DEFAULT_RAFFLE_SETTINGS,
+  updateSettings(settings: Partial<RaffleSettings>): void {
+    this.settingsState.update(current => ({
+      ...current,
+      ...settings,
       updatedAt: new Date()
-    } as RaffleSettings);
-    this._isLoadingRaffleSettings.set(false);
-    this._raffleSettingsError.set(null);
+    }));
+  }
+
+  /**
+   * Set loading state
+   */
+  setLoading(loading: boolean): void {
+    this.isLoadingState.set(loading);
+  }
+
+  /**
+   * Set saving state
+   */
+  setSaving(saving: boolean): void {
+    this.isSavingState.set(saving);
+  }
+
+  /**
+   * Set error
+   */
+  setError(error: string | null): void {
+    this.errorState.set(error);
+  }
+
+  /**
+   * Clear error
+   */
+  clearError(): void {
+    this.errorState.set(null);
+  }
+
+  /**
+   * Reset to defaults
+   */
+  reset(): void {
+    this.settingsState.set({
+      ...DEFAULT_RAFFLE_SETTINGS,
+      tenantId: '', // Solo aquí, después del spread
+    });
+    this.errorState.set(null);
   }
 }
