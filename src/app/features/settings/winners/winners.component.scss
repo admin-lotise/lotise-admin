@@ -1,0 +1,512 @@
+// ==================== VARIABLES ====================
+$primary: #ff497c;
+$success: #10b981;
+$info: #3b82f6;
+$warning: #f59e0b;
+$danger: #ef4444;
+
+$bg-white: #ffffff;
+$bg-gray-50: #f9fafb;
+$bg-gray-100: #f3f4f6;
+
+$text-primary: #111827;
+$text-secondary: #6b7280;
+$text-muted: #9ca3af;
+
+$border-color: #e5e7eb;
+$border-light: #f3f4f6;
+
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+
+// ==================== PAGE CONTAINER ====================
+.winners-page {
+  margin: 0 auto;
+  animation: fadeIn 0.3s ease-in;
+}
+
+// ==================== HEADER ====================
+.page-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid $border-light;
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .header-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    border-radius: $radius-lg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: $shadow-md;
+
+    i {
+      font-size: 2rem;
+      color: $text-primary;
+    }
+
+    @media (max-width: 768px) {
+      width: 56px;
+      height: 56px;
+
+      i {
+        font-size: 1.75rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      width: 48px;
+      height: 48px;
+
+      i {
+        font-size: 1.5rem;
+      }
+    }
+  }
+
+  .header-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .page-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin: 0 0 0.5rem 0;
+
+    @media (max-width: 768px) {
+      font-size: 1.5rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 1.25rem;
+    }
+  }
+
+  .page-subtitle {
+    font-size: 0.9375rem;
+    color: $text-secondary;
+    margin: 0;
+
+    @media (max-width: 480px) {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// ==================== WINNERS GRID ====================
+.winners-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+// ==================== WINNER CARD ====================
+.winner-card {
+  background: $bg-white;
+  border: 2px solid $border-light;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: $border-color;
+    box-shadow: $shadow-lg;
+    transform: translateY(-4px);
+  }
+
+  &.inactive {
+    opacity: 0.6;
+
+    .winner-photo::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  // Photo Section
+  .winner-photo {
+    position: relative;
+    width: 100%;
+    padding-top: 75%; // 4:3 aspect ratio
+    background: $bg-gray-100;
+    overflow: hidden;
+
+    img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .visibility-badge {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      width: 32px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: $shadow-md;
+      backdrop-filter: blur(8px);
+      z-index: 2;
+
+      i {
+        font-size: 1rem;
+        color: $success;
+      }
+
+      &.hidden i {
+        color: $text-muted;
+      }
+    }
+  }
+
+  &:hover .winner-photo img {
+    transform: scale(1.05);
+  }
+
+  // Info Section
+  .winner-info {
+    padding: 1.25rem;
+  }
+
+  .winner-name {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin: 0 0 1rem 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+
+    @media (max-width: 480px) {
+      font-size: 1rem;
+    }
+  }
+
+  .winner-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .detail-row {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 0.875rem;
+    color: $text-secondary;
+
+    i {
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $primary;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    span {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    &.raffle {
+      font-weight: 600;
+      color: $text-primary;
+
+      i {
+        color: $warning;
+      }
+    }
+
+    @media (max-width: 480px) {
+      font-size: 0.8125rem;
+
+      i {
+        width: 16px;
+        height: 16px;
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  // Actions Section
+  .winner-actions {
+    padding: 1rem 1.25rem;
+    background: $bg-gray-50;
+    border-top: 2px solid $border-light;
+
+    .btn-toggle {
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: $bg-white;
+      border: 2px solid $border-color;
+      border-radius: $radius-md;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: $text-secondary;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      i {
+        font-size: 1rem;
+      }
+
+      &:hover {
+        background: $bg-gray-50;
+        border-color: $primary;
+        color: $primary;
+      }
+
+      &:active {
+        transform: scale(0.98);
+      }
+
+      @media (max-width: 480px) {
+        padding: 0.625rem 0.875rem;
+        font-size: 0.8125rem;
+      }
+    }
+  }
+}
+
+// ==================== LOADING SKELETON ====================
+.winner-card.skeleton {
+  pointer-events: none;
+  animation: pulse 1.5s ease-in-out infinite;
+
+  .skeleton-image {
+    width: 100%;
+    padding-top: 75%;
+    background: linear-gradient(
+      90deg,
+      $bg-gray-100 0%,
+      $bg-gray-50 50%,
+      $bg-gray-100 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
+  .skeleton-content {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .skeleton-line {
+    height: 16px;
+    background: linear-gradient(
+      90deg,
+      $bg-gray-100 0%,
+      $bg-gray-50 50%,
+      $bg-gray-100 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: 4px;
+
+    &.short {
+      width: 60%;
+    }
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+// ==================== EMPTY STATE ====================
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+
+  .empty-icon {
+    width: 96px;
+    height: 96px;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 237, 78, 0.1) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+
+    i {
+      font-size: 3rem;
+      color: #ffd700;
+    }
+
+    @media (max-width: 768px) {
+      width: 80px;
+      height: 80px;
+
+      i {
+        font-size: 2.5rem;
+      }
+    }
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin: 0 0 0.75rem 0;
+
+    @media (max-width: 768px) {
+      font-size: 1.125rem;
+    }
+  }
+
+  p {
+    font-size: 0.9375rem;
+    color: $text-secondary;
+    max-width: 400px;
+    margin: 0;
+
+    @media (max-width: 768px) {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// ==================== INFO SECTION ====================
+.info-section {
+  .info-card {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: rgba($info, 0.05);
+    border: 2px solid rgba($info, 0.1);
+    border-radius: $radius-lg;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: rgba($info, 0.2);
+      box-shadow: $shadow-md;
+    }
+
+    > i {
+      width: 48px;
+      height: 48px;
+      background: rgba($info, 0.1);
+      border-radius: $radius-md;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 1.5rem;
+      color: $info;
+
+      @media (max-width: 480px) {
+        width: 40px;
+        height: 40px;
+        font-size: 1.25rem;
+      }
+    }
+
+    .info-content {
+      flex: 1;
+
+      h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: $text-primary;
+        margin: 0 0 0.5rem 0;
+
+        @media (max-width: 480px) {
+          font-size: 0.9375rem;
+        }
+      }
+
+      p {
+        font-size: 0.875rem;
+        color: $text-secondary;
+        line-height: 1.6;
+        margin: 0;
+
+        @media (max-width: 480px) {
+          font-size: 0.8125rem;
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      padding: 1.25rem;
+    }
+
+    @media (max-width: 480px) {
+      padding: 1rem;
+    }
+  }
+}
+
+// ==================== ANIMATIONS ====================
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
