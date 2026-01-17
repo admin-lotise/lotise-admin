@@ -48,6 +48,12 @@ export const routes: Routes = [
         path: 'raffles/:id/tickets',
         loadComponent: () => import('./features/raffles/ticket-manager/ticket-manager.component').then(m => m.TicketManagerComponent)
       },
+      // ==================== NUEVO: Winners ====================
+      {
+        path: 'winners',
+        loadComponent: () => import('./features/settings/winners/winners.component').then(m => m.WinnersComponent)
+      },
+      // ========================================================
       {
         path: 'settings/business-profile',
         loadComponent: () => import('./features/settings/business-profile/business-profile.component').then(m => m.BusinessProfileComponent)
@@ -69,7 +75,7 @@ export const routes: Routes = [
         path: 'settings/whatsapp-templates/editor/:id',
         loadComponent: () => import('./features/settings/whatsapp-templates/template-editor/template-editor.component').then(m => m.TemplateEditorComponent)
       },
-      // ==================== NUEVO: Legal Content ====================
+      // ==================== Legal Content ====================
       {
         path: 'settings/legal-content',
         loadComponent: () => import('./features/settings/legal-content/legal-content.component').then(m => m.LegalContentComponent)
