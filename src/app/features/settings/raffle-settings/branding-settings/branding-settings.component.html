@@ -1,0 +1,275 @@
+<div class="branding-settings-container" [class.locked]="!hasAccess()">
+  
+  <!-- Success Message -->
+  @if (successMessage()) {
+    <div class="alert alert-success">
+      <i class="fas fa-check-circle"></i>
+      <span>{{ successMessage() }}</span>
+      <button class="close-btn" (click)="successMessage.set(null)">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  }
+
+  <!-- Upgrade Success Message -->
+  @if (upgradeMessage()) {
+    <div class="alert alert-upgrade">
+      <i class="fas fa-crown"></i>
+      <span>{{ upgradeMessage() }}</span>
+      <button class="close-btn" (click)="upgradeMessage.set(null)">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  }
+
+  <!-- ==================== PLAN RESTRICTION BANNER ==================== -->
+  @if (!hasAccess()) {
+    <div class="restriction-banner">
+      <div class="restriction-icon">
+        <i class="fas fa-lock"></i>
+      </div>
+      <div class="restriction-content">
+        <h3 class="restriction-title">
+          Funcionalidad Premium Bloqueada
+        </h3>
+        <p class="restriction-message">
+          Los temas de color predefinidos son una funcionalidad exclusiva de los planes 
+          <strong>Emprendedor</strong> y <strong>Profesional</strong>.
+        </p>
+        <p class="restriction-current-plan">
+          Plan actual: <span class="plan-tag">{{ getPlanName() }}</span>
+        </p>
+        <button 
+          class="btn-upgrade"
+          [disabled]="isUpgrading()"
+          (click)="simulateUpgrade()"
+        >
+          @if (isUpgrading()) {
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Actualizando Plan...</span>
+          } @else {
+            <i class="fas fa-crown"></i>
+            <span>Actualizar Plan para Desbloquear</span>
+          }
+        </button>
+      </div>
+    </div>
+  }
+  <!-- ================================================================= -->
+
+  <!-- Header -->
+  <div class="settings-header">
+    <div class="header-content">
+      <h2 class="header-title">
+        <i class="fas fa-palette"></i>
+        Temas de Color Predefinidos
+        @if (!hasAccess()) {
+          <span class="lock-badge">
+            <i class="fas fa-lock"></i>
+          </span>
+        }
+      </h2>
+      <p class="header-subtitle">
+        Selecciona un tema para aplicar una paleta de colores profesional a tu sitio web
+      </p>
+    </div>
+
+    <!-- Plan Badge -->
+    <div class="plan-badge" [class.basic]="!hasAccess()" [class.premium]="hasAccess()">
+      <i class="fas fa-crown"></i>
+      <span>Plan {{ getPlanName() }}</span>
+    </div>
+  </div>
+
+  <!-- Themes Grid -->
+  <div class="themes-section">
+    <div class="themes-grid">
+      @for (theme of themes; track theme.id) {
+        <div 
+          class="theme-card"
+          [class.active]="isThemeActive(theme.id)"
+          [class.disabled]="!hasAccess()"
+          (click)="selectTheme(theme.id)"
+        >
+          <!-- Lock Overlay (solo si no tiene acceso) -->
+          @if (!hasAccess()) {
+            <div class="lock-overlay">
+              <i class="fas fa-lock"></i>
+            </div>
+          }
+
+          <!-- Radio Button -->
+          <div class="theme-radio">
+            <input 
+              type="radio" 
+              [id]="theme.id"
+              [checked]="isThemeActive(theme.id)"
+              [disabled]="!hasAccess()"
+              name="theme"
+            />
+            <label [for]="theme.id"></label>
+          </div>
+
+          <!-- Theme Name -->
+          <h3 class="theme-name">{{ theme.name }}</h3>
+
+          <!-- Color Circles -->
+          <div class="color-circles">
+            <div 
+              class="color-circle primary"
+              [style.background]="theme.primaryColor"
+              [title]="'Primario: ' + theme.primaryColor"
+            ></div>
+            <div 
+              class="color-circle secondary"
+              [style.background]="theme.secondaryColor"
+              [title]="'Secundario: ' + theme.secondaryColor"
+            ></div>
+          </div>
+
+          <!-- Description -->
+          <p class="theme-description">{{ theme.description }}</p>
+
+          <!-- Active Badge -->
+          @if (isThemeActive(theme.id) && hasAccess()) {
+            <div class="active-badge">
+              <i class="fas fa-check"></i>
+              Seleccionado
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Preview Section -->
+  <div class="preview-section" [class.disabled]="!hasAccess()">
+    <h3 class="preview-title">
+      <i class="fas fa-eye"></i>
+      Vista Previa del Tema
+    </h3>
+
+    @if (getSelectedTheme(); as selectedTheme) {
+      <div class="preview-card">
+        <div class="preview-header" [style.background]="selectedTheme.primaryColor">
+          <div class="preview-logo">
+            <i class="fas fa-store"></i>
+            <span [style.color]="selectedTheme.primaryColorContrast">Mi Negocio</span>
+          </div>
+        </div>
+
+        <div class="preview-content">
+          <div class="preview-raffle">
+            <div class="raffle-icon" [style.color]="selectedTheme.primaryColor">
+              <i class="fas fa-gift"></i>
+            </div>
+            <h4 class="raffle-title">Rifa iPhone 15 Pro</h4>
+            <p class="raffle-price">Boletos desde <strong>$50</strong></p>
+            
+            <button 
+              class="preview-button"
+              [style.background]="selectedTheme.primaryColor"
+              [style.color]="selectedTheme.primaryColorContrast"
+              [disabled]="!hasAccess()"
+            >
+              Comprar Ahora
+            </button>
+
+            <div class="preview-stats">
+              <div class="stat">
+                <span 
+                  class="stat-icon"
+                  [style.color]="selectedTheme.secondaryColor"
+                >
+                  <i class="fas fa-ticket-alt"></i>
+                </span>
+                <span class="stat-label">250 vendidos</span>
+              </div>
+              <div class="stat">
+                <span 
+                  class="stat-icon"
+                  [style.color]="selectedTheme.secondaryColor"
+                >
+                  <i class="fas fa-clock"></i>
+                </span>
+                <span class="stat-label">3 días restantes</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Theme Info -->
+      <div class="theme-info">
+        <div class="info-row">
+          <span class="info-label">Tema seleccionado:</span>
+          <span class="info-value">{{ selectedTheme.name }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Color primario:</span>
+          <span class="info-value">
+            <span class="color-dot" [style.background]="selectedTheme.primaryColor"></span>
+            {{ selectedTheme.primaryColor }}
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Color secundario:</span>
+          <span class="info-value">
+            <span class="color-dot" [style.background]="selectedTheme.secondaryColor"></span>
+            {{ selectedTheme.secondaryColor }}
+          </span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Info Banner -->
+  @if (hasAccess()) {
+    <div class="info-banner">
+      <i class="fas fa-info-circle"></i>
+      <div class="info-content">
+        <strong>Personalización adicional:</strong>
+        <p>
+          Los colores del tema seleccionado se aplicarán automáticamente. 
+          Si deseas ajustar los colores manualmente, puedes hacerlo en la pestaña 
+          <strong>"Apariencia Web"</strong>.
+        </p>
+      </div>
+    </div>
+  }
+
+  <!-- Apply Button -->
+  <div class="form-actions">
+    <button
+      type="button"
+      class="btn btn-primary"
+      [disabled]="isLoading || !hasAccess()"
+      (click)="applyTheme()"
+    >
+      @if (isLoading) {
+        <i class="fas fa-spinner fa-spin"></i>
+        <span>Aplicando tema...</span>
+      } @else if (!hasAccess()) {
+        <i class="fas fa-lock"></i>
+        <span>Funcionalidad Bloqueada</span>
+      } @else {
+        <i class="fas fa-check"></i>
+        <span>Aplicar Tema Seleccionado</span>
+      }
+    </button>
+  </div>
+
+  <!-- Debug: Reset Plan Button (solo para desarrollo) -->
+  @if (hasAccess()) {
+    <div class="debug-actions">
+      <button 
+        type="button"
+        class="btn-debug"
+        (click)="resetPlan()"
+      >
+        <i class="fas fa-undo"></i>
+        Resetear a Plan Básico (Debug)
+      </button>
+    </div>
+  }
+</div>
