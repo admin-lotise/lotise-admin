@@ -1,8 +1,213 @@
-<h1 class="dashboard-title">Inicio</h1>
-<div class="dashboard-indicators">
-  <div class="indicator-card" *ngFor="let ind of indicators">
-    <h3>{{ ind.title }}</h3>
-    <div class="indicator-value">{{ ind.value }}</div>
-    <div class="indicator-desc">{{ ind.description }}</div>
+<div class="dashboard-container">
+  
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1 class="dashboard-title">
+        <i class="material-icons">dashboard</i>
+        Panel de Control
+      </h1>
+      <p class="dashboard-subtitle">Resumen de tus rifas en tiempo real</p>
+    </div>
+
+    <!-- Plan Badge -->
+    <div class="premium-badge" [ngClass]="isPremiumPlan() ? 'premium' : 'basic'">
+      <i class="material-icons">{{ isPremiumPlan() ? 'workspace_premium' : 'lock' }}</i>
+      <span>{{ getPlanName() }}</span>
+    </div>
   </div>
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-state">
+      <i class="material-icons spin">refresh</i>
+      <p>Cargando datos del dashboard...</p>
+    </div>
+  } @else {
+
+    <!-- Filters Section -->
+    <div class="filters-section">
+      
+      <!-- ✅ Date Filter -->
+      <div class="filter-group">
+        <label for="date-filter" class="filter-label">
+          <i class="material-icons">date_range</i>
+          Período:
+        </label>
+        <select 
+          id="date-filter"
+          class="filter-select"
+          [value]="dateFilter()"
+          (change)="onDateFilterChange($event)"
+        >
+          <option value="week">📅 Última Semana</option>
+          <option value="month">📅 Último Mes</option>
+          <option value="year">📅 Último Año</option>
+          <option value="all">📅 Todo el Historial</option>
+        </select>
+      </div>
+
+      <!-- ✅ Raffle Filter -->
+      @if (filteredByDate().length > 0) {
+        <div class="filter-group">
+          <label for="raffle-select" class="filter-label">
+            <i class="material-icons">filter_list</i>
+            Rifa:
+          </label>
+          <select 
+            id="raffle-select"
+            class="filter-select"
+            [value]="selectedRaffleId()"
+            (change)="onRaffleChange($event)"
+          >
+            @for (option of raffleOptions(); track option.id) {
+              <option [value]="option.id">{{ option.label }}</option>
+            }
+          </select>
+        </div>
+      }
+    </div>
+
+    <!-- Selected Raffle Info -->
+    @if (selectedRaffle(); as raffle) {
+      <div class="selected-raffle-info">
+        <div class="raffle-info-header">
+          <h3>{{ raffle.title }}</h3>
+          <span class="status-badge" [class]="getStatusBadge(raffle.status).class">
+            {{ getStatusBadge(raffle.status).text }}
+          </span>
+        </div>
+        
+        <div class="raffle-progress">
+          <div class="progress-bar-container">
+            <div class="progress-bar" [style.width.%]="salesProgress()"></div>
+          </div>
+          <p class="progress-text">
+            {{ ticketsMetrics().sold | number }} de {{ ticketsMetrics().total | number }} boletos vendidos 
+            ({{ salesProgress() }}%)
+          </p>
+        </div>
+      </div>
+    }
+
+    <!-- Metrics Grid -->
+    <div class="metrics-grid">
+      @for (metric of visibleMetrics(); track metric.id) {
+        <div 
+          class="metric-card" 
+          [class]="metric.color"
+          [class.clickable]="!!metric.route"
+          [class.premium-locked]="metric.isPremium && !isPremiumPlan()"
+          (click)="onMetricClick(metric)"
+        >
+          <div class="metric-icon">
+            <i class="material-icons">{{ metric.icon }}</i>
+          </div>
+          <div class="metric-content">
+            <h3 class="metric-label">
+              {{ metric.label }}
+              @if (metric.isPremium && !isPremiumPlan()) {
+                <i class="material-icons lock-icon">lock</i>
+              }
+            </h3>
+            <div class="metric-value">{{ metric.value }}</div>
+            @if (metric.description) {
+              <p class="metric-description">{{ metric.description }}</p>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Premium Locked Metrics (for BASICO plan) -->
+      @if (!isPremiumPlan()) {
+        <div class="metric-card premium-locked revenue">
+          <div class="metric-overlay">
+            <i class="material-icons">lock</i>
+            <span>Premium</span>
+          </div>
+          <div class="metric-icon">
+            <i class="material-icons">payments</i>
+          </div>
+          <div class="metric-content">
+            <h3 class="metric-label">Ingresos Generados</h3>
+            <div class="metric-value">$--,---</div>
+            <p class="metric-description">Requiere plan premium</p>
+          </div>
+        </div>
+
+        <div class="metric-card premium-locked projection">
+          <div class="metric-overlay">
+            <i class="material-icons">lock</i>
+            <span>Premium</span>
+          </div>
+          <div class="metric-icon">
+            <i class="material-icons">trending_up</i>
+          </div>
+          <div class="metric-content">
+            <h3 class="metric-label">Proyección Total</h3>
+            <div class="metric-value">$--,---</div>
+            <p class="metric-description">Requiere plan premium</p>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Premium Features Section -->
+    @if (isPremiumPlan()) {
+      <div class="premium-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="material-icons">workspace_premium</i>
+            Funciones Premium
+          </h2>
+        </div>
+
+        <div class="premium-actions">
+          <button class="premium-btn excel-btn" (click)="exportToExcel()">
+            <i class="material-icons">download</i>
+            <span>Descargar Reporte Excel</span>
+          </button>
+
+          <button class="premium-btn projection-btn" (click)="viewProjections()">
+            <i class="material-icons">insights</i>
+            <span>Ver Proyecciones Detalladas</span>
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Upgrade CTA (BASICO Plan) -->
+    @if (!isPremiumPlan()) {
+      <div class="subscription-card">
+        <div class="subscription-header">
+          <div class="plan-info">
+            <h3 class="plan-name">
+              <i class="material-icons">info</i>
+              {{ getPlanName() }}
+            </h3>
+            <p class="plan-description">
+              Actualiza a <strong>Emprendedor</strong> o <strong>Profesional</strong> 
+              para desbloquear todas las funcionalidades
+            </p>
+          </div>
+          <button class="upgrade-btn" (click)="upgradePlan()">
+            <i class="material-icons">upgrade</i>
+            <span>Actualizar Plan</span>
+          </button>
+        </div>
+
+        <div class="upgrade-features">
+          <h4>🔒 Funciones Bloqueadas:</h4>
+          <ul>
+            <li><i class="material-icons">close</i> Ingresos y proyecciones en tiempo real</li>
+            <li><i class="material-icons">close</i> Exportación de datos a Excel</li>
+            <li><i class="material-icons">close</i> Proyecciones avanzadas y gráficas</li>
+            <li><i class="material-icons">close</i> Reportes personalizados</li>
+          </ul>
+        </div>
+      </div>
+    }
+
+  }
+
 </div>
