@@ -1,0 +1,274 @@
+<div class="bio-preview">
+
+  <!-- Preview Header -->
+  <div class="preview-header">
+    <div class="header-content">
+      <h2 class="preview-title">
+        <i class="fas fa-eye"></i>
+        Vista Previa de Bio Page
+      </h2>
+      <p class="preview-subtitle">
+        Así es como tus clientes verán tu página
+      </p>
+    </div>
+
+    <!-- Device Selector -->
+    <div class="device-selector">
+      <button 
+        type="button"
+        class="device-btn"
+        [class.active]="deviceMode() === 'mobile'"
+        (click)="setDeviceMode('mobile')"
+        title="Vista Móvil"
+      >
+        <i class="fas fa-mobile-screen-button"></i>
+      </button>
+      <button 
+        type="button"
+        class="device-btn"
+        [class.active]="deviceMode() === 'tablet'"
+        (click)="setDeviceMode('tablet')"
+        title="Vista Tablet"
+      >
+        <i class="fas fa-tablet-screen-button"></i>
+      </button>
+      <button 
+        type="button"
+        class="device-btn"
+        [class.active]="deviceMode() === 'desktop'"
+        (click)="setDeviceMode('desktop')"
+        title="Vista Desktop"
+      >
+        <i class="fas fa-desktop"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- URL Actions -->
+  <div class="url-actions">
+    <div class="url-display">
+      <i class="fas fa-link"></i>
+      <span class="url-text">{{ previewUrl() }}</span>
+    </div>
+    <div class="url-buttons">
+      <button type="button" class="btn-action" (click)="copyUrl()" title="Copiar URL">
+        <i class="fas fa-copy"></i>
+        <span>Copiar</span>
+      </button>
+      <button type="button" class="btn-action btn-primary" (click)="openInNewTab()" title="Abrir en nueva pestaña">
+        <i class="fas fa-external-link-alt"></i>
+        <span>Abrir</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Preview Frame -->
+  <div class="preview-frame" [attr.data-device]="deviceMode()">
+    <div class="device-frame">
+      <div class="bio-page-preview">
+
+        <!-- Profile Section -->
+        <section class="bio-section profile-section">
+          @if (profile().photoUrl) {
+            <div class="profile-image">
+              <img [src]="profile().photoUrl" [alt]="profile().displayName || 'Perfil'">
+            </div>
+          }
+          <h1 class="display-name">{{ profile().displayName || businessProfile().businessName }}</h1>
+          @if (profile().bio) {
+            <p class="bio-text">{{ profile().bio }}</p>
+          }
+        </section>
+
+        <!-- How It Works Section -->
+        @if (howItWorks().enabled && howItWorks().steps.length > 0) {
+          <section class="bio-section how-it-works-section">
+            <h2 class="section-title">{{ howItWorks().title }}</h2>
+            @if (howItWorks().subtitle) {
+              <p class="section-subtitle">{{ howItWorks().subtitle }}</p>
+            }
+            <div class="steps-grid">
+              @for (step of howItWorks().steps; track step.id) {
+                <div class="step-card">
+                  <div class="step-number">{{ step.order }}</div>
+                  <div class="step-icon">
+                    <i [class]="step.icon"></i>
+                  </div>
+                  <h3 class="step-title">{{ step.title }}</h3>
+                  <p class="step-description">{{ step.description }}</p>
+                </div>
+              }
+            </div>
+          </section>
+        }
+
+        <!-- Testimonials Section -->
+        @if (testimonials().enabled && testimonials().items.length > 0) {
+          <section class="bio-section testimonials-section">
+            <h2 class="section-title">{{ testimonials().title }}</h2>
+            @if (testimonials().subtitle) {
+              <p class="section-subtitle">{{ testimonials().subtitle }}</p>
+            }
+            <div class="testimonials-grid">
+              @for (testimonial of testimonials().items; track testimonial.id) {
+                <div class="testimonial-card">
+                  <div class="testimonial-header">
+                    <div class="testimonial-avatar">
+                      <i class="fas fa-user"></i>
+                    </div>
+                    <div class="testimonial-author">
+                      <h4>{{ testimonial.name }}</h4>
+                      <div class="rating">
+                        @for (filled of getStars(testimonial.rating); track $index) {
+                          <i class="fas fa-star" [class.filled]="filled"></i>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                  <div class="testimonial-message">
+                    <i class="fas fa-quote-left quote-icon"></i>
+                    <p>{{ testimonial.message }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          </section>
+        }
+
+        <!-- FAQs Section -->
+        @if (faqs().enabled && faqs().items.length > 0) {
+          <section class="bio-section faqs-section">
+            <h2 class="section-title">{{ faqs().title }}</h2>
+            @if (faqs().subtitle) {
+              <p class="section-subtitle">{{ faqs().subtitle }}</p>
+            }
+            <div class="faqs-list">
+              @for (faq of faqs().items; track faq.id) {
+                <div class="faq-item">
+                  <div class="faq-question">
+                    <span class="faq-number">{{ faq.order }}</span>
+                    <h4>{{ faq.question }}</h4>
+                  </div>
+                  <div class="faq-answer">
+                    <p>{{ faq.answer }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          </section>
+        }
+
+        <!-- Contact Section -->
+        @if (contact().enabled) {
+          <section class="bio-section contact-section">
+            <h2 class="section-title">{{ contact().title }}</h2>
+            @if (contact().subtitle) {
+              <p class="section-subtitle">{{ contact().subtitle }}</p>
+            }
+            
+            <div class="contact-info">
+              @if (contact().email) {
+                <a [href]="'mailto:' + contact().email" class="contact-item">
+                  <i class="fas fa-envelope"></i>
+                  <span>{{ contact().email }}</span>
+                </a>
+              }
+              @if (contact().phone) {
+                <a [href]="'tel:' + contact().phone" class="contact-item">
+                  <i class="fas fa-phone"></i>
+                  <span>{{ contact().phone }}</span>
+                </a>
+              }
+              @if (contact().whatsapp) {
+                <a 
+                  [href]="'https://wa.me/' + cleanWhatsAppNumber(contact().whatsapp)" 
+                  class="contact-item" 
+                  target="_blank"
+                >
+                  <i class="fab fa-whatsapp"></i>
+                  <span>{{ contact().whatsapp }}</span>
+                </a>
+              }
+              @if (contact().address) {
+                <div class="contact-item">
+                  <i class="fas fa-location-dot"></i>
+                  <span>{{ contact().address }}</span>
+                </div>
+              }
+              @if (contact().scheduleText) {
+                <div class="contact-item">
+                  <i class="fas fa-clock"></i>
+                  <span class="schedule-text">{{ contact().scheduleText }}</span>
+                </div>
+              }
+            </div>
+
+            <!-- Social Media Links -->
+            @if (businessProfile().socialMedia?.facebook || 
+                 businessProfile().socialMedia?.instagram || 
+                 businessProfile().socialMedia?.twitter ||
+                 businessProfile().socialMedia?.tiktok) {
+              <div class="social-links">
+                @if (businessProfile().socialMedia?.facebook) {
+                  <a 
+                    [href]="businessProfile().socialMedia!.facebook" 
+                    target="_blank"
+                    class="social-link"
+                    style="background-color: #1877F2"
+                    title="Facebook"
+                  >
+                    <i class="fab fa-facebook"></i>
+                  </a>
+                }
+                @if (businessProfile().socialMedia?.instagram) {
+                  <a 
+                    [href]="businessProfile().socialMedia!.instagram" 
+                    target="_blank"
+                    class="social-link"
+                    style="background-color: #E4405F"
+                    title="Instagram"
+                  >
+                    <i class="fab fa-instagram"></i>
+                  </a>
+                }
+                @if (businessProfile().socialMedia?.twitter) {
+                  <a 
+                    [href]="businessProfile().socialMedia!.twitter" 
+                    target="_blank"
+                    class="social-link"
+                    style="background-color: #1DA1F2"
+                    title="Twitter"
+                  >
+                    <i class="fab fa-twitter"></i>
+                  </a>
+                }
+                @if (businessProfile().socialMedia?.tiktok) {
+                  <a 
+                    [href]="businessProfile().socialMedia!.tiktok" 
+                    target="_blank"
+                    class="social-link"
+                    style="background-color: #000000"
+                    title="TikTok"
+                  >
+                    <i class="fab fa-tiktok"></i>
+                  </a>
+                }
+              </div>
+            }
+          </section>
+        }
+
+        <!-- Empty State -->
+        @if (!howItWorks().enabled && !testimonials().enabled && !faqs().enabled && !contact().enabled) {
+          <div class="empty-preview">
+            <i class="fas fa-file-lines"></i>
+            <h3>No hay contenido para mostrar</h3>
+            <p>Activa y configura las secciones para ver tu Bio Page</p>
+          </div>
+        }
+
+      </div>
+    </div>
+  </div>
+
+</div>
