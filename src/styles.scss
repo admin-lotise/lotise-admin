@@ -182,3 +182,29 @@ body {
     height: -webkit-fill-available;
   }
 }
+
+/* ==================== iOS AUTO-ZOOM FIX ====================
+ * Prevenir auto-zoom en inputs en iOS Safari
+ * iOS hace zoom automático cuando font-size < 16px
+ */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+input[type="url"],
+input[type="date"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"],
+input[type="time"],
+textarea,
+select {
+  font-size: 16px !important;
+  
+  // En tablets y desktop puede ser menor
+  @media (min-width: 768px) {
+    font-size: 0.9375rem !important; // 15px
+  }
+}
