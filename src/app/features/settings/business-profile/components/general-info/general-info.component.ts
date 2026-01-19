@@ -1,10 +1,10 @@
 import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { SettingsStateService } from '../../../../core/signals/settings-state.service';
-import { SettingsApiService } from '../../../../core/http/settings-api.service';
-import { StorageService } from '../../../../core/auth/storage.service';
-import { FileUploadRequest } from '../../../../shared/models/settings.model';
+import { SettingsStateService } from '../../../../../core/signals/settings-state.service';
+import { SettingsApiService } from '../../../../../core/http/settings-api.service';
+import { StorageService } from '../../../../../core/auth/storage.service';
+import { FileUploadRequest } from '../../../../../shared/models/settings.model';
 
 /**
  * Componente para gestión de datos generales del negocio

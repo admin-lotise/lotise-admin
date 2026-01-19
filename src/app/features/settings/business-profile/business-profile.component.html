@@ -6,7 +6,7 @@
         Perfil del Negocio
       </h1>
       <p class="page-subtitle">
-        Configura la información de tu negocio que se mostrará a tus clientes
+        Configura la información de tu negocio y tu página Bio
       </p>
     </div>
     
@@ -42,10 +42,14 @@
     <!-- Tabs Navigation -->
     <div class="tabs-container">
       <div class="tabs-header">
+        
+        <!-- ========== BUSINESS PROFILE TABS ========== -->
         <button 
           class="tab-button" 
           [class.active]="activeTab() === 'general'"
-          (click)="changeTab('general')">
+          (click)="changeTab('general')"
+          title="Información general del negocio"
+        >
           <i class="fas fa-info-circle"></i>
           <span>Datos Generales</span>
         </button>
@@ -53,9 +57,11 @@
         <button 
           class="tab-button" 
           [class.active]="activeTab() === 'contacts'"
-          (click)="changeTab('contacts')">
+          (click)="changeTab('contacts')"
+          title="Números de WhatsApp"
+        >
           <i class="fab fa-whatsapp"></i>
-          <span>Contactos WhatsApp</span>
+          <span>Contactos</span>
           @if (settingsState.whatsappContactsCount() > 0) {
             <span class="badge">{{ settingsState.whatsappContactsCount() }}</span>
           }
@@ -64,18 +70,88 @@
         <button 
           class="tab-button" 
           [class.active]="activeTab() === 'social'"
-          (click)="changeTab('social')">
+          (click)="changeTab('social')"
+          title="Redes sociales"
+        >
           <i class="fas fa-share-alt"></i>
           <span>Redes Sociales</span>
           @if (settingsState.hasSocialMedia()) {
             <span class="badge-dot"></span>
           }
         </button>
+
+        <!-- ========== BIO PAGE TABS ========== -->
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab() === 'bio-contact'"
+          (click)="changeTab('bio-contact')"
+          title="Información de contacto en Bio Page"
+        >
+          <i class="fas fa-address-book"></i>
+          <span>Bio: Contacto</span>
+          @if (bioPage().contact.enabled) {
+            <span class="badge-dot"></span>
+          }
+        </button>
+
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab() === 'bio-how'"
+          (click)="changeTab('bio-how')"
+          title="Sección Cómo Funciona"
+        >
+          <i class="fas fa-list-ol"></i>
+          <span>Bio: Cómo Funciona</span>
+          @if (bioPage().howItWorks.enabled) {
+            <span class="badge">{{ bioPage().howItWorks.steps.length }}</span>
+          }
+        </button>
+
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab() === 'bio-testimonials'"
+          (click)="changeTab('bio-testimonials')"
+          title="Testimonios de clientes"
+        >
+          <i class="fas fa-quote-left"></i>
+          <span>Bio: Testimonios</span>
+          @if (bioPage().testimonials.enabled) {
+            <span class="badge">{{ bioPage().testimonials.items.length }}</span>
+          }
+        </button>
+
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab() === 'bio-faqs'"
+          (click)="changeTab('bio-faqs')"
+          title="Preguntas frecuentes"
+        >
+          <i class="fas fa-question-circle"></i>
+          <span>Bio: FAQs</span>
+          @if (bioPage().faqs.enabled) {
+            <span class="badge">{{ bioPage().faqs.items.length }}</span>
+          }
+        </button>
+
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab() === 'bio-preview'"
+          (click)="changeTab('bio-preview')"
+          title="Vista previa de tu Bio Page"
+        >
+          <i class="fas fa-eye"></i>
+          <span>Bio: Preview</span>
+          @if (activeBioSectionsCount() > 0) {
+            <span class="badge">{{ activeBioSectionsCount() }}</span>
+          }
+        </button>
+
       </div>
 
       <!-- Tab Content -->
       <div class="tab-content">
         @switch (activeTab()) {
+          <!-- Business Profile -->
           @case ('general') {
             <app-general-info />
           }
@@ -84,6 +160,22 @@
           }
           @case ('social') {
             <app-social-media />
+          }
+          <!-- Bio Page -->
+          @case ('bio-contact') {
+            <app-contact-info />
+          }
+          @case ('bio-how') {
+            <app-how-it-works />
+          }
+          @case ('bio-testimonials') {
+            <app-testimonials />
+          }
+          @case ('bio-faqs') {
+            <app-faqs />
+          }
+          @case ('bio-preview') {
+            <app-preview />
           }
         }
       </div>

@@ -1,0 +1,285 @@
+<div class="faqs-container">
+
+  <!-- Success Alert -->
+  @if (successMessage()) {
+    <div class="alert alert-success">
+      <i class="fas fa-check-circle"></i>
+      <span>{{ successMessage() }}</span>
+      <button class="close-btn" (click)="successMessage.set(null)">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  }
+
+  <!-- Error Alert -->
+  @if (errorMessage()) {
+    <div class="alert alert-error">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>{{ errorMessage() }}</span>
+      <button class="close-btn" (click)="errorMessage.set(null)">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  }
+
+  <!-- Header -->
+  <div class="section-header">
+    <div class="header-content">
+      <h2 class="section-title">
+        <i class="fas fa-question-circle"></i>
+        Preguntas Frecuentes (FAQs)
+      </h2>
+      <p class="section-description">
+        Responde las dudas más comunes de tus clientes
+      </p>
+    </div>
+    
+    <div class="header-actions">
+      <!-- Toggle Section -->
+      <label class="toggle-switch">
+        <input 
+          type="checkbox" 
+          [checked]="isSectionEnabled()"
+          (change)="toggleSection()"
+        >
+        <span class="slider"></span>
+        <span class="toggle-label">
+          {{ isSectionEnabled() ? 'Activa' : 'Inactiva' }}
+        </span>
+      </label>
+
+      <!-- Add Button -->
+      <button 
+        type="button" 
+        class="btn btn-primary" 
+        (click)="openNewFaqModal()"
+        [disabled]="!isSectionEnabled()"
+      >
+        <i class="fas fa-plus"></i>
+        Agregar Pregunta
+      </button>
+    </div>
+  </div>
+
+  <!-- FAQs List -->
+  @if (faqs().length > 0) {
+    <div class="faqs-list">
+      @for (faq of faqs(); track faq.id) {
+        <div class="faq-card">
+          
+          <!-- FAQ Header -->
+          <div class="faq-header">
+            <div class="faq-info">
+              <span class="faq-order">{{ faq.order }}</span>
+              <div class="faq-content">
+                <h4 class="faq-question">{{ faq.question }}</h4>
+                @if (faq.category) {
+                  <span class="faq-category">
+                    <i [class]="getCategoryIcon(faq.category)"></i>
+                    {{ getCategoryLabel(faq.category) }}
+                  </span>
+                }
+              </div>
+            </div>
+            
+            <div class="faq-actions">
+              <button 
+                type="button" 
+                class="btn-icon btn-primary" 
+                (click)="openEditFaqModal(faq)"
+                [disabled]="!isSectionEnabled()"
+                title="Editar"
+              >
+                <i class="fas fa-edit"></i>
+              </button>
+              <button 
+                type="button" 
+                class="btn-icon btn-danger" 
+                (click)="deleteFaq(faq)"
+                [disabled]="isDeleting() === faq.id || !isSectionEnabled()"
+                title="Eliminar"
+              >
+                @if (isDeleting() === faq.id) {
+                  <i class="fas fa-spinner fa-spin"></i>
+                } @else {
+                  <i class="fas fa-trash"></i>
+                }
+              </button>
+            </div>
+          </div>
+
+          <!-- FAQ Answer -->
+          <div class="faq-answer">
+            <p>{{ faq.answer }}</p>
+          </div>
+
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <i class="fas fa-question-circle"></i>
+      <h3>No hay preguntas frecuentes</h3>
+      <p>Agrega preguntas para ayudar a tus clientes a resolver sus dudas</p>
+      <button 
+        type="button" 
+        class="btn btn-primary" 
+        (click)="openNewFaqModal()"
+        [disabled]="!isSectionEnabled()"
+      >
+        <i class="fas fa-plus"></i>
+        Agregar Primera Pregunta
+      </button>
+    </div>
+  }
+
+</div>
+
+<!-- ==================== MODAL: ADD/EDIT FAQ ==================== -->
+@if (isModalOpen()) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      
+      <div class="modal-header">
+        <h3 class="modal-title">
+          @if (isEditing()) {
+            <i class="fas fa-edit"></i>
+            Editar Pregunta Frecuente
+          } @else {
+            <i class="fas fa-plus"></i>
+            Agregar Pregunta Frecuente
+          }
+        </h3>
+        <button type="button" class="close-btn" (click)="closeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <form [formGroup]="faqForm" (ngSubmit)="onSubmit()">
+        <div class="modal-body">
+
+          <!-- Category -->
+          <div class="form-group">
+            <label class="form-label required">
+              <i class="fas fa-tag"></i>
+              Categoría
+            </label>
+            <select 
+              class="form-select"
+              formControlName="category"
+              [class.invalid]="category?.invalid && category?.touched"
+            >
+              @for (cat of categories; track cat.value) {
+                <option [value]="cat.value">
+                  {{ cat.label }}
+                </option>
+              }
+            </select>
+            @if (category?.invalid && category?.touched) {
+              <div class="field-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>La categoría es requerida</span>
+              </div>
+            }
+          </div>
+
+          <!-- Question -->
+          <div class="form-group">
+            <label class="form-label required">
+              <i class="fas fa-question"></i>
+              Pregunta
+            </label>
+            <input 
+              type="text" 
+              class="form-input"
+              formControlName="question"
+              placeholder="¿Cómo puedo participar en una rifa?"
+              maxlength="200"
+              [class.invalid]="question?.invalid && question?.touched"
+            >
+            @if (question?.invalid && question?.touched) {
+              <div class="field-error">
+                @if (question?.errors?.['required']) {
+                  <i class="fas fa-exclamation-circle"></i>
+                  <span>La pregunta es requerida</span>
+                }
+                @if (question?.errors?.['minlength']) {
+                  <i class="fas fa-exclamation-circle"></i>
+                  <span>Mínimo 5 caracteres</span>
+                }
+                @if (question?.errors?.['maxlength']) {
+                  <i class="fas fa-exclamation-circle"></i>
+                  <span>Máximo 200 caracteres</span>
+                }
+              </div>
+            }
+            <div class="input-footer">
+              <span class="char-counter">{{ question?.value?.length || 0 }}/200</span>
+            </div>
+          </div>
+
+          <!-- Answer -->
+          <div class="form-group">
+            <label class="form-label required">
+              <i class="fas fa-comment-alt"></i>
+              Respuesta
+            </label>
+            <textarea 
+              class="form-textarea"
+              formControlName="answer"
+              placeholder="Es muy sencillo, solo debes seleccionar la rifa que te interese..."
+              rows="5"
+              maxlength="1000"
+              [class.invalid]="answer?.invalid && answer?.touched"
+            ></textarea>
+            @if (answer?.invalid && answer?.touched) {
+              <div class="field-error">
+                @if (answer?.errors?.['required']) {
+                  <i class="fas fa-exclamation-circle"></i>
+                  <span>La respuesta es requerida</span>
+                }
+                @if (answer?.errors?.['minlength']) {
+                  <i class="fas fa-exclamation-circle"></i>
+                  <span>Mínimo 10 caracteres</span>
+                }
+                @if (answer?.errors?.['maxlength']) {
+                  <i class="fas fa-exclamation-circle"></i>
+                  <span>Máximo 1000 caracteres</span>
+                }
+              </div>
+            }
+            <div class="input-footer">
+              <span class="char-counter">{{ answer?.value?.length || 0 }}/1000</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button 
+            type="button" 
+            class="btn btn-secondary" 
+            (click)="closeModal()"
+            [disabled]="isSaving()"
+          >
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="faqForm.invalid || isSaving()"
+          >
+            @if (isSaving()) {
+              <i class="fas fa-spinner fa-spin"></i>
+              <span>Guardando...</span>
+            } @else {
+              <i class="fas fa-save"></i>
+              <span>{{ isEditing() ? 'Actualizar' : 'Agregar' }}</span>
+            }
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+}

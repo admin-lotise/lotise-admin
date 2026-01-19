@@ -1,14 +1,13 @@
 import { Component, signal, inject, computed, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { SettingsStateService } from '../../../../core/signals/settings-state.service';
-import { SettingsApiService } from '../../../../core/http/settings-api.service';
-import { StorageService } from '../../../../core/auth/storage.service';
-import { WhatsAppContact } from '../../../../shared/models/settings.model';
+import { SettingsStateService } from '../../../../../core/signals/settings-state.service';
+import { SettingsApiService } from '../../../../../core/http/settings-api.service';
+import { StorageService } from '../../../../../core/auth/storage.service';
+import { WhatsAppContact } from '../../../../../shared/models/settings.model';
 
 /**
- * Componente para gestión CRUD de contactos WhatsApp
- * Permite agregar, editar y eliminar números de contacto
+ * Componente para gestión de contactos WhatsApp
  */
 @Component({
   selector: 'app-contact-numbers',
@@ -23,22 +22,22 @@ export class ContactNumbersComponent implements OnDestroy {
   private readonly settingsApi = inject(SettingsApiService);
   private readonly storageService = inject(StorageService);
 
-  // Signals locales
+  // ==================== SIGNALS ====================
   readonly isModalOpen = signal(false);
   readonly isEditing = signal(false);
   readonly isSaving = signal(false);
   readonly isDeleting = signal<string | null>(null);
+  readonly editingContactId = signal<string | null>(null);
   readonly successMessage = signal<string | null>(null);
   readonly errorMessage = signal<string | null>(null);
-  readonly editingContactId = signal<string | null>(null);
 
-  // Form reactivo
-  contactForm!: FormGroup;
+  // Form
+  whatsappContactForm!: FormGroup;
 
-  // Computed: Lista de contactos desde el estado
+  // Computed
   readonly contacts = computed(() => this.settingsState.businessProfile().whatsappContacts);
 
-  // Country codes comunes (México y LATAM)
+  // Country codes
   readonly countryCodes = [
     { code: '+52', country: 'México', flag: '🇲🇽' },
     { code: '+1', country: 'USA/Canadá', flag: '🇺🇸' },
@@ -64,17 +63,14 @@ export class ContactNumbersComponent implements OnDestroy {
     this.initializeForm();
   }
 
-  // ✅ NUEVO: Limpieza al destruir el componente
   ngOnDestroy(): void {
-    // Asegurar que se restaure el scroll si el componente se destruye con el modal abierto
     this.unlockBodyScroll();
   }
 
-  /**
-   * Inicializar formulario
-   */
+  // ==================== FORM INITIALIZATION ====================
+
   private initializeForm(): void {
-    this.contactForm = this.fb.group({
+    this.whatsappContactForm = this.fb.group({
       countryCode: ['+52', [Validators.required]],
       number: ['', [
         Validators.required, 
@@ -87,57 +83,49 @@ export class ContactNumbersComponent implements OnDestroy {
     });
   }
 
-  /**
-   * Abrir modal para nuevo contacto
-   */
+  // ==================== MODAL MANAGEMENT ====================
+
   openNewContactModal(): void {
     this.isEditing.set(false);
     this.editingContactId.set(null);
-    this.contactForm.reset({
+    this.whatsappContactForm.reset({
       countryCode: '+52',
       number: '',
       useForReservations: true,
       visibleOnWeb: true
     });
     this.isModalOpen.set(true);
-    this.lockBodyScroll(); // ✅ NUEVO
+    this.lockBodyScroll();
     this.clearMessages();
   }
 
-  /**
-   * Abrir modal para editar contacto
-   */
   openEditContactModal(contact: WhatsAppContact): void {
     this.isEditing.set(true);
     this.editingContactId.set(contact.id);
-    this.contactForm.patchValue({
+    this.whatsappContactForm.patchValue({
       countryCode: contact.countryCode,
       number: contact.number,
       useForReservations: contact.useForReservations,
       visibleOnWeb: contact.visibleOnWeb
     });
     this.isModalOpen.set(true);
-    this.lockBodyScroll(); // ✅ NUEVO
+    this.lockBodyScroll();
     this.clearMessages();
   }
 
-  /**
-   * Cerrar modal
-   */
   closeModal(): void {
     this.isModalOpen.set(false);
     this.isEditing.set(false);
     this.editingContactId.set(null);
-    this.contactForm.reset();
-    this.unlockBodyScroll(); // ✅ NUEVO
+    this.whatsappContactForm.reset();
+    this.unlockBodyScroll();
   }
 
-  /**
-   * Guardar contacto (crear o actualizar)
-   */
+  // ==================== CRUD OPERATIONS ====================
+
   onSubmit(): void {
-    if (this.contactForm.invalid) {
-      this.contactForm.markAllAsTouched();
+    if (this.whatsappContactForm.invalid) {
+      this.whatsappContactForm.markAllAsTouched();
       return;
     }
 
@@ -150,7 +138,7 @@ export class ContactNumbersComponent implements OnDestroy {
     this.isSaving.set(true);
     this.clearMessages();
 
-    const formValue = this.contactForm.value;
+    const formValue = this.whatsappContactForm.value;
     const contactData = {
       countryCode: formValue.countryCode,
       number: formValue.number,
@@ -159,7 +147,6 @@ export class ContactNumbersComponent implements OnDestroy {
     };
 
     if (this.isEditing()) {
-      // Actualizar contacto existente
       const contactId = this.editingContactId()!;
       this.settingsApi.updateWhatsAppContact(tenant.tenantId, contactId, contactData).subscribe({
         next: (updatedContact) => {
@@ -175,7 +162,6 @@ export class ContactNumbersComponent implements OnDestroy {
         }
       });
     } else {
-      // Crear nuevo contacto
       this.settingsApi.createWhatsAppContact(tenant.tenantId, contactData).subscribe({
         next: (newContact) => {
           this.settingsState.addWhatsAppContact(newContact);
@@ -192,9 +178,6 @@ export class ContactNumbersComponent implements OnDestroy {
     }
   }
 
-  /**
-   * Eliminar contacto
-   */
   deleteContact(contact: WhatsAppContact): void {
     if (!confirm(`¿Estás seguro de eliminar el contacto ${contact.countryCode} ${contact.number}?`)) {
       return;
@@ -223,52 +206,34 @@ export class ContactNumbersComponent implements OnDestroy {
     });
   }
 
-  /**
-   * Formatear número para mostrar en WhatsApp
-   */
+  // ==================== HELPERS ====================
+
   getWhatsAppLink(contact: WhatsAppContact): string {
     const cleanNumber = contact.number.replace(/\D/g, '');
     const fullNumber = contact.countryCode.replace('+', '') + cleanNumber;
     return `https://wa.me/${fullNumber}`;
   }
 
-  /**
-   * Formatear número para display
-   */
   formatPhoneNumber(number: string): string {
-    // Formato: (XXX) XXX-XXXX para números de 10 dígitos
     if (number.length === 10) {
       return `(${number.slice(0, 3)}) ${number.slice(3, 6)}-${number.slice(6)}`;
     }
     return number;
   }
 
-  // ==================== MODAL SCROLL CONTROL ====================
-
-  /**
-   * ✅ NUEVO: Bloquear scroll del body cuando el modal está abierto
-   */
   private lockBodyScroll(): void {
     document.body.style.overflow = 'hidden';
     document.body.style.paddingRight = this.getScrollbarWidth() + 'px';
   }
 
-  /**
-   * ✅ NUEVO: Restaurar scroll del body cuando el modal se cierra
-   */
   private unlockBodyScroll(): void {
     document.body.style.overflow = '';
     document.body.style.paddingRight = '';
   }
 
-  /**
-   * ✅ NUEVO: Calcular ancho del scrollbar para evitar "salto" del contenido
-   */
   private getScrollbarWidth(): number {
     return window.innerWidth - document.documentElement.clientWidth;
   }
-
-  // ==================== HELPERS ====================
 
   private showSuccess(message: string): void {
     this.successMessage.set(message);
@@ -285,9 +250,9 @@ export class ContactNumbersComponent implements OnDestroy {
     this.errorMessage.set(null);
   }
 
-  // Getters para template
-  get countryCode() { return this.contactForm.get('countryCode'); }
-  get number() { return this.contactForm.get('number'); }
-  get useForReservations() { return this.contactForm.get('useForReservations'); }
-  get visibleOnWeb() { return this.contactForm.get('visibleOnWeb'); }
+  // Form getters
+  get countryCode() { return this.whatsappContactForm.get('countryCode'); }
+  get number() { return this.whatsappContactForm.get('number'); }
+  get useForReservations() { return this.whatsappContactForm.get('useForReservations'); }
+  get visibleOnWeb() { return this.whatsappContactForm.get('visibleOnWeb'); }
 }

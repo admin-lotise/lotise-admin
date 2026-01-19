@@ -1,0 +1,319 @@
+<div class="contact-info-container">
+
+  <!-- Success Alert -->
+  @if (successMessage()) {
+    <div class="alert alert-success">
+      <i class="fas fa-check-circle"></i>
+      <span>{{ successMessage() }}</span>
+      <button class="close-btn" (click)="successMessage.set(null)">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  }
+
+  <!-- Error Alert -->
+  @if (errorMessage()) {
+    <div class="alert alert-error">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>{{ errorMessage() }}</span>
+      <button class="close-btn" (click)="errorMessage.set(null)">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  }
+
+  <!-- Header -->
+  <div class="section-header">
+    <div class="header-content">
+      <h2 class="section-title">
+        <i class="fas fa-address-book"></i>
+        Información de Contacto
+      </h2>
+      <p class="section-subtitle">
+        Configura cómo tus clientes pueden contactarte en tu Bio Page
+      </p>
+    </div>
+
+    <!-- Toggle Section -->
+    <div class="section-toggle">
+      <label class="toggle-switch">
+        <input 
+          type="checkbox" 
+          [checked]="isSectionEnabled()"
+          (change)="toggleSection()"
+        >
+        <span class="slider"></span>
+      </label>
+      <span class="toggle-label">
+        {{ isSectionEnabled() ? 'Activa' : 'Inactiva' }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <form [formGroup]="contactForm" (ngSubmit)="save()">
+
+    <!-- Section Configuration -->
+    <div class="section-card" [class.disabled]="!isSectionEnabled()">
+      <h3 class="subsection-title">
+        <i class="fas fa-cog"></i>
+        Configuración de la Sección
+      </h3>
+
+      <div class="form-row">
+        <!-- Title -->
+        <div class="form-group">
+          <label class="form-label required">
+            <i class="fas fa-heading"></i>
+            Título
+          </label>
+          <input 
+            type="text" 
+            class="form-input"
+            formControlName="title"
+            placeholder="Contáctanos"
+            maxlength="100"
+            [class.invalid]="title?.invalid && title?.touched"
+            [disabled]="!isSectionEnabled()"
+          >
+          @if (title?.invalid && title?.touched) {
+            <div class="field-error">
+              @if (title?.errors?.['required']) {
+                <i class="fas fa-exclamation-circle"></i>
+                <span>El título es requerido</span>
+              }
+              @if (title?.errors?.['maxlength']) {
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Máximo 100 caracteres</span>
+              }
+            </div>
+          }
+          <div class="input-footer">
+            <span class="char-counter">{{ title?.value?.length || 0 }}/100</span>
+          </div>
+        </div>
+
+        <!-- Subtitle -->
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-align-left"></i>
+            Subtítulo (Opcional)
+          </label>
+          <input 
+            type="text" 
+            class="form-input"
+            formControlName="subtitle"
+            placeholder="Estamos aquí para ayudarte"
+            maxlength="200"
+            [class.invalid]="subtitle?.invalid && subtitle?.touched"
+            [disabled]="!isSectionEnabled()"
+          >
+          @if (subtitle?.invalid && subtitle?.touched) {
+            <div class="field-error">
+              @if (subtitle?.errors?.['maxlength']) {
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Máximo 200 caracteres</span>
+              }
+            </div>
+          }
+          <div class="input-footer">
+            <span class="char-counter">{{ subtitle?.value?.length || 0 }}/200</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Methods -->
+    <div class="section-card" [class.disabled]="!isSectionEnabled()">
+      <h3 class="subsection-title">
+        <i class="fas fa-phone"></i>
+        Métodos de Contacto
+      </h3>
+      <p class="section-description">
+        Proporciona al menos un método de contacto
+      </p>
+
+      <div class="form-row">
+        <!-- Email -->
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-envelope"></i>
+            Email
+          </label>
+          <input 
+            type="email" 
+            class="form-input"
+            formControlName="email"
+            placeholder="contacto@ejemplo.com"
+            [class.invalid]="email?.invalid && email?.touched"
+            [disabled]="!isSectionEnabled()"
+          >
+          @if (email?.invalid && email?.touched) {
+            <div class="field-error">
+              @if (email?.errors?.['email']) {
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Email no válido</span>
+              }
+              @if (email?.errors?.['maxlength']) {
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Máximo 100 caracteres</span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Phone -->
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-phone"></i>
+            Teléfono
+          </label>
+          <input 
+            type="tel" 
+            class="form-input"
+            formControlName="phone"
+            placeholder="+52 (555) 123-4567"
+            [class.invalid]="phone?.invalid && phone?.touched"
+            [disabled]="!isSectionEnabled()"
+          >
+          @if (phone?.invalid && phone?.touched) {
+            <div class="field-error">
+              @if (phone?.errors?.['maxlength']) {
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Máximo 20 caracteres</span>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- WhatsApp -->
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fab fa-whatsapp"></i>
+            WhatsApp
+          </label>
+          <input 
+            type="tel" 
+            class="form-input"
+            formControlName="whatsapp"
+            placeholder="+52 55 1234 5678"
+            [class.invalid]="whatsapp?.invalid && whatsapp?.touched"
+            [disabled]="!isSectionEnabled()"
+          >
+          @if (whatsapp?.invalid && whatsapp?.touched) {
+            <div class="field-error">
+              @if (whatsapp?.errors?.['maxlength']) {
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Máximo 20 caracteres</span>
+              }
+            </div>
+          }
+          <div class="field-hint">
+            <i class="fas fa-info-circle"></i>
+            <span>Incluye código de país (ej: +52)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Information -->
+    <div class="section-card" [class.disabled]="!isSectionEnabled()">
+      <h3 class="subsection-title">
+        <i class="fas fa-map-marker-alt"></i>
+        Información Adicional (Opcional)
+      </h3>
+
+      <div class="form-row">
+        <!-- Address -->
+        <div class="form-group full-width">
+          <label class="form-label">
+            <i class="fas fa-location-dot"></i>
+            Dirección
+          </label>
+          <textarea 
+            class="form-textarea"
+            formControlName="address"
+            placeholder="Av. Principal 123, Col. Centro, Ciudad, C.P. 12345"
+            rows="2"
+            maxlength="200"
+            [class.invalid]="address?.invalid && address?.touched"
+            [disabled]="!isSectionEnabled()"
+          ></textarea>
+          @if (address?.invalid && address?.touched) {
+            <div class="field-error">
+              @if (address?.errors?.['maxlength']) {
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Máximo 200 caracteres</span>
+              }
+            </div>
+          }
+          <div class="input-footer">
+            <span class="char-counter">{{ address?.value?.length || 0 }}/200</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Schedule -->
+        <div class="form-group full-width">
+          <label class="form-label">
+            <i class="fas fa-clock"></i>
+            Horario de Atención
+          </label>
+          <textarea 
+            class="form-textarea"
+            formControlName="scheduleText"
+            placeholder="Lunes a Viernes: 9:00 AM - 6:00 PM&#10;Sábados: 9:00 AM - 2:00 PM"
+            rows="3"
+            maxlength="300"
+            [class.invalid]="scheduleText?.invalid && scheduleText?.touched"
+            [disabled]="!isSectionEnabled()"
+          ></textarea>
+          @if (scheduleText?.invalid && scheduleText?.touched) {
+            <div class="field-error">
+              @if (scheduleText?.errors?.['maxlength']) {
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Máximo 300 caracteres</span>
+              }
+            </div>
+          }
+          <div class="input-footer">
+            <span class="char-counter">{{ scheduleText?.value?.length || 0 }}/300</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      @if (hasChanges()) {
+        <button 
+          type="button" 
+          class="btn btn-secondary" 
+          (click)="cancel()"
+          [disabled]="isSaving()"
+        >
+          <i class="fas fa-times"></i>
+          Cancelar
+        </button>
+      }
+      <button 
+        type="submit" 
+        class="btn btn-primary"
+        [disabled]="contactForm.invalid || isSaving() || !hasChanges()"
+      >
+        @if (isSaving()) {
+          <i class="fas fa-spinner fa-spin"></i>
+          <span>Guardando...</span>
+        } @else {
+          <i class="fas fa-save"></i>
+          <span>Guardar Cambios</span>
+        }
+      </button>
+    </div>
+
+  </form>
+
+</div>

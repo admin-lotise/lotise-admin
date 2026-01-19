@@ -1,0 +1,398 @@
+<div class="how-it-works-container">
+
+  <!-- Messages -->
+  @if (errorMessage()) {
+    <div class="alert alert-error">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>{{ errorMessage() }}</span>
+      <button class="close-btn" (click)="errorMessage.set(null)">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  }
+
+  @if (successMessage()) {
+    <div class="alert alert-success">
+      <i class="fas fa-check-circle"></i>
+      <span>{{ successMessage() }}</span>
+      <button class="close-btn" (click)="successMessage.set(null)">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  }
+
+  <!-- Header -->
+  <div class="section-header">
+    <div class="header-content">
+      <h2 class="section-title">
+        <i class="fas fa-list-ol"></i>
+        Sección "Cómo Funciona"
+      </h2>
+      <p class="section-subtitle">
+        Explica a tus clientes el proceso paso a paso
+      </p>
+    </div>
+
+    <!-- Toggle Enable -->
+    <div class="section-toggle">
+      <label class="toggle-switch">
+        <input 
+          type="checkbox" 
+          [checked]="enabled()"
+          (change)="toggleEnabled()"
+        >
+        <span class="slider"></span>
+      </label>
+      <span class="toggle-label">
+        {{ enabled() ? 'Sección Activa' : 'Sección Inactiva' }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="editor-content" [class.disabled]="!enabled()">
+
+    <!-- Section Config -->
+    <div class="section-config">
+      
+      <!-- Title -->
+      <div class="form-group">
+        <label for="sectionTitle" class="form-label required">
+          <i class="fas fa-heading"></i>
+          Título de la Sección
+        </label>
+        <input
+          type="text"
+          id="sectionTitle"
+          class="form-input"
+          placeholder="Ej: ¿Cómo Funciona?"
+          [(ngModel)]="sectionTitle"
+          (ngModelChange)="onFieldChange()"
+          [disabled]="isSaving() || !enabled()"
+          maxlength="100"
+        >
+        <div class="input-footer">
+          <span class="char-counter">{{ sectionTitle().length }}/100</span>
+        </div>
+      </div>
+
+      <!-- Subtitle -->
+      <div class="form-group">
+        <label for="sectionSubtitle" class="form-label">
+          <i class="fas fa-align-left"></i>
+          Subtítulo (Opcional)
+        </label>
+        <input
+          type="text"
+          id="sectionSubtitle"
+          class="form-input"
+          placeholder="Ej: Es muy fácil participar en nuestras rifas"
+          [(ngModel)]="sectionSubtitle"
+          (ngModelChange)="onFieldChange()"
+          [disabled]="isSaving() || !enabled()"
+          maxlength="150"
+        >
+        <div class="input-footer">
+          <span class="char-counter">{{ sectionSubtitle().length }}/150</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Steps List -->
+    <div class="steps-section">
+      <div class="steps-header">
+        <h3 class="steps-title">
+          <i class="fas fa-tasks"></i>
+          Pasos ({{ steps().length }})
+        </h3>
+        <button 
+          type="button"
+          class="btn btn-primary btn-sm"
+          (click)="showAddStepForm()"
+          [disabled]="isSaving() || !enabled() || showNewStepForm()"
+        >
+          <i class="fas fa-plus"></i>
+          <span>Agregar Paso</span>
+        </button>
+      </div>
+
+      <!-- Empty State -->
+      @if (steps().length === 0 && !showNewStepForm()) {
+        <div class="empty-state">
+          <i class="fas fa-list-ol"></i>
+          <h4>No hay pasos configurados</h4>
+          <p>Agrega pasos para explicar cómo funciona tu servicio de rifas</p>
+          <button 
+            type="button"
+            class="btn btn-primary"
+            (click)="showAddStepForm()"
+            [disabled]="!enabled()"
+          >
+            <i class="fas fa-plus"></i>
+            <span>Agregar Primer Paso</span>
+          </button>
+        </div>
+      }
+
+      <!-- Steps List -->
+      @if (steps().length > 0) {
+        <div class="steps-list">
+          @for (step of steps(); track step.id; let i = $index) {
+            <div class="step-item" [class.editing]="step.isEditing">
+              
+              <!-- View Mode -->
+              @if (!step.isEditing) {
+                <div class="step-view">
+                  <div class="step-number">{{ step.order }}</div>
+                  
+                  <div class="step-icon">
+                    <i [class]="step.icon"></i>
+                  </div>
+                  
+                  <div class="step-content">
+                    <h4 class="step-title">{{ step.title }}</h4>
+                    <p class="step-description">{{ step.description }}</p>
+                  </div>
+                  
+                  <div class="step-actions">
+                    <button 
+                      type="button"
+                      class="btn-icon"
+                      (click)="editStep(step.id)"
+                      [disabled]="isSaving()"
+                      title="Editar"
+                    >
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button 
+                      type="button"
+                      class="btn-icon btn-danger"
+                      (click)="deleteStep(step.id)"
+                      [disabled]="isSaving()"
+                      title="Eliminar"
+                    >
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              }
+
+              <!-- Edit Mode -->
+              @if (step.isEditing) {
+                <div class="step-edit">
+                  <div class="step-number">{{ step.order }}</div>
+                  
+                  <!-- Icon Selector -->
+                  <div class="icon-selector">
+                    <button 
+                      type="button"
+                      class="icon-btn"
+                      (click)="openIconPicker(step.id)"
+                    >
+                      <i [class]="step.icon"></i>
+                    </button>
+                    <span class="icon-hint">Clic para cambiar</span>
+                  </div>
+
+                  <div class="step-form">
+                    <!-- Title -->
+                    <div class="form-group">
+                      <label class="form-label required">
+                        <i class="fas fa-heading"></i>
+                        Título del Paso
+                      </label>
+                      <input
+                        type="text"
+                        class="form-input"
+                        placeholder="Ej: Elige tu Rifa"
+                        [(ngModel)]="step.title"
+                        maxlength="100"
+                      >
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-group">
+                      <label class="form-label required">
+                        <i class="fas fa-align-left"></i>
+                        Descripción
+                      </label>
+                      <textarea
+                        class="form-textarea"
+                        placeholder="Ej: Explora nuestras rifas activas y elige la que más te guste"
+                        [(ngModel)]="step.description"
+                        maxlength="200"
+                        rows="3"
+                      ></textarea>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="form-actions-inline">
+                      <button 
+                        type="button"
+                        class="btn btn-secondary btn-sm"
+                        (click)="cancelEdit(step.id)"
+                      >
+                        <i class="fas fa-times"></i>
+                        <span>Cancelar</span>
+                      </button>
+                      <button 
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        (click)="saveStepEdit(step.id)"
+                      >
+                        <i class="fas fa-check"></i>
+                        <span>Guardar</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- New Step Form -->
+      @if (showNewStepForm()) {
+        <div class="step-item new-step">
+          <div class="step-edit">
+            <div class="step-number">{{ steps().length + 1 }}</div>
+            
+            <!-- Icon Selector -->
+            <div class="icon-selector">
+              <button 
+                type="button"
+                class="icon-btn"
+                (click)="openIconPicker('new')"
+              >
+                <i [class]="newStep.icon"></i>
+              </button>
+              <span class="icon-hint">Clic para cambiar</span>
+            </div>
+
+            <div class="step-form">
+              <!-- Title -->
+              <div class="form-group">
+                <label class="form-label required">
+                  <i class="fas fa-heading"></i>
+                  Título del Paso
+                </label>
+                <input
+                  type="text"
+                  class="form-input"
+                  placeholder="Ej: Elige tu Rifa"
+                  [(ngModel)]="newStep.title"
+                  maxlength="100"
+                >
+              </div>
+
+              <!-- Description -->
+              <div class="form-group">
+                <label class="form-label required">
+                  <i class="fas fa-align-left"></i>
+                  Descripción
+                </label>
+                <textarea
+                  class="form-textarea"
+                  placeholder="Ej: Explora nuestras rifas activas y elige la que más te guste"
+                  [(ngModel)]="newStep.description"
+                  maxlength="200"
+                  rows="3"
+                ></textarea>
+              </div>
+
+              <!-- Actions -->
+              <div class="form-actions-inline">
+                <button 
+                  type="button"
+                  class="btn btn-secondary btn-sm"
+                  (click)="cancelNewStep()"
+                >
+                  <i class="fas fa-times"></i>
+                  <span>Cancelar</span>
+                </button>
+                <button 
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  (click)="addStep()"
+                >
+                  <i class="fas fa-plus"></i>
+                  <span>Agregar Paso</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+    </div>
+
+  </div>
+
+  <!-- Save Actions -->
+  <div class="form-actions">
+    <button
+      type="button"
+      class="btn btn-secondary"
+      (click)="cancel()"
+      [disabled]="isSaving() || !hasChanges()"
+    >
+      <i class="fas fa-times"></i>
+      <span>Cancelar</span>
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="save()"
+      [disabled]="isSaving() || !hasChanges()"
+    >
+      @if (isSaving()) {
+        <i class="fas fa-spinner fa-spin"></i>
+        <span>Guardando...</span>
+      } @else {
+        <i class="fas fa-save"></i>
+        <span>Guardar Cambios</span>
+      }
+    </button>
+  </div>
+
+</div>
+
+<!-- Icon Picker Modal -->
+@if (showIconPicker()) {
+  <div class="modal-overlay" (click)="closeIconPicker()">
+    <div class="modal-content icon-picker-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i class="fas fa-icons"></i>
+          Selecciona un Ícono
+        </h3>
+        <button 
+          type="button" 
+          class="modal-close"
+          (click)="closeIconPicker()"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="icon-grid">
+          @for (icon of availableIcons; track icon.class) {
+            <button
+              type="button"
+              class="icon-option"
+              (click)="selectIcon(icon.class)"
+              [title]="icon.label"
+            >
+              <i [class]="icon.class"></i>
+              <span>{{ icon.label }}</span>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

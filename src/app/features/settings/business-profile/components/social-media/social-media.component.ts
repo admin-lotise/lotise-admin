@@ -1,9 +1,9 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { SettingsStateService } from '../../../../core/signals/settings-state.service';
-import { SettingsApiService } from '../../../../core/http/settings-api.service';
-import { StorageService } from '../../../../core/auth/storage.service';
+import { SettingsStateService } from '../../../../../core/signals/settings-state.service';
+import { SettingsApiService } from '../../../../../core/http/settings-api.service';
+import { StorageService } from '../../../../../core/auth/storage.service';
 
 /**
  * Componente para gestión de redes sociales del negocio

@@ -1,0 +1,393 @@
+<div class="testimonials-container">
+
+  <!-- Messages -->
+  @if (errorMessage()) {
+    <div class="alert alert-error">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>{{ errorMessage() }}</span>
+      <button class="close-btn" (click)="errorMessage.set(null)">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  }
+
+  @if (successMessage()) {
+    <div class="alert alert-success">
+      <i class="fas fa-check-circle"></i>
+      <span>{{ successMessage() }}</span>
+      <button class="close-btn" (click)="successMessage.set(null)">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  }
+
+  <!-- Header -->
+  <div class="section-header">
+    <div class="header-content">
+      <h2 class="section-title">
+        <i class="fas fa-quote-left"></i>
+        Sección de Testimonios
+      </h2>
+      <p class="section-subtitle">
+        Muestra opiniones de clientes satisfechos
+      </p>
+    </div>
+
+    <!-- Toggle Enable -->
+    <div class="section-toggle">
+      <label class="toggle-switch">
+        <input 
+          type="checkbox" 
+          [checked]="enabled()"
+          (change)="toggleEnabled()"
+        >
+        <span class="slider"></span>
+      </label>
+      <span class="toggle-label">
+        {{ enabled() ? 'Sección Activa' : 'Sección Inactiva' }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="editor-content" [class.disabled]="!enabled()">
+
+    <!-- Section Config -->
+    <div class="section-config">
+      
+      <!-- Title -->
+      <div class="form-group">
+        <label for="sectionTitle" class="form-label required">
+          <i class="fas fa-heading"></i>
+          Título de la Sección
+        </label>
+        <input
+          type="text"
+          id="sectionTitle"
+          class="form-input"
+          placeholder="Ej: Testimonios"
+          [ngModel]="sectionTitle()"
+          (ngModelChange)="sectionTitle.set($event); onFieldChange()"
+          [disabled]="isSaving() || !enabled()"
+          maxlength="100"
+        >
+        <div class="input-footer">
+          <span class="char-counter">{{ sectionTitle().length }}/100</span>
+        </div>
+      </div>
+
+      <!-- Subtitle -->
+      <div class="form-group">
+        <label for="sectionSubtitle" class="form-label">
+          <i class="fas fa-align-left"></i>
+          Subtítulo (Opcional)
+        </label>
+        <input
+          type="text"
+          id="sectionSubtitle"
+          class="form-input"
+          placeholder="Ej: Lo que dicen nuestros clientes"
+          [ngModel]="sectionSubtitle()"
+          (ngModelChange)="sectionSubtitle.set($event); onFieldChange()"
+          [disabled]="isSaving() || !enabled()"
+          maxlength="150"
+        >
+        <div class="input-footer">
+          <span class="char-counter">{{ sectionSubtitle().length }}/150</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Testimonials List -->
+    <div class="testimonials-section">
+      <div class="testimonials-header">
+        <h3 class="testimonials-title">
+          <i class="fas fa-comments"></i>
+          Testimonios ({{ testimonials().length }})
+        </h3>
+        <button 
+          type="button"
+          class="btn btn-primary btn-sm"
+          (click)="showAddTestimonialForm()"
+          [disabled]="isSaving() || !enabled() || showNewTestimonialForm()"
+        >
+          <i class="fas fa-plus"></i>
+          <span>Agregar Testimonial</span>
+        </button>
+      </div>
+
+      <!-- Empty State -->
+      @if (testimonials().length === 0 && !showNewTestimonialForm()) {
+        <div class="empty-state">
+          <i class="fas fa-quote-left"></i>
+          <h4>No hay testimonios configurados</h4>
+          <p>Agrega testimonios de clientes satisfechos para generar confianza</p>
+          <button 
+            type="button"
+            class="btn btn-primary"
+            (click)="showAddTestimonialForm()"
+            [disabled]="!enabled()"
+          >
+            <i class="fas fa-plus"></i>
+            <span>Agregar Primer Testimonial</span>
+          </button>
+        </div>
+      }
+
+      <!-- Testimonials List -->
+      @if (testimonials().length > 0) {
+        <div class="testimonials-list">
+          @for (testimonial of testimonials(); track testimonial.id; let i = $index) {
+            <div class="testimonial-item" [class.editing]="testimonial.isEditing">
+              
+              <!-- View Mode -->
+              @if (!testimonial.isEditing) {
+                <div class="testimonial-view">
+                  <div class="testimonial-header">
+                    <div class="testimonial-author">
+                      <div class="author-avatar">
+                        <i class="fas fa-user"></i>
+                      </div>
+                      <div class="author-info">
+                        <h4 class="author-name">{{ testimonial.name }}</h4>
+                        <div class="rating">
+                          @for (filled of getStars(testimonial.rating); track $index) {
+                            <i class="fas fa-star" [class.filled]="filled"></i>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                    <div class="testimonial-actions">
+                      <button 
+                        type="button"
+                        class="btn-icon"
+                        (click)="editTestimonial(testimonial.id)"
+                        [disabled]="isSaving()"
+                        title="Editar"
+                      >
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button 
+                        type="button"
+                        class="btn-icon btn-danger"
+                        (click)="deleteTestimonial(testimonial.id)"
+                        [disabled]="isSaving()"
+                        title="Eliminar"
+                      >
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="testimonial-text">
+                    <i class="fas fa-quote-left quote-icon"></i>
+                    <p>{{ testimonial.message }}</p>
+                  </div>
+                </div>
+              }
+
+              <!-- Edit Mode -->
+              @if (testimonial.isEditing) {
+                <div class="testimonial-edit">
+                  <div class="testimonial-form">
+                    
+                    <!-- Author -->
+                    <div class="form-group">
+                      <label class="form-label required">
+                        <i class="fas fa-user"></i>
+                        Nombre del Cliente
+                      </label>
+                      <input
+                        type="text"
+                        class="form-input"
+                        placeholder="Ej: Juan Pérez"
+                        [(ngModel)]="testimonial.name"
+                        maxlength="100"
+                      >
+                    </div>
+
+                    <!-- Rating -->
+                    <div class="form-group">
+                      <label class="form-label required">
+                        <i class="fas fa-star"></i>
+                        Calificación
+                      </label>
+                      <div class="rating-selector">
+                        @for (star of stars; track star) {
+                          <button
+                            type="button"
+                            class="star-btn"
+                            [class.active]="star <= testimonial.rating"
+                            (click)="setRating(testimonial, star)"
+                          >
+                            <i class="fas fa-star"></i>
+                          </button>
+                        }
+                      </div>
+                    </div>
+
+                    <!-- Text -->
+                    <div class="form-group">
+                      <label class="form-label required">
+                        <i class="fas fa-align-left"></i>
+                        Testimonial
+                      </label>
+                      <textarea
+                        class="form-textarea"
+                        placeholder="Ej: Excelente servicio, gané un iPhone 15 Pro. Muy transparentes y confiables."
+                        [(ngModel)]="testimonial.message"
+                        maxlength="300"
+                        rows="4"
+                      ></textarea>
+                      <div class="input-footer">
+                        <span class="char-counter">{{ testimonial.message.length }}/300</span>
+                      </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="form-actions-inline">
+                      <button 
+                        type="button"
+                        class="btn btn-secondary btn-sm"
+                        (click)="cancelEdit(testimonial.id)"
+                      >
+                        <i class="fas fa-times"></i>
+                        <span>Cancelar</span>
+                      </button>
+                      <button 
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        (click)="saveTestimonialEdit(testimonial.id)"
+                      >
+                        <i class="fas fa-check"></i>
+                        <span>Guardar</span>
+                      </button>
+                    </div>
+
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- New Testimonial Form -->
+      @if (showNewTestimonialForm()) {
+        <div class="testimonial-item new-testimonial">
+          <div class="testimonial-edit">
+            <div class="testimonial-form">
+              
+              <!-- Author -->
+              <div class="form-group">
+                <label class="form-label required">
+                  <i class="fas fa-user"></i>
+                  Nombre del Cliente
+                </label>
+                <input
+                  type="text"
+                  class="form-input"
+                  placeholder="Ej: Juan Pérez"
+                  [ngModel]="newTestimonial().name"
+                  (ngModelChange)="updateNewTestimonialName($event)"
+                  maxlength="100"
+                >
+              </div>
+
+              <!-- Rating -->
+              <div class="form-group">
+                <label class="form-label required">
+                  <i class="fas fa-star"></i>
+                  Calificación
+                </label>
+                <div class="rating-selector">
+                  @for (star of stars; track star) {
+                    <button
+                      type="button"
+                      class="star-btn"
+                      [class.active]="star <= newTestimonial().rating"
+                      (click)="setNewRating(star)"
+                    >
+                      <i class="fas fa-star"></i>
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <!-- Text -->
+              <div class="form-group">
+                <label class="form-label required">
+                  <i class="fas fa-align-left"></i>
+                  Testimonial
+                </label>
+                <textarea
+                  class="form-textarea"
+                  placeholder="Ej: Excelente servicio, gané un iPhone 15 Pro. Muy transparentes y confiables."
+                  [ngModel]="newTestimonial().message"
+                  (ngModelChange)="updateNewTestimonialMessage($event)"
+                  maxlength="300"
+                  rows="4"
+                ></textarea>
+                <div class="input-footer">
+                  <span class="char-counter">{{ newTestimonial().message.length }}/300</span>
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div class="form-actions-inline">
+                <button 
+                  type="button"
+                  class="btn btn-secondary btn-sm"
+                  (click)="cancelNewTestimonial()"
+                >
+                  <i class="fas fa-times"></i>
+                  <span>Cancelar</span>
+                </button>
+                <button 
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  (click)="addTestimonial()"
+                >
+                  <i class="fas fa-plus"></i>
+                  <span>Agregar Testimonial</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      }
+
+    </div>
+
+  </div>
+
+  <!-- Save Actions -->
+  <div class="form-actions">
+    <button
+      type="button"
+      class="btn btn-secondary"
+      (click)="cancel()"
+      [disabled]="isSaving() || !hasChanges()"
+    >
+      <i class="fas fa-times"></i>
+      <span>Cancelar</span>
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="save()"
+      [disabled]="isSaving() || !hasChanges()"
+    >
+      @if (isSaving()) {
+        <i class="fas fa-spinner fa-spin"></i>
+        <span>Guardando...</span>
+      } @else {
+        <i class="fas fa-save"></i>
+        <span>Guardar Cambios</span>
+      }
+    </button>
+  </div>
+
+</div>

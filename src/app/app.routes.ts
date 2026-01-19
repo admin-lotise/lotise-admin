@@ -48,12 +48,12 @@ export const routes: Routes = [
         path: 'raffles/:id/tickets',
         loadComponent: () => import('./features/raffles/ticket-manager/ticket-manager.component').then(m => m.TicketManagerComponent)
       },
-      // ==================== NUEVO: Winners ====================
+      // ==================== Winners ====================
       {
         path: 'winners',
         loadComponent: () => import('./features/settings/winners/winners.component').then(m => m.WinnersComponent)
       },
-      // ========================================================
+      // ==================== Settings ====================
       {
         path: 'settings/business-profile',
         loadComponent: () => import('./features/settings/business-profile/business-profile.component').then(m => m.BusinessProfileComponent)

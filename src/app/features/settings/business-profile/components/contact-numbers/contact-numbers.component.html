@@ -1,0 +1,247 @@
+<div class="contact-numbers-container">
+
+  <!-- Success Alert -->
+  @if (successMessage()) {
+    <div class="alert alert-success">
+      <i class="fas fa-check-circle"></i>
+      <span>{{ successMessage() }}</span>
+      <button class="close-btn" (click)="successMessage.set(null)">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  }
+
+  <!-- Error Alert -->
+  @if (errorMessage()) {
+    <div class="alert alert-error">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>{{ errorMessage() }}</span>
+      <button class="close-btn" (click)="errorMessage.set(null)">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  }
+
+  <!-- ==================== WHATSAPP CONTACTS SECTION ==================== -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="header-content">
+        <h2 class="section-title">
+          <i class="fab fa-whatsapp"></i>
+          Contactos WhatsApp
+        </h2>
+        <p class="section-description">
+          Números de WhatsApp para recibir y enviar mensajes automáticos de rifas
+        </p>
+      </div>
+      <button type="button" class="btn btn-primary" (click)="openNewContactModal()">
+        <i class="fas fa-plus"></i>
+        Agregar Contacto
+      </button>
+    </div>
+
+    <!-- Contacts Table -->
+    @if (contacts().length > 0) {
+      <div class="table-container">
+        <table class="contacts-table">
+          <thead>
+            <tr>
+              <th>Número</th>
+              <th>Para Reservas</th>
+              <th>Visible en Web</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (contact of contacts(); track contact.id) {
+              <tr>
+                <td>
+                  <div class="phone-number">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>{{ contact.countryCode }} {{ formatPhoneNumber(contact.number) }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="badge" [class.badge-success]="contact.useForReservations" [class.badge-secondary]="!contact.useForReservations">
+                    {{ contact.useForReservations ? 'Sí' : 'No' }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge" [class.badge-success]="contact.visibleOnWeb" [class.badge-secondary]="!contact.visibleOnWeb">
+                    {{ contact.visibleOnWeb ? 'Sí' : 'No' }}
+                  </span>
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <a 
+                      [href]="getWhatsAppLink(contact)" 
+                      target="_blank" 
+                      class="btn-icon btn-success" 
+                      title="Abrir en WhatsApp"
+                    >
+                      <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <button 
+                      type="button" 
+                      class="btn-icon btn-primary" 
+                      (click)="openEditContactModal(contact)"
+                      title="Editar"
+                    >
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button 
+                      type="button" 
+                      class="btn-icon btn-danger" 
+                      (click)="deleteContact(contact)"
+                      [disabled]="isDeleting() === contact.id"
+                      title="Eliminar"
+                    >
+                      @if (isDeleting() === contact.id) {
+                        <i class="fas fa-spinner fa-spin"></i>
+                      } @else {
+                        <i class="fas fa-trash"></i>
+                      }
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <div class="empty-state">
+        <i class="fab fa-whatsapp"></i>
+        <h3>No hay contactos de WhatsApp</h3>
+        <p>Agrega números de WhatsApp para recibir mensajes automáticos</p>
+      </div>
+    }
+  </div>
+
+</div>
+
+<!-- ==================== MODAL: ADD/EDIT WHATSAPP CONTACT ==================== -->
+@if (isModalOpen()) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      
+      <div class="modal-header">
+        <h3 class="modal-title">
+          @if (isEditing()) {
+            <i class="fas fa-edit"></i>
+            Editar Contacto WhatsApp
+          } @else {
+            <i class="fas fa-plus"></i>
+            Agregar Contacto WhatsApp
+          }
+        </h3>
+        <button type="button" class="close-btn" (click)="closeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <form [formGroup]="whatsappContactForm" (ngSubmit)="onSubmit()">
+        <div class="modal-body">
+
+          <!-- Country Code -->
+          <div class="form-group">
+            <label class="form-label required">
+              <i class="fas fa-flag"></i>
+              País
+            </label>
+            <select 
+              class="form-select"
+              formControlName="countryCode"
+              [class.invalid]="countryCode?.invalid && countryCode?.touched"
+            >
+              @for (country of countryCodes; track country.code) {
+                <option [value]="country.code">
+                  {{ country.flag }} {{ country.country }} ({{ country.code }})
+                </option>
+              }
+            </select>
+          </div>
+
+          <!-- Phone Number -->
+          <div class="form-group">
+            <label class="form-label required">
+              <i class="fas fa-phone"></i>
+              Número de Teléfono
+            </label>
+            <input 
+              type="tel" 
+              class="form-input"
+              formControlName="number"
+              placeholder="1234567890"
+              maxlength="10"
+              [class.invalid]="number?.invalid && number?.touched"
+            >
+            @if (number?.invalid && number?.touched) {
+              <div class="field-error">
+                @if (number?.errors?.['required']) {
+                  <i class="fas fa-exclamation-circle"></i>
+                  <span>El número es requerido</span>
+                }
+                @if (number?.errors?.['pattern'] || number?.errors?.['minlength'] || number?.errors?.['maxlength']) {
+                  <i class="fas fa-exclamation-circle"></i>
+                  <span>Debe ser un número de 10 dígitos</span>
+                }
+              </div>
+            }
+            <div class="field-hint">
+              <i class="fas fa-info-circle"></i>
+              <span>Solo números, 10 dígitos</span>
+            </div>
+          </div>
+
+          <!-- Checkboxes -->
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                formControlName="useForReservations"
+              >
+              <span>Usar para recibir notificaciones de reservas</span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                formControlName="visibleOnWeb"
+              >
+              <span>Mostrar en página web pública</span>
+            </label>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button 
+            type="button" 
+            class="btn btn-secondary" 
+            (click)="closeModal()"
+            [disabled]="isSaving()"
+          >
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="whatsappContactForm.invalid || isSaving()"
+          >
+            @if (isSaving()) {
+              <i class="fas fa-spinner fa-spin"></i>
+              <span>Guardando...</span>
+            } @else {
+              <i class="fas fa-save"></i>
+              <span>{{ isEditing() ? 'Actualizar' : 'Agregar' }}</span>
+            }
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+}
