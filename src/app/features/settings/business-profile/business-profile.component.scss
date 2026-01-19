@@ -166,15 +166,32 @@
   background: var(--color-bg-main);
   border-bottom: 2px solid #e2e8f0;
   overflow-x: auto;
+  overflow-y: hidden; // ✅ AGREGADO
 
+  // ✅ MEJORADO: Scrollbar personalizado
   &::-webkit-scrollbar {
-    height: 0;
+    height: 6px; // ✅ CAMBIADO de 0 a 6px
   }
 
-  scrollbar-width: none;
+  &::-webkit-scrollbar-track {
+    background: var(--color-bg-main); // ✅ AGREGADO
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1; // ✅ AGREGADO
+    border-radius: 3px; // ✅ AGREGADO
+
+    &:hover {
+      background: #94a3b8; // ✅ AGREGADO
+    }
+  }
+
+  scrollbar-width: thin; // ✅ CAMBIADO de none a thin
+  scrollbar-color: #cbd5e1 var(--color-bg-main); // ✅ AGREGADO
 
   .tab-button {
-    flex: 1;
+    flex: 0 0 auto; // ✅ CAMBIADO de flex: 1 para permitir scroll
+    min-width: 180px; // ✅ AGREGADO: ancho mínimo
     padding: 1.25rem 2rem;
     background: transparent;
     border: none;
@@ -282,12 +299,13 @@
 @media (min-width: 769px) and (max-width: 1024px) {
   .page-header {
     .page-title {
-      font-size: 1.35rem; // ✅ Mantener igual que desktop
+      font-size: 1.35rem;
     }
   }
 
   .tabs-header {
     .tab-button {
+      min-width: 160px; // ✅ AGREGADO
       padding: 1rem 1.5rem;
       font-size: 0.9rem;
     }
@@ -296,7 +314,7 @@
 
 @media (max-width: 768px) {
   .business-profile-container {
-    padding-bottom: 100px; // Espacio para bottom nav
+    padding-bottom: 100px;
   }
 
   .page-header {
@@ -326,11 +344,12 @@
 
   .tabs-header {
     .tab-button {
+      min-width: 80px; // ✅ REDUCIDO para mobile
       padding: 1rem;
       font-size: 0.85rem;
 
       span {
-        display: none;
+        display: none; // ✅ Ocultar texto en mobile
       }
 
       i {

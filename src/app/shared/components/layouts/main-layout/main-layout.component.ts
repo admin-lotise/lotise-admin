@@ -33,13 +33,11 @@ export class MainLayoutComponent {
       label: 'Rifas', 
       route: '/raffles' 
     },
-    // ==================== NUEVO ====================
     { 
       icon: 'emoji_events', 
       label: 'Ganadores', 
       route: '/winners' 
     },
-    // ===============================================
     // ===== SEPARADOR: CONFIGURACIÓN =====
     { 
       icon: 'business', 
@@ -106,14 +104,12 @@ export class MainLayoutComponent {
       description: 'Agregar una rifa nueva',
       route: '/raffles/new' 
     },
-    // ==================== NUEVO ====================
     { 
       icon: 'emoji_events', 
       label: 'Ganadores', 
       description: 'Últimos 5 ganadores',
       route: '/winners' 
     },
-    // ===============================================
     // ===== SEPARADOR: CONFIGURACIÓN =====
     { 
       icon: 'business', 
