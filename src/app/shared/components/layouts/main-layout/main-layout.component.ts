@@ -21,7 +21,7 @@ export class MainLayoutComponent {
     private router: Router
   ) {}
 
-  // ✅ Desktop Sidebar
+  // ✅ Desktop Sidebar (ORDEN REORGANIZADO)
   readonly menuItems = [
     { 
       icon: 'dashboard', 
@@ -29,30 +29,19 @@ export class MainLayoutComponent {
       route: '/dashboard' 
     },
     { 
-      icon: 'confirmation_number', 
-      label: 'Rifas', 
-      route: '/raffles' 
-    },
-    { 
-      icon: 'emoji_events', 
-      label: 'Ganadores', 
-      route: '/winners' 
-    },
-    // ===== SEPARADOR: CONFIGURACIÓN =====
-    { 
       icon: 'business', 
       label: 'Mi Negocio', 
       route: '/settings/business-profile' 
     },
     { 
-      icon: 'tune', 
-      label: 'Config. Rifas', 
-      route: '/settings/raffle-settings' 
-    },
-    { 
       icon: 'account_balance', 
       label: 'Métodos de Pago', 
       route: '/settings/payment-methods' 
+    },
+    { 
+      icon: 'tune', 
+      label: 'Config. Rifas', 
+      route: '/settings/raffle-settings' 
     },
     { 
       icon: 'chat', 
@@ -65,13 +54,23 @@ export class MainLayoutComponent {
       route: '/settings/legal-content' 
     },
     { 
-      icon: 'settings', 
-      label: 'Configuración', 
-      route: '/settings' 
+      icon: 'emoji_events', 
+      label: 'Ganadores', 
+      route: '/winners' 
+    },
+    { 
+      icon: 'confirmation_number', 
+      label: 'Todas las Rifas', 
+      route: '/raffles' 
+    },
+    { 
+      icon: 'add_circle', 
+      label: 'Crear Nueva Rifa', 
+      route: '/raffles/new' 
     }
   ];
 
-  // ✅ Mobile Bottom Nav
+  // ✅ Mobile Bottom Nav (SIN CAMBIOS)
   readonly mobileBottomNavItems = [
     { 
       icon: 'home', 
@@ -90,27 +89,8 @@ export class MainLayoutComponent {
     }
   ];
 
-  // ✅ Mobile Sidebar
+  // ✅ Mobile Sidebar (ORDEN REORGANIZADO)
   readonly mobileSecondaryItems = [
-    { 
-      icon: 'confirmation_number', 
-      label: 'Todas las Rifas', 
-      description: 'Ver y gestionar rifas',
-      route: '/raffles' 
-    },
-    { 
-      icon: 'add_circle_outline', 
-      label: 'Crear Nueva Rifa', 
-      description: 'Agregar una rifa nueva',
-      route: '/raffles/new' 
-    },
-    { 
-      icon: 'emoji_events', 
-      label: 'Ganadores', 
-      description: 'Últimos 5 ganadores',
-      route: '/winners' 
-    },
-    // ===== SEPARADOR: CONFIGURACIÓN =====
     { 
       icon: 'business', 
       label: 'Mi Negocio', 
@@ -118,16 +98,16 @@ export class MainLayoutComponent {
       route: '/settings/business-profile' 
     },
     { 
-      icon: 'tune', 
-      label: 'Configuración de Rifas', 
-      description: 'Personaliza tus rifas',
-      route: '/settings/raffle-settings' 
-    },
-    { 
       icon: 'account_balance', 
       label: 'Métodos de Pago', 
       description: 'Cuentas bancarias y tarjetas',
       route: '/settings/payment-methods' 
+    },
+    { 
+      icon: 'tune', 
+      label: 'Configuración de Rifas', 
+      description: 'Personaliza tus rifas',
+      route: '/settings/raffle-settings' 
     },
     { 
       icon: 'chat', 
@@ -142,10 +122,22 @@ export class MainLayoutComponent {
       route: '/settings/legal-content' 
     },
     { 
-      icon: 'settings', 
-      label: 'Configuración', 
-      description: 'Preferencias y ajustes',
-      route: '/settings' 
+      icon: 'emoji_events', 
+      label: 'Ganadores', 
+      description: 'Últimos ganadores registrados',
+      route: '/winners' 
+    },
+    { 
+      icon: 'confirmation_number', 
+      label: 'Todas las Rifas', 
+      description: 'Ver y gestionar rifas',
+      route: '/raffles' 
+    },
+    { 
+      icon: 'add_circle_outline', 
+      label: 'Crear Nueva Rifa', 
+      description: 'Agregar una rifa nueva',
+      route: '/raffles/new' 
     }
   ];
 
